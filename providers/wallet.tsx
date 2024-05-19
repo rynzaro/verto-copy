@@ -109,7 +109,8 @@ const NearWalletProvider = ({ children }: { children: ReactNode }) => {
 
   const signOut = async () => {
     const selectedWallet = await walletSelector?.wallet();
-    selectedWallet?.signOut();
+    await selectedWallet?.signOut();
+    setStatus("unauthenticated");
   };
 
   const viewMethod = async ({

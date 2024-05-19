@@ -11,6 +11,7 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import clsx from "clsx";
+import Link from "next/link";
 
 const user = {
   name: "Tom Cook",
@@ -21,7 +22,7 @@ const user = {
 const navigation = [
   { name: "Explore", href: "#", current: true },
   { name: "Trade", href: "#", current: false },
-  { name: "Getting Started", href: "#", current: false },
+  { name: "Getting Started", href: "/getting-started", current: false },
 ];
 
 export default function Navigation() {
@@ -142,7 +143,7 @@ export default function Navigation() {
               className="hidden lg:flex lg:space-x-8 lg:py-2"
               aria-label="Global">
               {navigation.map((item) => (
-                <a
+                <Link
                   key={item.name}
                   href={item.href}
                   className={clsx(
@@ -153,7 +154,7 @@ export default function Navigation() {
                   )}
                   aria-current={item.current ? "page" : undefined}>
                   {item.name}
-                </a>
+                </Link>
               ))}
             </nav>
           </div>
