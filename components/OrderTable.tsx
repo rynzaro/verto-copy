@@ -5,8 +5,8 @@ import { Order } from "@/lib/types/types";
 import { handleInput } from "@/lib/utils";
 import { useNearWallet } from "@/providers/wallet";
 import { FormEvent, Key, useEffect, useState } from "react";
+import { MethodParameters } from "@/lib/types/types";
 
-const THIRTY_TGAS = "30000000000000";
 const TAKE_OFFER_TGAS = "300000000000000";
 
 export default function GetOrders({
@@ -17,7 +17,7 @@ export default function GetOrders({
   heading: string;
 }) {
   const CONTRACT = VertoContract;
-  const { viewMethod, callMethod, accountId } = useNearWallet();
+  const { viewMethod, callMethod, accountId, callMethods } = useNearWallet();
   const [orders, setOrders] = useState<Order[]>([]);
 
   useEffect(() => {
@@ -40,6 +40,9 @@ export default function GetOrders({
         break;
       case "take":
         method = "get_take_orders";
+        break;
+      case "completed":
+        method = "get_completed_orders";
         break;
       default:
         return;
@@ -66,7 +69,7 @@ export default function GetOrders({
 
     if (state == "Open" && order.taker_id === null) {
       return (
-        <button onClick={() => handleFill(order)} className={buttonClass}>
+        <button onClick={() => handleClick(order)} className={buttonClass}>
           Fill
         </button>
       );
@@ -96,45 +99,67 @@ export default function GetOrders({
         </button>
       );
     }
-  }
 
-  function handleFill(order: Order) {
-    console.log("fill order");
-  }
+    function handleFill(order: Order) {
+      console.log("fill order");
+    }
 
-  function handleClaim(order: Order) {
-    console.log("fill order");
-  }
+    function handleClaim(order: Order) {
+      console.log("claim order");
+    }
 
-  function handleClick(order: Order) {
-    const jsonObject = {
-      type: "take",
-      id: order.id,
-    };
+    function handleClick(order: Order) {
+      const jsonObject = {
+        type: "take",
+        id: order.id,
+      };
 
-    const jsonString = JSON.stringify(jsonObject);
+      let transactions: MethodParameters[] = [];
 
-    if (order.to_contract_id === "near") {
-      callMethod({
-        contractId: VertoContract,
-        method: "take_order",
-        args: { msg: jsonString },
-        gas: TAKE_OFFER_TGAS,
-        deposit: order.to_amount,
-      });
-    } else {
-      callMethod({
-        contractId: order.to_contract_id,
-        method: "ft_transfer_call",
-        args: {
-          receiver_id: VertoContract,
-          amount: order.to_amount,
-          memo: null,
-          msg: jsonString,
-        },
-        gas: TAKE_OFFER_TGAS,
-        deposit: "1",
-      }).catch((error) => console.log(error));
+      const jsonString = JSON.stringify(jsonObject);
+
+      if (order.to_contract_id === "near") {
+        callMethod({
+          contractId: VertoContract,
+          method: "take_order",
+          args: { msg: jsonString },
+          gas: TAKE_OFFER_TGAS,
+          deposit: order.to_amount,
+        });
+      } else {
+        viewMethod({
+          contractId: order.from_contract_id,
+          method: "storage_balance_of",
+          args: {
+            account_id: accountId,
+          },
+        }).then((balance) => {
+          if (balance === null) {
+            transactions.push({
+              contractId: order.from_contract_id,
+              method: "storage_deposit",
+              args: {
+                account_id: accountId,
+                registration_only: true,
+              },
+              gas: TAKE_OFFER_TGAS,
+              deposit: "100000000000000000000000",
+            });
+          }
+          transactions.push({
+            contractId: order.to_contract_id,
+            method: "ft_transfer_call",
+            args: {
+              receiver_id: VertoContract,
+              amount: order.to_amount,
+              msg: jsonString,
+            },
+            gas: TAKE_OFFER_TGAS,
+            deposit: "1",
+          });
+          callMethods(transactions).catch((error) => console.log(error));
+        });
+      }
     }
   }
 

@@ -147,7 +147,7 @@ export default function TradeOrderForm() {
     if (values.from_amount.indexOf(".") !== -1) {
       const split_famount = values.from_amount.split(".");
       values.from_amount =
-        split_famount[0] + +split_famount[1].padEnd(DECIMALS_FROM, "0");
+        split_famount[0] + split_famount[1].padEnd(DECIMALS_FROM, "0");
     } else {
       values.from_amount = values.from_amount + "".padEnd(DECIMALS_FROM, "0");
     }

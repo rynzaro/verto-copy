@@ -19,9 +19,11 @@ export default function ProfileDashboard() {
       case "Claimable":
         return <OrderTable typeOfOrders="claimable" heading="" />;
       case "Open":
-        return <OrderTable typeOfOrders="make" heading="" />;
+        return <OrderTable typeOfOrders="open" heading="" />;
       case "Cancelled":
         return <OrderTable typeOfOrders="cancelled" heading="" />;
+      case "Completed":
+        return <OrderTable typeOfOrders="completed" heading="" />;
     }
   };
   return (
@@ -41,7 +43,7 @@ export default function ProfileDashboard() {
             >
               Completed Orders
             </button>
-            <button
+            {/* <button
               className={`block bg-verto_bg py-2 px-4 text-left rounded mb-2 ${selectedOption === "Claimable" ? "bg-gradient-to-r from-green-400 to-lime-300 text-black" : "hover:bg-slate-600"}`}
               onClick={() => setSelectedOption("Claimable")}
             >
@@ -53,7 +55,7 @@ export default function ProfileDashboard() {
               onClick={() => setSelectedOption("Cancelled")}
             >
               Cancelled Orders
-            </button>
+            </button> */}
           </div>
           <div className="pt-12">{renderContent()}</div>
         </div>
