@@ -5,31 +5,26 @@ import { useNearWallet } from "@/providers/wallet";
 import React, { FormEvent, useEffect, useState } from "react";
 import { MethodParameters } from "@/lib/types/types";
 
+const THIRTY_TGAS = "30000000000000";
 const CREATE_OFFER_TGAS = "300000000000000";
 const MAX_GAS = "300000000000000";
 
-export default function TradeOrderForm() {
-  const { accountId, callMethod, callMethods, viewMethod, signIn, status } =
+export default function LandingOrderForm() {
+  const [typePrivate, typePublic] = useState(false);
+
+  const changeType = () => {
+    typePublic(!typePrivate);
+  };
+
+  const [fillSingle, fillPartial] = useState(false);
+  const changeFill = () => {
+    fillPartial(!fillSingle);
+  };
+
+  const { accountId, callMethods, viewMethod, signIn, status } =
     useNearWallet();
 
-  //
-  // // CONTRACT TYPE OPTIONS
-  //
-
-  const [typePrivate, setType] = useState(false);
-  const changeType = () => {
-    setType((previousType) => !previousType);
-  };
-
-  const [fillSingle, fillSet] = useState(true);
-  const changeFill = () => {
-    fillSet((previousFill) => !previousFill);
-  };
-
-  //
-  // // CONTRACT DATA
-  //
-
+  const { callMethod } = useNearWallet();
   const [values, setValues] = useState({
     from_contract_id: "",
     to_contract_id: "",
@@ -37,110 +32,36 @@ export default function TradeOrderForm() {
     to_amount: "",
   });
 
-  //
-  // // PADDING DECIMALS OF SET AMOUNTS
-  //
-
-  // const PadDecimals = () => {
-  //   //
-  //   // // SET FROM_AMOUNT DECIMALS
-  //   //
-
-  //   const [DECIMALS_FROM, setDecimalsFrom] = useState(0);
-  //   useEffect(() => {
-  //     const fetchData = async () => {
-  //       const meta = await viewMethod({
-  //         contractId: values.from_contract_id,
-  //         method: "ft_metadata",
-  //       });
-  //       setDecimalsFrom(meta.decimals);
-  //     };
-  //     fetchData();
-  //   },[values.from_contract_id]);
-  //   if (values.from_amount.indexOf(".") !== -1) {
-  //     const split_famount = values.from_amount.split(".");
-  //     values.from_amount =
-  //       split_famount[0] + "." + split_famount[1].padEnd(DECIMALS_FROM, "0");
-  //   } else {
-  //     values.from_amount =
-  //       values.from_amount + "." + "".padEnd(DECIMALS_FROM, "0");
-  //   }
-  //   console.log(values.from_amount);
-
   const [DECIMALS_FROM, setDecimalsFrom] = useState(0);
-  useEffect(() => {
-    const fetchData = async () => {
-      const meta = await viewMethod({
-        contractId: values.from_contract_id,
-        method: "ft_metadata",
-      });
-      setDecimalsFrom(meta.decimals);
-    };
-    fetchData();
-  }, [values.from_contract_id]);
 
-  //
-  // // SET TO_AMOUNT DECIMALS
-  //
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const meta = await viewMethod({
+  //       contractId: values.from_contract_id,
+  //       method: "ft_metadata",
+  //     });
+  //     setDecimalsFrom(meta.decimals);
+  //   };
+  //   fetchData();
+  // });
 
   const [DECIMALS_TO, setDecimalsTo] = useState(0);
-  useEffect(() => {
-    const fetchData = async () => {
-      const meta = await viewMethod({
-        contractId: values.to_contract_id,
-        method: "ft_metadata",
-      });
-      setDecimalsTo(meta.decimals);
-    };
-    fetchData();
-  }, [values.to_contract_id]);
 
-  //
-  // // BALANCE CHECK
-  //
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const meta = await viewMethod({
+  //       contractId: values.from_contract_id,
+  //       method: "ft_metadata",
+  //     });
+  //     setDecimalsTo(meta.decimals);
+  //   };
+  //   fetchData();
+  // });
 
-  // useEffect on change of from_contract_id
-  // const [sufficientBalance, setSufficientBalance] = useState(true);
-  // const BalanceCheck = () => {
-  //   viewMethod({
-  //     contractId: values.from_contract_id,
-  //     method: "storage_balance_of",
-  //     args: { accountId: accountId },
-  //   }).then((balance) => {
-  //     if (balance < values.from_amount) {
-  //       setSufficientBalance(false);
-  //     } else {
-  //       setSufficientBalance(true);
-  //     }
-  //   });
-  // };
-
-  //
-  // // JSON Object Literal
-  //
-
-  //
-  // // ARMING MULTIPLE METHODS
-  //
-
-  let transactions: MethodParameters[] = [];
-
-  //
-  // // SUBMIT FORM
-  //
+  const [sufficientBalance, setSufficientBalance] = useState(true);
 
   const submitForm = (e: FormEvent) => {
     e.preventDefault();
-
-    // PadDecimals();
-
-    if (values.to_amount.indexOf(".") !== -1) {
-      const split_famount = values.to_amount.split(".");
-      values.to_amount =
-        split_famount[0] + "." + split_famount[1].padEnd(DECIMALS_TO, "0");
-    } else {
-      values.to_amount = values.to_amount + "." + "".padEnd(DECIMALS_TO, "0");
-    }
 
     if (values.from_amount.indexOf(".") !== -1) {
       const split_famount = values.from_amount.split(".");
@@ -151,6 +72,14 @@ export default function TradeOrderForm() {
         values.from_amount + "." + "".padEnd(DECIMALS_FROM, "0");
     }
 
+    if (values.to_amount.indexOf(".") !== -1) {
+      const split_famount = values.to_amount.split(".");
+      values.to_amount =
+        split_famount[0] + "." + split_famount[1].padEnd(DECIMALS_TO, "0");
+    } else {
+      values.to_amount = values.to_amount + "." + "".padEnd(DECIMALS_TO, "0");
+    }
+
     const jsonObject = {
       type: "make",
       to_contract_id: values.to_contract_id,
@@ -159,6 +88,17 @@ export default function TradeOrderForm() {
       to_account: null,
     };
     const jsonString = JSON.stringify(jsonObject);
+    let transactions: MethodParameters[] = [];
+
+    viewMethod({
+      contractId: values.from_contract_id,
+      method: "storage_balance_of",
+      args: { accountId: accountId },
+    }).then((balance) => {
+      if (balance < values.from_amount) {
+        setSufficientBalance(false);
+      }
+    });
 
     if (values.from_contract_id === "near") {
       callMethod({
@@ -185,7 +125,7 @@ export default function TradeOrderForm() {
               registration_only: true,
             },
             gas: MAX_GAS,
-            deposit: "1",
+            deposit: "1", // ?
           });
         }
         transactions.push({
@@ -202,7 +142,6 @@ export default function TradeOrderForm() {
       });
     }
   };
-
   return (
     <div className="flex w-full items-center justify-center opacity-75">
       <form

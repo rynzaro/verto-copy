@@ -31,3 +31,37 @@ body {
     text-wrap: balance;
   }
 }
+
+.transition-bg {
+  transition: background 0.5s ease;
+}
+
+.hover-inset-border {
+  transition: box-shadow 0.3s ease;
+}
+.hover-inset-border:hover {
+  box-shadow: inset 0 0 0 2px #000000;
+}
+
+.hover-inset-border2 {
+  transition: box-shadow 0.3s ease;
+}
+.hover-inset-border2:hover {
+  box-shadow: inset 0 0 0 2px #242827;
+}
+
+.noselect {
+  user-select: none;
+}
+
+.toggler {
+  border: none;
+}
+
+.toggler button {
+  border-radius: 2rem;
+  border-color: white;
+}
+
+.toggler button.active {
+}
