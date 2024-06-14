@@ -16,12 +16,12 @@ export default function ProfileDashboard() {
 
   const renderContent = () => {
     switch (selectedOption) {
-      case "Claimable":
-        return <OrderTable typeOfOrders="claimable" heading="" />;
+      // case "Claimable":
+      //   return <OrderTable typeOfOrders="claimable" heading="" />;
       case "Open":
         return <OrderTable typeOfOrders="open" heading="" />;
-      case "Cancelled":
-        return <OrderTable typeOfOrders="cancelled" heading="" />;
+      // case "Cancelled":
+      //   return <OrderTable typeOfOrders="cancelled" heading="" />;
       case "Completed":
         return <OrderTable typeOfOrders="completed" heading="" />;
     }
@@ -30,15 +30,15 @@ export default function ProfileDashboard() {
     <>
       {status === "authenticated" ? (
         <div className="flex flex-col w-full items-center justify-center opacity-75">
-          <div className="pt-48 w-1/2 flex justify-between">
+          <div className="pt-48 w-1/2 flex justify-between text-xl font-semibold ">
             <button
-              className={`block bg-verto_bg py-2 px-4 text-left rounded mb-2 ${selectedOption === "Open" ? "bg-gradient-to-r from-green-400 to-lime-300 text-black" : "hover:bg-slate-600"}`}
+              className={`block  bg-verto_bg py-3 px-3 text-left rounded-xl mb-2 ${selectedOption === "Open" ? "bg-gradient-to-r from-vblue to-lime-400 text-black" : "hover:bg-zinc-500 hover:text-white text-zinc-500"}`}
               onClick={() => setSelectedOption("Open")}
             >
               Open Orders
             </button>
             <button
-              className={`block bg-verto_bg py-2 px-4 text-left rounded mb-2 ${selectedOption === "Completed" ? "bg-gradient-to-r from-green-400 to-lime-300 text-black" : "hover:bg-slate-600"}`}
+              className={`block bg-verto_bg py-3 px-3 text-left rounded-xl mb-2 ${selectedOption === "Completed" ? "bg-gradient-to-r from-vblue to-lime-400 text-black" : "hover:bg-zinc-500 hover:text-white text-zinc-500"}`}
               onClick={() => setSelectedOption("Completed")}
             >
               Completed Orders

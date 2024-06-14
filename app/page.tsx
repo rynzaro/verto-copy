@@ -4,6 +4,7 @@ import { handleInput } from "@/lib/utils";
 import { useNearWallet } from "@/providers/wallet";
 import React, { FormEvent, useEffect, useState } from "react";
 import { MethodParameters } from "@/lib/types/types";
+import TokenDropdown from "@/components/TokenDropdown";
 
 const CREATE_OFFER_TGAS = "300000000000000";
 const MAX_GAS = "300000000000000";
@@ -27,6 +28,16 @@ export default function TradeOrderForm() {
   };
 
   //
+  // // DROPDOWN MENUS
+  //
+
+  const TokensDropdown1 = [
+    { label: "NEAR", value: "near" },
+    { label: "WBTC", value: "wbtc.testnet" },
+    { label: "USDC", value: "usdc.testnet" },
+  ];
+
+  //
   // // CONTRACT DATA
   //
 
@@ -38,34 +49,8 @@ export default function TradeOrderForm() {
   });
 
   //
-  // // PADDING DECIMALS OF SET AMOUNTS
+  // // SET FROM_AMOUNT DECIMALS
   //
-
-  // const PadDecimals = () => {
-  //   //
-  //   // // SET FROM_AMOUNT DECIMALS
-  //   //
-
-  //   const [DECIMALS_FROM, setDecimalsFrom] = useState(0);
-  //   useEffect(() => {
-  //     const fetchData = async () => {
-  //       const meta = await viewMethod({
-  //         contractId: values.from_contract_id,
-  //         method: "ft_metadata",
-  //       });
-  //       setDecimalsFrom(meta.decimals);
-  //     };
-  //     fetchData();
-  //   },[values.from_contract_id]);
-  //   if (values.from_amount.indexOf(".") !== -1) {
-  //     const split_famount = values.from_amount.split(".");
-  //     values.from_amount =
-  //       split_famount[0] + "." + split_famount[1].padEnd(DECIMALS_FROM, "0");
-  //   } else {
-  //     values.from_amount =
-  //       values.from_amount + "." + "".padEnd(DECIMALS_FROM, "0");
-  //   }
-  //   console.log(values.from_amount);
 
   const [DECIMALS_FROM, setDecimalsFrom] = useState(0);
   useEffect(() => {
@@ -115,14 +100,6 @@ export default function TradeOrderForm() {
   //   });
   // };
 
-  //
-  // // JSON Object Literal
-  //
-
-  //
-  // // ARMING MULTIPLE METHODS
-  //
-
   let transactions: MethodParameters[] = [];
 
   //
@@ -131,10 +108,6 @@ export default function TradeOrderForm() {
 
   const submitForm = (e: FormEvent) => {
     e.preventDefault();
-
-    // PadDecimals();
-
-    console.log(values.from_amount, values.to_amount);
 
     if (values.to_amount.indexOf(".") !== -1) {
       const split_famount = values.to_amount.split(".");
@@ -151,8 +124,6 @@ export default function TradeOrderForm() {
     } else {
       values.from_amount = values.from_amount + "".padEnd(DECIMALS_FROM, "0");
     }
-
-    console.log(values.from_amount, values.to_amount);
 
     const jsonObject = {
       type: "make",
@@ -207,76 +178,103 @@ export default function TradeOrderForm() {
     }
   };
 
+  const handleFromContractSelect = (selectedOption: any) => {
+    setValues((prevValues) => ({
+      ...prevValues,
+      from_contract_id: selectedOption.value, // Assuming href is the identifier or value you want to store
+    }));
+  };
+
+  // Function to update to_contract_id
+  const handleToContractSelect = (selectedOption: any) => {
+    setValues((prevValues) => ({
+      ...prevValues,
+      to_contract_id: selectedOption.value, // Assuming href is the identifier or value you want to store
+    }));
+  };
+
   return (
     <div className="flex w-full items-center justify-center opacity-75">
       <form
         onSubmit={submitForm}
         className="pt-44 px-24 flex min-h-screen w-7/8 justify-center object-center"
       >
-        <div className=" p-2 h-5/6 flex flex-col justify-around">
+        <div className=" p-2 h-5/6 flex flex-col justify-around w-tradeWindow">
+          <div className="text-4xl font-semibold pb-5 pl-2">Trade Details</div>
           <div className="flex flex-col bg-verto_bg py-4 px-4 w-full rounded-lg mb-2 justify-between hover-inset-border2 border-verto_borders border-2">
-            <div className="text-2xl font-bold">SELL</div>
+            <div className="text-lg font-bold">OFFERING</div>
             <div className="flex">
               <input
                 type="text"
                 name="from_amount"
                 id="from_amount"
                 onChange={(e) => handleInput(e, setValues)}
-                className="focus:outline-none w-3/4 text-4xl bg-verto_bg  placeholder:text-zinc-700 text-white"
-                placeholder="0"
+                className="focus:outline-none w-3/4 text-4xl bg-verto_bg placeholder:font-semibold placeholder:text-zinc-700 text-verto_wt"
+                placeholder="Enter Amount"
               />
-              <input
+              {/* <input
                 type="text"
                 name="from_contract_id"
                 id="from_contract_id"
                 onChange={(e) => handleInput(e, setValues)}
-                className="rounded-lg bg-verto_bg border-2 border-verto_borders p-4 placeholder:text-white text-zinc-700 focus:outline-none hover-inset-border2"
-                placeholder="From Token"
+                className="w-1/3 rounded-lg bg-verto_bg border-2 border-verto_borders font-bold p-4 placeholder:text-verto_wt text-xl text-verto_wt focus:outline-none hover-inset-border2"
+                placeholder="Select Token"
+              /> */}
+
+              <TokenDropdown
+                label="Select Token"
+                options={TokensDropdown1}
+                onSelect={handleFromContractSelect}
               />
             </div>
-            <div className="flex justify-between text-sm mt-1 text-verto_borders font-bold">
+            <div className="flex justify-between text-sm mt-1 text-verto_wt font-normal">
               <div>$-</div>
               <div>Balance: -</div>
             </div>
           </div>
           <div className="flex flex-col bg-verto_bg py-4 px-4 w-full rounded-lg mb-2 justify-between hover-inset-border2 border-verto_borders border-2">
-            <div className="text-2xl font-bold">BUY</div>
+            <div className="text-lg font-bold">FOR</div>
             <div className="flex ">
               <input
                 type="text"
                 name="to_amount"
                 id="to_amount"
                 onChange={(e) => handleInput(e, setValues)}
-                className="focus:outline-none w-3/4 text-4xl bg-verto_bg  placeholder:text-zinc-700 text-white"
-                placeholder="0"
+                className="focus:outline-none placeholder:font-semibold w-3/4 text-4xl bg-verto_bg  placeholder:text-zinc-700 text-verto_wt"
+                placeholder="Enter Amount"
               />
-              <input
+              {/* <input
                 type="text"
                 name="to_contract_id"
                 id="to_contract_id"
                 onChange={(e) => handleInput(e, setValues)}
-                className="rounded-lg bg-verto_bg border-2 border-verto_borders p-4 placeholder:text-white text-zinc-700 focus:outline-none hover-inset-border2"
-                placeholder="To Token"
+                className="w-1/3 rounded-lg bg-verto_bg border-2 border-verto_borders font-bold p-4 placeholder:text-verto_wt text-xl text-verto_wt focus:outline-none hover-inset-border2"
+                placeholder="Select Token"
+              /> */}
+              <TokenDropdown
+                label="Select Token"
+                options={TokensDropdown1}
+                onSelect={handleToContractSelect}
               />
             </div>
-            <div className="flex justify-between text-sm mt-1 text-verto_borders font-bold">
+            <div className="flex justify-between text-sm mt-1 text-verto_wt font-normal">
               <div>$-</div>
               <div>Balance: -</div>
             </div>
           </div>
           <div className="mb-1">
-            <div className="flex border-2 border-verto_borders py-1 w-full rounded-lg justify-around mb-1">
+            <div className="flex border-2 hover-inset-border2 border-verto_borders py-1 w-full rounded-lg justify-around mb-1">
               <button
                 type="button"
                 onClick={changeFill}
-                className=" w-1/2 rounded-l-md mx-1 hover:bg-gradient-to-r from-green-400 to-lime-300 hover:text-black transition duration-700"
+                className=" w-1/2 rounded-l-md mx-1 hover:bg-gradient-to-r from-vblue to-lime-400 hover:text-black"
               >
                 {fillSingle ? <b>SINGLE</b> : <b>PARTIAL</b>}
               </button>
               <button
                 type="button"
                 onClick={changeType}
-                className=" w-1/2 hover:box-shadow bg-verto_bg rounded-r-md mx-1 py-2 hover:bg-gradient-to-r hover:from-green-400 hover:to-lime-300  hover:text-black transition-colors duration-700"
+                className=" w-1/2 hover:box-shadow bg-verto_bg rounded-r-md mx-1 py-2 hover:bg-gradient-to-r from-vblue to-lime-400  hover:text-black"
               >
                 {typePrivate ? <b>PRIVATE</b> : <b>PUBLIC</b>}
               </button>
@@ -288,7 +286,7 @@ export default function TradeOrderForm() {
                   name="to_account"
                   id="to_account"
                   onChange={(e) => handleInput(e, setValues)}
-                  className="hover-inset-border2 mt-1 w-full text-center rounded-lg bg-verto_bg border-2 border-verto_borders mb-1 p-3 text-white focus:outline-none"
+                  className="placeholder:text-zinc-700 placeholder:font-bold hover-inset-border2 mt-1 w-full text-center text-bold rounded-lg bg-verto_bg border-2 border-verto_borders mb-1 p-3 text-verto_wt focus:outline-none"
                   placeholder="ENTER TARGET WALLET ADDRESS"
                 />
               </>
@@ -301,7 +299,7 @@ export default function TradeOrderForm() {
               <button
                 type="button"
                 onClick={signIn}
-                className="transition-bg hover:bg-gradient-to-r hover:from-green-300 hover:to-lime-200 w-full rounded-xl  bg-gradient-to-r from-green-400 to-lime-300 px-3 py-3 text-sm font-semibold text-zinc-900 shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                className="transition-bg hover:bg-gradient-to-r hover:from-green-300 hover:to-lime-200 w-full rounded-xl  bg-gradient-to-r from-vblue to-lime-400 px-3 py-3 text-sm font-semibold text-zinc-900 shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               >
                 <b> CONNECT WALLET</b>
               </button>
@@ -309,7 +307,7 @@ export default function TradeOrderForm() {
           ) : (
             <button
               type="submit"
-              className="text-bold text-xl transition-bg hover:bg-gradient-to-r hover:from-green-300 hover:to-lime-200 w-full rounded-lg  bg-gradient-to-r from-green-400 to-lime-300 px-3 py-3 font-semibold text-zinc-900 shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+              className="text-bold text-xl transition-bg hover:bg-gradient-to-r hover:from-green-300 hover:to-lime-200 w-full rounded-lg  bg-gradient-to-r from-vblue to-lime-400 px-3 py-3 font-semibold text-zinc-900 shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
             >
               CREATE ORDER
             </button>

@@ -21,7 +21,14 @@ const config = {
       colors: {
         verto_bg: "#111111",
         verto_borders: "#242827",
+        verto_wt: "#FFFEFE",
+        vblue: "#4CCEC4",
+        vgreen: "#B5EA75",
+
         // verto_active: "#5f5f5f80",
+      },
+      width: {
+        tradeWindow: "605px",
       },
       animation: {
         first: "moveVertical 30s ease infinite",

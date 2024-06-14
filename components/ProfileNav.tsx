@@ -40,26 +40,32 @@ export default function ProfileNav() {
 
       {/* Profile dropdown */}
       {status === "authenticated" ? (
-        <div className="flex bg-zinc-800 bg-opacity-70 justify-between items-center ml-4 py-3 px-4 rounded-2xl z-50">
+        <div className="flex justify-between items-center ml-4 py-3 px-4 z-50">
           {" "}
-          <button
+          {/* <button
             type="button"
-            className="relative flex-shrink-0 rounded-full bg-zinc-700 p-1 text-zinc-200 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-zinc-800"
+            className="relative flex-shrink-0  p-1 text-zinc-200 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-zinc-800"
           >
             <span className="absolute -inset-1.5" />
             <span className="sr-only">View Alerts</span>
             <BellIcon className="h-6 w-6" aria-hidden="true" />
-          </button>
-          <Menu as="div" className="relative ml-4 flex-shrink-0">
+          </button> */}
+          <Menu
+            as="div"
+            className="relative ml-4  border-2 border-transparent flex-shrink-0 "
+          >
             <div>
-              <Menu.Button className="py-2.5 px-4 relative flex rounded-full bg-zinc-700 text-sm text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-zinc-800">
-                <span className="absolute -inset-1.5" />
-                <span className="sr-only">Open Overview</span>
-                <img
-                  className="h-8 w-8 rounded-full"
-                  src={user.imageUrl}
-                  alt=""
-                />
+              <Menu.Button className="py-2.5 px-4 relative flex items-center text-white focus:border-verto_wt hover:border-verto_borders">
+                <div className="relative py-2.5 px-4 flex items-center border-2 border-transparent hover:rounded-lg hover:border-zinc-700 focus:border-white">
+                  <img
+                    className="h-14 w-14 rounded-full"
+                    src={user.imageUrl}
+                    alt=""
+                  />
+                  <div className="text-sm text-zinc-300 font-bold pl-4 uppercase">
+                    {accountId}
+                  </div>
+                </div>
               </Menu.Button>
             </div>
             <Transition
@@ -71,14 +77,16 @@ export default function ProfileNav() {
               leaveFrom="transform opacity-100 scale-100"
               leaveTo="transform opacity-0 scale-95"
             >
-              <MenuItems className="absolute z-10 mt-4 right-0 origin-top-right rounded-md bg-zinc-800 text-white py-2 px-4 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+              <MenuItems className="absolute right-0 left-0 z-10 mt-4 origin-top-right rounded-md bg-zinc-800 hover:bg-zinc-500 text-white py-2 px-4 shadow-lg ring-1 ring-black ring-opacity-5">
                 <Menu.Item>
                   <button
                     type="button"
                     onClick={signOut}
-                    className={"block px-4 py-2 text-sm text-white w-full"}
+                    className={
+                      "block px-4 py-2 font-semibold text-sm text-white w-full "
+                    }
                   >
-                    Sign Out
+                    SIGN OUT
                   </button>
                 </Menu.Item>
               </MenuItems>

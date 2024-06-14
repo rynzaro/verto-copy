@@ -21,12 +21,16 @@ export default function RootLayout({
     <html lang="en">
       <body className="h-full">
         <NearWalletProvider>
-          <header className="fixed top-0 left-0 w-full h-28 flex items-center justify-center z-50 border-b-2 border-b-verto_borders">
-            <div className="flex bg-zinc-800 bg-opacity-70 justify-start w-3/4 items-center py-1 px-4 rounded-2xl z-50">
+          <header className="fixed top-0 left-0 w-full px-12 h-28 flex items-center justify-between z-50 border-b-2 border-b-verto_borders">
+            <div className="flex w-3/4 items-center">
               <HeroNav />
               <PageNav />
             </div>
-            <ProfileNav />
+            <div>
+              <ProfileNav />
+            </div>
+
+            {/* <div className="flex bg-zinc-800 bg-opacity-70 justify-start w-3/4 items-center py-1 px-4 rounded-2xl z-50"></div> */}
           </header>
 
           <main className="content min-h-screen z-10 bg-verto_bg">
