@@ -134,22 +134,25 @@ export default function TradeOrderForm() {
 
     // PadDecimals();
 
+    console.log(values.from_amount, values.to_amount);
+
     if (values.to_amount.indexOf(".") !== -1) {
       const split_famount = values.to_amount.split(".");
       values.to_amount =
-        split_famount[0] + "." + split_famount[1].padEnd(DECIMALS_TO, "0");
+        split_famount[0] + split_famount[1].padEnd(DECIMALS_TO, "0");
     } else {
-      values.to_amount = values.to_amount + "." + "".padEnd(DECIMALS_TO, "0");
+      values.to_amount = values.to_amount + "".padEnd(DECIMALS_TO, "0");
     }
 
     if (values.from_amount.indexOf(".") !== -1) {
       const split_famount = values.from_amount.split(".");
       values.from_amount =
-        split_famount[0] + "." + split_famount[1].padEnd(DECIMALS_FROM, "0");
+        split_famount[0] + +split_famount[1].padEnd(DECIMALS_FROM, "0");
     } else {
-      values.from_amount =
-        values.from_amount + "." + "".padEnd(DECIMALS_FROM, "0");
+      values.from_amount = values.from_amount + "".padEnd(DECIMALS_FROM, "0");
     }
+
+    console.log(values.from_amount, values.to_amount);
 
     const jsonObject = {
       type: "make",
@@ -185,15 +188,16 @@ export default function TradeOrderForm() {
               registration_only: true,
             },
             gas: MAX_GAS,
-            deposit: "1",
+            deposit: "1000000000000000000000000",
           });
         }
         transactions.push({
           contractId: values.from_contract_id,
-          method: "ft_transfer",
+          method: "ft_transfer_call",
           args: {
             receiver_id: "verto.testnet",
             amount: values.from_amount,
+            msg: jsonString,
           },
           gas: MAX_GAS,
           deposit: "1",
