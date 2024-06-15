@@ -17,9 +17,15 @@ export default function Explorer() {
   return (
     <>
       {status === "authenticated" ? (
-        <div className="flex w-full items-center justify-center opacity-75">
-          <div className="pt-48">
-            <OrderTable typeOfOrders="open" heading="" />
+        <div className="flex w-full items-center justify-center">
+          <div className="pt-32 w-full">
+            <div className="text-2xl font-bold text-verto_wt px-20 pb-4">
+              {" "}
+              OTC Token Market
+            </div>
+            <div className="border-t-2 border-verto_borders pt-4 px-20">
+              <OrderTable typeOfOrders="open" heading="" />
+            </div>
           </div>
         </div>
       ) : (

@@ -65,7 +65,7 @@ export default function GetOrders({
     let button = <></>;
     let state = order.status;
     let buttonClass =
-      "w-full rounded-md bg-indigo-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500";
+      "w-3/4 rounded-lg bg-gradient-to-r from-vblue to-lime-400 px-3 py-3 text-sm font-semibold text-black shadow-sm hover:bg-gradient-to-r hover:from-green-300 hover:to-lime-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500";
 
     if (state == "Open" && order.taker_id === null) {
       return (
@@ -85,7 +85,7 @@ export default function GetOrders({
     order.status === "Open" ? (
       <button
         onClick={() => handleClick(order)}
-        className="w-full rounded-md bg-indigo-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+        className="w-full rounded-md bg-gradient-to-r from-vblue to-lime-400 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gradient-to-r hover:from-green-300 hover:to-lime-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
       >
         Fill
       </button>
@@ -165,39 +165,41 @@ export default function GetOrders({
 
   return (
     <>
-      <div className="block text-sm font-medium leading-6 text-white">
+      <div className="block text-sm font-medium leading-6 text-verto_wt">
         {heading}
       </div>
       <div className="mt-2">
-        <table className="border-collapse border border-slate-500 border-spacing-2 table-auto text-left w-full">
-          <thead className="border-b-2 border-white/5">
+        <table className="border-collapse border-spacing-2 table-auto text-center w-full">
+          <thead className="border-b-2 border-verto_borders pb-4">
             <tr>
-              <th className="bg-white/5 px-3 py-2">ID</th>
-              <th className="px-3 py-2">Maker ID</th>
-              <th className="bg-white/5 px-3 py-2">Taker ID</th>
-              <th className="px-3 py-2">From</th>
-              <th className="bg-white/5 px-3 py-2">Amount</th>
-              <th className="px-3 py-2">To</th>
-              <th className="bg-white/5 px-3 py-2">Amount</th>
-              <th className="px-3 py-2">Status</th>
-              <th className="bg-white/5 px-3 py-2"></th>
+              <th className="px-3 py-4">ID</th>
+              <th className="px-3 py-4">Trade Overview</th>
+              <th className="px-3 py-4">Offering</th>
+              <th className="px-3 py-4">For</th>
+              <th className="px-3 py-4">Fill Type</th>
+              <th className="px-3 py-4">Creator</th>
+              <th className="px-3 py-4">Action</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="border-b-2 border-verto_borders pb-4">
             {orders.map((order: Order, index: Key) => {
               return (
                 <tr key={index}>
-                  <td className="bg-white/5 p-2">{order.id}</td>
-                  <td className="p-2">{order.maker_id}</td>
-                  <td className="bg-white/5 p-2">
-                    {order.taker_id ? order.taker_id : ""}
+                  <td className="py-4">{order.id}</td>
+                  <td className="py-4"></td>
+                  <td className="py-4">
+                    <p className="font-bold inline">{order.from_amount}</p>
+                    <span> {order.from_contract_id}</span>
                   </td>
-                  <td className="p-2">{order.from_contract_id}</td>
-                  <td className="bg-white/5 p-2">{order.from_amount}</td>
-                  <td className="p-2">{order.to_contract_id}</td>
-                  <td className="bg-white/5 p-2">{order.to_amount}</td>
-                  <td className="p-2">{order.status}</td>
-                  <td className="bg-white/5 p-2">{getOrderButton(order)}</td>
+                  <td className="py-4">
+                    <p className="font-bold inline">{order.to_amount}</p>
+                    <span> {order.to_contract_id}</span>
+                  </td>
+                  <td className="py-4"></td>
+                  <td className="py-4">
+                    <p className="font-bold">{order.maker_id} </p>
+                  </td>
+                  <td className="py-4">{getOrderButton(order)}</td>
                 </tr>
               );
             })}
@@ -206,4 +208,25 @@ export default function GetOrders({
       </div>
     </>
   );
+}
+
+{
+  /* <td className="border-verto_borders border-b-2 p-2">
+
+</td>
+<td className="border-verto_borders border-b-2 p-2">
+  {order.id}
+</td>
+<td className="border-verto_borders border-b-2p-2">
+  {order.maker_id}
+</td>
+<td className="border-verto_borders border-b-2 p-2">
+  {order.taker_id ? order.taker_id : ""}
+</td>
+<td className="p-2">{order.from_contract_id}</td>
+<td className="bg-white/5 p-2">{order.from_amount}</td>
+<td className="p-2">{order.to_contract_id}</td>
+<td className="bg-white/5 p-2">{order.to_amount}</td>
+<td className="p-2">{order.status}</td>
+<td className="bg-white/5 p-2">{getOrderButton(order)}</td> */
 }

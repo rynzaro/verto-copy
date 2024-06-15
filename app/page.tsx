@@ -31,10 +31,11 @@ export default function TradeOrderForm() {
   // // DROPDOWN MENUS
   //
 
-  const TokensDropdown1 = [
+  const TokensDropdown = [
     { label: "NEAR", value: "near" },
-    { label: "WBTC", value: "wbtc.testnet" },
-    { label: "USDC", value: "usdc.testnet" },
+    { label: "USDC", value: "usdc.fakes.testnet" },
+    { label: "AURORA", value: "aurora.fakes.testnet" },
+    { label: "ETH", value: "eth.fakes.testnet" },
   ];
 
   //
@@ -223,7 +224,7 @@ export default function TradeOrderForm() {
 
               <TokenDropdown
                 label="Select Token"
-                options={TokensDropdown1}
+                options={TokensDropdown}
                 onSelect={handleFromContractSelect}
               />
             </div>
@@ -253,7 +254,7 @@ export default function TradeOrderForm() {
               /> */}
               <TokenDropdown
                 label="Select Token"
-                options={TokensDropdown1}
+                options={TokensDropdown}
                 onSelect={handleToContractSelect}
               />
             </div>
