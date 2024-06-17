@@ -18,6 +18,7 @@ import { setupHereWallet } from "@near-wallet-selector/here-wallet";
 import { setupMyNearWallet } from "@near-wallet-selector/my-near-wallet";
 import { HelloNearContract, NetworkId } from "@/lib/config/near";
 import { providers } from "near-api-js";
+import { MethodParameters } from "@/lib/types/types";
 
 const THIRTY_TGAS = "30000000000000";
 const NO_DEPOSIT = "0";
@@ -56,6 +57,7 @@ const NearWalletContext = createContext<{
     gas: string;
     deposit: string;
   }) => Promise<any>;
+  callMethods: (walletParameters: MethodParameters[]) => Promise<any>;
   accountId: string | null;
   status: AuthStatusType;
   getTransactionResult: (transactionHash: string) => Promise<any>;
@@ -63,6 +65,7 @@ const NearWalletContext = createContext<{
   viewMethod: async () => {},
   callMethod: async () => {},
   getTransactionResult: async () => {},
+  callMethods: async () => {},
   status: "loading",
   accountId: null,
   signIn: async () => {},
@@ -72,7 +75,7 @@ const NearWalletContext = createContext<{
 const NearWalletProvider = ({ children }: { children: ReactNode }) => {
   const [status, setStatus] = useState<AuthStatusType>("loading");
   const [walletSelector, setWalletSelector] = useState<WalletSelector | null>(
-    null
+    null,
   );
   const [accountId, setAccountId] = useState<string | null>(null);
 
@@ -86,11 +89,11 @@ const NearWalletProvider = ({ children }: { children: ReactNode }) => {
       selector.store.observable
         .pipe(
           map((state) => state.accounts),
-          distinctUntilChanged()
+          distinctUntilChanged(),
         )
         .subscribe((accounts) => {
           const signedAccount = accounts.find(
-            (account) => account.active
+            (account) => account.active,
           )?.accountId;
           setAccountId(signedAccount || null);
         });
@@ -176,6 +179,31 @@ const NearWalletProvider = ({ children }: { children: ReactNode }) => {
     return providers.getTransactionLastResult(outcome);
   };
 
+  const callMethods = async (methodParameters: MethodParameters[]) => {
+    if (!walletSelector) {
+      return;
+    }
+    const selectedWallet = await walletSelector.wallet();
+
+    const outcome = await selectedWallet.signAndSendTransactions({
+      transactions: methodParameters.map((parameters) => ({
+        receiverId: parameters.contractId,
+
+        actions: [
+          {
+            type: "FunctionCall",
+            params: {
+              methodName: parameters.method,
+              args: parameters.args,
+              gas: parameters.gas,
+              deposit: parameters.deposit,
+            },
+          },
+        ],
+      })),
+    });
+  };
+
   const getTransactionResult = async (transactionHash: string) => {
     if (!walletSelector) {
       return;
@@ -198,8 +226,10 @@ const NearWalletProvider = ({ children }: { children: ReactNode }) => {
         status,
         viewMethod,
         callMethod,
+        callMethods,
         getTransactionResult,
-      }}>
+      }}
+    >
       {children}
     </NearWalletContext.Provider>
   );

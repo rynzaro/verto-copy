@@ -20,8 +20,8 @@ const user = {
     "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
 };
 const navigation = [
-  { name: "Explore", href: "#", current: true },
-  { name: "Trade", href: "#", current: false },
+  { name: "Trade now", href: "/", current: true },
+  { name: "Market", href: "/market", current: false },
   { name: "Getting Started", href: "/getting-started", current: false },
 ];
 
@@ -38,7 +38,7 @@ export default function Navigation() {
                   <div className="font-medium text-lg">Verto</div>
                 </div>
               </div>
-              <div className="relative z-0 flex flex-1 items-center justify-center px-2 sm:absolute sm:inset-0">
+              {/* <div className="relative z-0 flex flex-1 items-center justify-center px-2 sm:absolute sm:inset-0">
                 <div className="w-full sm:max-w-xs">
                   <label htmlFor="search" className="sr-only">
                     Search
@@ -59,7 +59,7 @@ export default function Navigation() {
                     />
                   </div>
                 </div>
-              </div>
+              </div> */}
               <div className="relative z-10 flex items-center lg:hidden">
                 {/* Mobile menu button */}
                 <Disclosure.Button className="relative inline-flex items-center justify-center rounded-md p-2 text-zinc-400 hover:bg-zinc-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
