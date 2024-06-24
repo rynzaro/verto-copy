@@ -222,7 +222,7 @@ export default function CreateTradeForm() {
             ) : (
                 <button
                     type="submit"
-                    className="text-bold text-xl transition-bg bg-gradient-to-r from-green-300 to-lime-200 w-full rounded-lg  px-3 py-3 font-semibold text-zinc-900 shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                    className="w-full rounded-md bg-gradient-to-r from-green-400 to-lime-300 hover:from-green-300 px-3.5 py-2.5 text-sm font-semibold text-black shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
                 >
                     Create Order
                 </button>
