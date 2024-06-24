@@ -1,7 +1,7 @@
 const contractPerNetwork = {
-    mainnet: 'hello.near-examples.near',
-    testnet: 'hello.near-examples.testnet',
+    mainnet: 'verto.near',
+    testnet: 'verto.testnet',
   };
   
   export const NetworkId = 'testnet';
-  export const HelloNearContract = contractPerNetwork[NetworkId];
+  export const VertoContract = contractPerNetwork[NetworkId];

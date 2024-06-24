@@ -3,7 +3,7 @@ import TradesTable from "./TradesTable";
 export default function Page() {
     return (
         <div>
-            <TradesTable />
+            <TradesTable typeOfOrders="open" heading=""/>
         </div>
     );
 }
