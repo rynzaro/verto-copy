@@ -214,7 +214,7 @@ export default function CreateTradeForm() {
 
                 <button
                     type="button"
-                    className="w-full rounded-md bg-gradient-to-r from-green-400 to-lime-300 hover:from-green-300 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+                    className="w-full rounded-md bg-gradient-to-r from-green-400 to-lime-300 hover:from-green-300 px-3.5 py-2.5 text-sm font-semibold text-black shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
                 >
                     Connect Wallet to Create Order
                 </button>
