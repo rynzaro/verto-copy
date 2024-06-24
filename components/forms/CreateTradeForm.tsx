@@ -9,11 +9,11 @@ import { availableTokens } from "@/lib/availableTokens";
 const MAX_GAS = "300000000000000";
 
 export default function CreateTradeForm() {
-    const { accountId, callMethod, callMethods, viewMethod, signIn, status } =
+    const { accountId, callMethods, viewMethod, status } =
         useNearWallet();
     const [decimalsFrom, setDecimalsFrom] = useState(0);
     const [decimalsTo, setDecimalsTo] = useState(0);
-    const [paritalFill, setPartialFill] = useState(false);
+    const [partialFill, setPartialFill] = useState(false);
     const [privateTrade, setPrivateTrade] = useState(false);
 
     const [selectedFromToken, setSelectedFromToken] = useState<typeof availableTokens[number]>(availableTokens[0]);
@@ -105,9 +105,7 @@ export default function CreateTradeForm() {
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
-
         handleDecimals()
-
         callTransferMethod()
     };
 
