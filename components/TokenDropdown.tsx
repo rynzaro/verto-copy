@@ -3,14 +3,30 @@
 import React, { useState, useEffect, useRef, Fragment, Dispatch, SetStateAction } from "react";
 import Image from "next/image";
 import { Label, Listbox, ListboxButton, ListboxOption, ListboxOptions, Transition } from '@headlessui/react'
+import { useNearWallet } from "@/providers/wallet";
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid'
 import clsx from "clsx";
 import { availableTokens } from "@/lib/availableTokens";
 
 export default function TokenDropdown({
+
   selected, setSelected
 }: { selected: typeof availableTokens[number], setSelected: Dispatch<SetStateAction<typeof availableTokens[number]>> }) {
+  const { viewMethod } =
+    useNearWallet();
 
+  useEffect(() => {
+    availableTokens.forEach(async (token) => {
+      if (token.symbol === 'near') {
+         return
+      }
+      const ft_metadata = await viewMethod({
+        contractId: token.contractId,
+        method: 'ft_metadata',
+      })
+      token.icon = ft_metadata.icon
+    })
+  }, [])
 
   return (
     <Listbox value={selected} onChange={setSelected}>
@@ -53,7 +69,11 @@ export default function TokenDropdown({
                           >
                             <CheckIcon className="h-5 w-5" aria-hidden="true" />
                           </span>
-                        ) : null}
+                        ) :
+                          <span className='absolute inset-y-0 left-0 flex items-center pl-1.5'>
+                            <img src={token.icon} className="h-5 w-5" aria-hidden="true" />
+                          </span>
+                        }
                       </>
                     )}
                   </ListboxOption>
