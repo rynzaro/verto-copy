@@ -47,7 +47,7 @@ export default function TokenDropdown({
                     key={token.name}
                     className={({ focus }) =>
                       clsx(
-                        focus ? 'bg-green-400 text-white' : '',
+                        focus ? 'bg-green-400 text-white cursor-pointer' : '',
                         !focus ? 'text-zinc-400' : '',
                         'relative cursor-default select-none py-2 pl-8 pr-4'
                       )

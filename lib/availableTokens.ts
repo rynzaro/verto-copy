@@ -1,8 +1,4 @@
-'use client'
-
 import { useNearWallet } from "@/providers/wallet";
-import { useEffect } from 'react';
-const { viewMethod } = useNearWallet();
 
 export const availableTokens = [
     { name: "near", symbol: "NEAR", contractId: "near", icon: ''},
