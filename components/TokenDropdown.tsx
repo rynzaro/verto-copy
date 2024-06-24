@@ -14,19 +14,28 @@ export default function TokenDropdown({
 }: { selected: typeof availableTokens[number], setSelected: Dispatch<SetStateAction<typeof availableTokens[number]>> }) {
   const { viewMethod } =
     useNearWallet();
+  const [tokenObjects, setTokenObjects] = useState<(typeof availableTokens[number] & {icon: string})[]>([]);
 
   useEffect(() => {
-    availableTokens.forEach(async (token) => {
-      if (token.symbol === 'near') {
-         return
-      }
-      const ft_metadata = await viewMethod({
-        contractId: token.contractId,
-        method: 'ft_metadata',
-      })
-      token.icon = ft_metadata.icon
-    })
+    const tokenPromises = availableTokens.map(async (token) => ({
+      ...token,
+      icon: await getIcon(token.contractId)
+    }))
+    const results = Promise.all(tokenPromises)
+    .then((result) => setTokenObjects(result))
+    .catch((e) => console.log(e))
   }, [])
+
+  async function getIcon( contractId: string) {
+    if (contractId === 'near') {
+      return "/near-icon-rev.svg"
+    }
+    const ft_metadata = await viewMethod({
+      contractId: contractId,
+      method: 'ft_metadata',
+    })
+    return ft_metadata.icon
+  }
 
   return (
     <Listbox value={selected} onChange={setSelected}>
@@ -42,7 +51,7 @@ export default function TokenDropdown({
 
             <Transition show={open} leave="transition ease-in duration-100" leaveFrom="opacity-100" leaveTo="opacity-0">
               <ListboxOptions className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-zinc-900 py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                {availableTokens.map((token) => (
+                {tokenObjects.map((token) => (
                   <ListboxOption
                     key={token.name}
                     className={({ focus }) =>
@@ -71,7 +80,7 @@ export default function TokenDropdown({
                           </span>
                         ) :
                           <span className='absolute inset-y-0 left-0 flex items-center pl-1.5'>
-                            <img src={token.icon} className="h-5 w-5" aria-hidden="true" />
+                            <Image src={token.icon} alt={token.name} height={20} width={20} className="h-5 w-5 rounded-full object-cover" aria-hidden="true" />
                           </span>
                         }
                       </>
