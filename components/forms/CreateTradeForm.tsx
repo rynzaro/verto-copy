@@ -132,6 +132,7 @@ export default function CreateTradeForm() {
                         id="from_amount"
                         value={values.from_amount}
                         onChange={(e) => handleNumericInput(e, setValues, selectedFromToken.decimals)}
+                        autoComplete="off"
                         className="w-3/4 p-0 text-4xl bg-transparent outline-none border-0 focus:outline-none"
                         placeholder="Enter Amount"
                     />
@@ -150,6 +151,7 @@ export default function CreateTradeForm() {
                         id="to_amount"
                         value={values.to_amount}
                         onChange={(e) => handleNumericInput(e, setValues, selectedToToken.decimals)}
+                        autoComplete="off"
                         className="w-3/4 p-0 text-4xl bg-transparent outline-none border-0 focus:outline-none"
                         placeholder="Enter Amount"
                     />
