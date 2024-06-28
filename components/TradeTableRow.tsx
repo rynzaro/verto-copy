@@ -3,6 +3,7 @@
 import useFetchTokenObjects from "@/hook/FetchTokenObjects";
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { convertIntToFloat } from "@/lib/utils";
 
 export default function TradeTableRow() {
     const tokenObjects = useFetchTokenObjects();
@@ -18,22 +19,7 @@ export default function TradeTableRow() {
     }
 
     const testDecimals = 6
-    const testNumber = '100000000'
-
-    function convertNumber(amount: string, decimals: number) {
-        const digitsAmount = amount.length;
-        let result: string;
-        if (digitsAmount <= decimals) {
-            const additionalZeros = '0'.repeat(decimals - digitsAmount);
-            result =  `0.${additionalZeros}${amount}`;
-        } else {
-            const index = digitsAmount - decimals;
-            result =  `${amount.slice(0, index)}.${amount.slice(index)}`;
-        }
-        result = result.replace(/\.?0+$/, '');
-
-        return result
-    }
+    const testNumber = '104000'
 
     useEffect(() => {
         setFromObject(tokenObjects[order.from_token])
@@ -56,7 +42,7 @@ export default function TradeTableRow() {
                 : <></>}
             <div>Decimals: {testDecimals}</div>
             <div>Before: {testNumber}</div>
-            <div>After: {convertNumber(testNumber, testDecimals)}</div>
+            <div>After: {convertIntToFloat(testNumber, testDecimals)}</div>
         </>
     )
 }

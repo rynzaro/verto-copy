@@ -1,6 +1,6 @@
 "use client";
 
-import { handleInput } from "@/lib/utils";
+import { handleInput, handleNumericInput } from "@/lib/utils";
 import { useNearWallet } from "@/providers/wallet";
 import React, { FormEvent, useEffect, useState } from "react";
 import TokenDropdown from "@/components/TokenDropdown";
@@ -127,20 +127,19 @@ export default function CreateTradeForm() {
                 <div className="uppercase mb-2 font-medium">Offering</div>
                 <div className="flex">
                     <input
-                        type="number"
+                        type="text"
                         name="from_amount"
                         id="from_amount"
-                        onChange={(e) => handleInput(e, setValues)}
+                        value={values.from_amount}
+                        onChange={(e) => handleNumericInput(e, setValues, selectedFromToken.decimals)}
                         className="w-3/4 p-0 text-4xl bg-transparent outline-none border-0 focus:outline-none"
                         placeholder="Enter Amount"
                     />
-
                     <div className="w-1/4"><TokenDropdown
                         selected={selectedFromToken}
                         setSelected={setSelectedFromToken}
                     /></div>
                 </div>
-
             </div>
             <div className="flex flex-col mt-4 py-4 px-4 w-full rounded-lg mb-2 justify-between ring-1 ring-gray-500">
                 <div className="uppercase mb-2 font-medium">For</div>
@@ -149,7 +148,8 @@ export default function CreateTradeForm() {
                         type="text"
                         name="to_amount"
                         id="to_amount"
-                        onChange={(e) => handleInput(e, setValues)}
+                        value={values.to_amount}
+                        onChange={(e) => handleNumericInput(e, setValues, selectedToToken.decimals)}
                         className="w-3/4 p-0 text-4xl bg-transparent outline-none border-0 focus:outline-none"
                         placeholder="Enter Amount"
                     />
@@ -157,9 +157,7 @@ export default function CreateTradeForm() {
                         selected={selectedToToken}
                         setSelected={setSelectedToToken}
                     /></div>
-
                 </div>
-
             </div>
             <div className="my-8">
                 <fieldset>
