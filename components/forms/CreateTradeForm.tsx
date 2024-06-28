@@ -1,6 +1,6 @@
 "use client";
 
-import { handleInput, handleNumericInput } from "@/lib/utils";
+import { convertFloatToInt, handleInput, handleNumericInput } from "@/lib/utils";
 import { useNearWallet } from "@/providers/wallet";
 import React, { FormEvent, useEffect, useState } from "react";
 import TokenDropdown from "@/components/TokenDropdown";
@@ -14,11 +14,8 @@ export default function CreateTradeForm() {
     const { accountId, callMethods, viewMethod, status } =
         useNearWallet();
     const tokenObjects = useFetchTokenObjects();
-    const [decimalsFrom, setDecimalsFrom] = useState(0);
-    const [decimalsTo, setDecimalsTo] = useState(0);
     const [partialFill, setPartialFill] = useState(false);
     const [privateTrade, setPrivateTrade] = useState(false);
-
     const [selectedFromToken, setSelectedFromToken] = useState<TokenMetadata>(defaultTokenMetadata);
     const [selectedToToken, setSelectedToToken] = useState<TokenMetadata>(defaultTokenMetadata);
 
@@ -28,39 +25,20 @@ export default function CreateTradeForm() {
     });
 
     useEffect(() => {
-        if (Object.values(tokenObjects)[0]) {
+        if (Object.values(tokenObjects)[0] && (selectedFromToken === defaultTokenMetadata || selectedToToken === defaultTokenMetadata)) {
             setSelectedFromToken(Object.values(tokenObjects)[0]);
             setSelectedToToken(Object.values(tokenObjects)[1]);
         }
         console.log(Object.values(tokenObjects)[0])
-    }, [tokenObjects, selectedFromToken, selectedToToken]);
+    }, [tokenObjects]);
     
-
-    function handleDecimals() {
-        if (values.to_amount.indexOf(".") !== -1) {
-            const split_famount = values.to_amount.split(".");
-            values.to_amount =
-                split_famount[0] + split_famount[1].padEnd(decimalsTo, "0");
-        } else {
-            values.to_amount = values.to_amount + "".padEnd(decimalsTo, "0");
-        }
-
-        if (values.from_amount.indexOf(".") !== -1) {
-            const split_famount = values.from_amount.split(".");
-            values.from_amount =
-                split_famount[0] + split_famount[1].padEnd(decimalsFrom, "0");
-        } else {
-            values.from_amount = values.from_amount + "".padEnd(decimalsFrom, "0");
-        }
-    }
-
-    async function callTransferMethod() {
+    async function callTransferMethod(fromAmount: string, toAmount: string) {
         let transactions = []
         const jsonObject = {
             type: "make",
             to_contract_id: selectedToToken.contractId,
             from_contract_id: selectedFromToken.contractId,
-            to_amount: values.to_amount,
+            to_amount: toAmount,
             to_account: null,
         };
         const jsonString = JSON.stringify(jsonObject);
@@ -83,7 +61,7 @@ export default function CreateTradeForm() {
                         registration_only: true,
                     },
                     gas: MAX_GAS,
-                    deposit: "1000000000000000000000000",
+                    deposit: "100000000000000000000000",
                 });
             }
         }
@@ -94,7 +72,7 @@ export default function CreateTradeForm() {
                 method: "make_order",
                 args: { msg: jsonString },
                 gas: MAX_GAS,
-                deposit: values.from_amount,
+                deposit: fromAmount,
             });
         } else {
             transactions.push({
@@ -102,7 +80,7 @@ export default function CreateTradeForm() {
                 method: "ft_transfer_call",
                 args: {
                     receiver_id: "verto.testnet",
-                    amount: values.from_amount,
+                    amount: fromAmount,
                     msg: jsonString,
                 },
                 gas: MAX_GAS,
@@ -117,8 +95,12 @@ export default function CreateTradeForm() {
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
-        handleDecimals()
-        callTransferMethod()
+        if (values.from_amount === '' || values.to_amount === '') {
+            return
+        }
+        let fromAmount = convertFloatToInt(values.from_amount, selectedFromToken.decimals)
+        let toAmount = convertFloatToInt(values.to_amount, selectedToToken.decimals)
+        callTransferMethod(fromAmount, toAmount)
     };
 
     return (
