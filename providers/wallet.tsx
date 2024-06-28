@@ -16,7 +16,7 @@ import {
 } from "@near-wallet-selector/core";
 import { setupHereWallet } from "@near-wallet-selector/here-wallet";
 import { setupMyNearWallet } from "@near-wallet-selector/my-near-wallet";
-import { HelloNearContract, NetworkId } from "@/lib/config/near";
+import { VertoContract, NetworkId } from "@/lib/config/near";
 import { providers } from "near-api-js";
 import { MethodParameters } from "@/lib/types/types";
 
@@ -105,7 +105,7 @@ const NearWalletProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
     const modal = setupModal(walletSelector, {
-      contractId: HelloNearContract,
+      contractId: VertoContract,
     });
     modal.show();
   };

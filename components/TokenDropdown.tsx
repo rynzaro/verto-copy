@@ -7,35 +7,13 @@ import { useNearWallet } from "@/providers/wallet";
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid'
 import clsx from "clsx";
 import { availableTokens } from "@/lib/availableTokens";
+import useGetTokenObjects from "@/hook/FetchTokenObjects";
 
 export default function TokenDropdown({
 
   selected, setSelected
 }: { selected: typeof availableTokens[number], setSelected: Dispatch<SetStateAction<typeof availableTokens[number]>> }) {
-  const { viewMethod } =
-    useNearWallet();
-  const [tokenObjects, setTokenObjects] = useState<(typeof availableTokens[number] & {icon: string})[]>([]);
-
-  useEffect(() => {
-    const tokenPromises = availableTokens.map(async (token) => ({
-      ...token,
-      icon: await getIcon(token.contractId)
-    }))
-    const results = Promise.all(tokenPromises)
-    .then((result) => setTokenObjects(result))
-    .catch((e) => console.log(e))
-  }, [])
-
-  async function getIcon( contractId: string) {
-    if (contractId === 'near') {
-      return "/near-icon-rev.svg"
-    }
-    const ft_metadata = await viewMethod({
-      contractId: contractId,
-      method: 'ft_metadata',
-    })
-    return ft_metadata.icon
-  }
+  const tokenObjects = useGetTokenObjects();
 
   return (
     <Listbox value={selected} onChange={setSelected}>
