@@ -19,14 +19,8 @@ export default function TradeTableRow() {
 
 
     useEffect(() => {
-        tokenObjects.map((token) => {
-            if (token.contractId === order.from_token) {
-                setFromObject(token)
-            }
-            if (token.contractId === order.to_token) {
-                setToObject(token)
-            }
-        })
+        setFromObject(tokenObjects[order.from_token])
+        setToObject(tokenObjects[order.to_token])
     }, [tokenObjects])
 
     return (

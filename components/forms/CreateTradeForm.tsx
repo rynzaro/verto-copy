@@ -5,24 +5,36 @@ import { useNearWallet } from "@/providers/wallet";
 import React, { FormEvent, useEffect, useState } from "react";
 import TokenDropdown from "@/components/TokenDropdown";
 import { availableTokens } from "@/lib/availableTokens";
+import { TokenMetadata, defaultTokenMetadata } from "@/lib/types/types";
+import useFetchTokenObjects from "@/hook/FetchTokenObjects";
 
 const MAX_GAS = "300000000000000";
 
 export default function CreateTradeForm() {
     const { accountId, callMethods, viewMethod, status } =
         useNearWallet();
+    const tokenObjects = useFetchTokenObjects();
     const [decimalsFrom, setDecimalsFrom] = useState(0);
     const [decimalsTo, setDecimalsTo] = useState(0);
     const [partialFill, setPartialFill] = useState(false);
     const [privateTrade, setPrivateTrade] = useState(false);
 
-    const [selectedFromToken, setSelectedFromToken] = useState<typeof availableTokens[number]>(availableTokens[0]);
-    const [selectedToToken, setSelectedToToken] = useState<typeof availableTokens[number]>(availableTokens[1]);
+    const [selectedFromToken, setSelectedFromToken] = useState<TokenMetadata>(defaultTokenMetadata);
+    const [selectedToToken, setSelectedToToken] = useState<TokenMetadata>(defaultTokenMetadata);
 
     const [values, setValues] = useState({
         from_amount: "",
         to_amount: "",
     });
+
+    useEffect(() => {
+        if (Object.values(tokenObjects)[0]) {
+            setSelectedFromToken(Object.values(tokenObjects)[0]);
+            setSelectedToToken(Object.values(tokenObjects)[1]);
+        }
+        console.log(Object.values(tokenObjects)[0])
+    }, [tokenObjects, selectedFromToken, selectedToToken]);
+    
 
     function handleDecimals() {
         if (values.to_amount.indexOf(".") !== -1) {
