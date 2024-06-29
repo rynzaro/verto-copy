@@ -44,7 +44,7 @@ export function convertIntToFloat(amount: string, decimals: number): string {
         const index = digitsAmount - decimals;
         result = `${amount.slice(0, index)}.${amount.slice(index)}`;
     }
-    result = result.replace(/\.?y+$/, '');
+    result = result.replace(/\.?0+$/, '');
 
     return result
 }
