@@ -8,6 +8,12 @@ const nextConfig = {
             //port: '',
             pathname: '/**',
           },
+          {
+            protocol: 'https',
+            hostname: 'assets.ref.finance',
+            //port: '',
+            pathname: '/**',
+          }
         ],
       },
 };

@@ -11,6 +11,7 @@ import clsx from "clsx";
 const navigation = [
   { name: "Trade now", href: "/", current: true },
   { name: "Market", href: "/market", current: false },
+  { name: "Created Orders", href: "/created-orders", current: false },
   { name: "Getting Started", href: "/getting-started", current: false },
 ];
 

@@ -44,8 +44,10 @@ export function convertIntToFloat(amount: string, decimals: number): string {
         const index = digitsAmount - decimals;
         result = `${amount.slice(0, index)}.${amount.slice(index)}`;
     }
-    result = result.replace(/\.?0+$/, '');
-
+    // Remove trailing zeros after comma and remove the comma if it's the last character
+    if (result.includes('.')) {
+        result = result.replace(/(\.\d*?)0+$/, '$1').replace(/\.$/, ''); 
+    }
     return result
 }
 
@@ -72,4 +74,11 @@ export function convertFloatToInt(input: string, decimals: number): string {
         // No separator present, just add `decimals` number of zeros
         return input + '0'.repeat(decimals);
     }
+}
+
+export function truncateString(str: string, length: number) {
+    if (str.length > length) {
+        return str.substring(0, length) + '...';
+    }
+    return str;
 }

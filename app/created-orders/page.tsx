@@ -3,7 +3,7 @@ import TradesTable from "@/components/TradesTable";
 export default function Page() {
     return (
         <div>
-            <TradesTable typeOfOrders="all" heading=""/>
+            <TradesTable typeOfOrders="make" heading=""/>
         </div>
     );
 }
