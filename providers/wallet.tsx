@@ -19,6 +19,7 @@ import { setupMyNearWallet } from "@near-wallet-selector/my-near-wallet";
 import { VertoContract, NetworkId } from "@/lib/config/near";
 import { providers } from "near-api-js";
 import { MethodParameters } from "@/lib/types/types";
+import { setupMeteorWallet } from "@near-wallet-selector/meteor-wallet";
 
 const THIRTY_TGAS = "30000000000000";
 const NO_DEPOSIT = "0";
@@ -80,9 +81,12 @@ const NearWalletProvider = ({ children }: { children: ReactNode }) => {
   const [accountId, setAccountId] = useState<string | null>(null);
 
   useEffect(() => {
-    setupWalletSelector({
-      network: NetworkId,
-      modules: [setupMyNearWallet(), setupHereWallet()],
+    const meteorWallet = setupMeteorWallet({
+    })
+
+    const selector = setupWalletSelector({
+      network: "testnet",
+      modules: [meteorWallet],
     }).then((selector) => {
       setWalletSelector(selector);
       setStatus(selector.isSignedIn() ? "authenticated" : "unauthenticated");
@@ -98,6 +102,24 @@ const NearWalletProvider = ({ children }: { children: ReactNode }) => {
           setAccountId(signedAccount || null);
         });
     });
+    // setupWalletSelector({
+    //   network: NetworkId,
+    //   modules: [setupMyNearWallet(), setupHereWallet()],
+    // }).then((selector) => {
+    //   setWalletSelector(selector);
+    //   setStatus(selector.isSignedIn() ? "authenticated" : "unauthenticated");
+    //   selector.store.observable
+    //     .pipe(
+    //       map((state) => state.accounts),
+    //       distinctUntilChanged(),
+    //     )
+    //     .subscribe((accounts) => {
+    //       const signedAccount = accounts.find(
+    //         (account) => account.active,
+    //       )?.accountId;
+    //       setAccountId(signedAccount || null);
+    //     });
+    // });
   }, []);
 
   const signIn = async () => {
