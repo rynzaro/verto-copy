@@ -28,6 +28,9 @@ export default function CreateTradeForm() {
     });
 
     useEffect(() => {
+        if (!tokenObjects){
+            return;
+        }
         if (Object.values(tokenObjects)[0] && (selectedFromToken === defaultTokenMetadata || selectedToToken === defaultTokenMetadata)) {
             setSelectedFromToken(Object.values(tokenObjects)[0]);
             setSelectedToToken(Object.values(tokenObjects)[1]);
@@ -165,7 +168,7 @@ export default function CreateTradeForm() {
                             onMouseLeave={()=> setHovered(false)} 
                             className="px-1"
                         >
-                            {numSlice(values.to_amount / values.from_amount)}
+                            {numSlice(parseFloat(values.to_amount) / parseFloat(values.from_amount))}
                         </div> 
                         {selectedToToken.symbol}
                 </div>
