@@ -100,6 +100,7 @@ const NearWalletProvider = ({ children }: { children: ReactNode }) => {
             (account) => account.active,
           )?.accountId;
           setAccountId(signedAccount || null);
+          setStatus(signedAccount ? "authenticated" : "unauthenticated");
         });
     });
     // setupWalletSelector({

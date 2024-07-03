@@ -7,16 +7,20 @@ import {
   BellIcon, WalletIcon, XMarkIcon
 } from "@heroicons/react/24/outline";
 import clsx from "clsx";
+import { usePathname } from "next/navigation";
+import { useEffect } from "react";
 
 const navigation = [
-  { name: "Trade now", href: "/", current: false },
-  { name: "Market", href: "/market", current: false },
-  { name: "Created Orders", href: "/created-orders", current: false },
-  { name: "Getting Started", href: "/getting-started", current: false },
+  { name: "Trade now", href: "/"},
+  { name: "Market", href: "/market"},
+  { name: "Created Orders", href: "/created-orders"},
+  { name: "Getting Started", href: "/getting-started"},
 ];
 
 export default function Navigation() {
   const { accountId, signIn, signOut, status } = useNearWallet();
+  const pathName = usePathname();
+
   return (
     <Disclosure as="nav" className="">
       {({ open }) => (
@@ -50,10 +54,10 @@ export default function Navigation() {
                         key={item.name}
                         href={item.href}
                         className={clsx(
-                          item.current ? 'bg-zinc-900 text-white' : 'text-zinc-300 hover:bg-zinc-700 hover:text-white',
+                          pathName.endsWith(item.href) ? 'bg-zinc-900 text-white' : 'text-zinc-300 hover:bg-zinc-700 hover:text-white',
                           'rounded-md px-3 py-2 text-sm font-medium',
                         )}
-                        aria-current={item.current ? 'page' : undefined}
+                        aria-current={pathName.endsWith(item.href)  ? 'page' : undefined}
                       >
                         {item.name}
                       </a>
@@ -135,10 +139,10 @@ export default function Navigation() {
                   as="a"
                   href={item.href}
                   className={clsx(
-                    item.current ? 'bg-zinc-900 text-white' : 'text-zinc-300 hover:bg-zinc-700 hover:text-white',
+                    pathName.endsWith(item.href)  ? 'bg-zinc-900 text-white' : 'text-zinc-300 hover:bg-zinc-700 hover:text-white',
                     'block rounded-md px-3 py-2 text-base font-medium',
                   )}
-                  aria-current={item.current ? 'page' : undefined}
+                  aria-current={pathName.endsWith(item.href)  ? 'page' : undefined}
                 >
                   {item.name}
                 </DisclosureButton>
