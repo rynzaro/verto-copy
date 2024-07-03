@@ -25,6 +25,9 @@ export default function CreateTradeForm() {
     });
 
     useEffect(() => {
+        if (!tokenObjects) {
+            return;
+        }
         if (Object.values(tokenObjects)[0] && (selectedFromToken === defaultTokenMetadata || selectedToToken === defaultTokenMetadata)) {
             setSelectedFromToken(Object.values(tokenObjects)[0]);
             setSelectedToToken(Object.values(tokenObjects)[1]);

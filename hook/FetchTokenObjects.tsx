@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 
 export default function useFetchTokenObjects() {
     const { viewMethod } = useNearWallet();
-    const [tokenObjects, setTokenObjects] = useState<{ [key: string]: TokenMetadata}>({});
+    const [tokenObjects, setTokenObjects] = useState<{ [key: string]: TokenMetadata} | null>({});
 
     async function getMetadata(contractId: string) {
         if (contractId === 'near') {

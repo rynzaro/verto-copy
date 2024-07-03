@@ -1,13 +1,15 @@
 "use client";
 
 import { VertoContract } from "@/lib/config/near";
-import { Order } from "@/lib/types/types";
+import { Order, TokenMetadata } from "@/lib/types/types";
 import { convertIntToFloat, handleInput, truncateString } from "@/lib/utils";
 import { useNearWallet } from "@/providers/wallet";
 import { FormEvent, Key, useEffect, useState } from "react";
 import Image from "next/image";
 import { MethodParameters } from "@/lib/types/types";
 import useFetchTokenObjects from "@/hook/FetchTokenObjects";
+import { Input } from "@headlessui/react";
+import FilterForm from "./forms/FilterForm";
 
 const TAKE_OFFER_TGAS = "300000000000000";
 
@@ -19,10 +21,14 @@ export default function GetOrders({
   heading: string;
 }) {
   const tokenObjects = useFetchTokenObjects();
-  console.log(tokenObjects)
   const CONTRACT = VertoContract;
   const { viewMethod, callMethod, accountId, callMethods, status } = useNearWallet();
   const [orders, setOrders] = useState<Order[]>([]);
+  const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
+
+  useEffect(() => {
+    setFilteredOrders(orders)
+  }, [orders])
 
   useEffect(() => {
     let method = "";
@@ -118,7 +124,7 @@ export default function GetOrders({
       });
     }
   }
-  
+
   function handleCancel(order: Order) {
     callMethod({
       contractId: VertoContract,
@@ -128,7 +134,7 @@ export default function GetOrders({
       deposit: '1',
     })
   }
-  
+
   function handleClaim(order: Order) {
     console.log("claim order");
   }
@@ -183,8 +189,12 @@ export default function GetOrders({
         </button>
       );
     }
+  }
 
-    
+  if (!tokenObjects) {
+    return(
+      <div>LOADING</div>
+    )
   }
 
   return (
@@ -201,46 +211,57 @@ export default function GetOrders({
                 <th className="px-3 py-4">Pair</th>
                 <th className="px-3 py-4">Offering</th>
                 <th className="px-3 py-4">For</th>
+                <th className="px-3 py-4">Price</th>
                 <th className="px-3 py-4">Creator</th>
                 <th className="px-3 py-4">Status</th>
                 <th className="px-3 py-4">Action</th>
               </tr>
             </thead>
             <tbody className="">
-              {orders.map((order: Order, index: Key) => {
+  
+              {filteredOrders.map((order: Order, index: Key) => {
                 let fromObject = tokenObjects[order.from_contract_id]
                 let toObject = tokenObjects[order.to_contract_id]
                 if (fromObject && toObject) {
-                                  return (
-                  <tr key={index} className="my-2 border-b border-gray-700">
-                    <td className="py-4">{order.id}</td>
-                    <td className="py-4 flex items-center justify-center">
+                  let fromAmountFloat = Number(convertIntToFloat(order.from_amount, fromObject.decimals))
+                  let toAmountFloat = Number(convertIntToFloat(order.to_amount, toObject.decimals))
+                  return (
+                    <tr key={index} className="my-2 border-b border-gray-700">
+                      <td className="py-4">{order.id}</td>
+                      <td className="py-4 flex items-center justify-center">
                         <Image src={fromObject.icon} alt={fromObject.name} height={20} width={20} className="h-8 w-8 rounded-full object-cover -mr-1 border-zinc-400 border-2" aria-hidden="true" />
                         <Image src={toObject.icon} alt={toObject.name} height={20} width={20} className="h-8 w-8 rounded-full object-cover border-zinc-400 border-2" aria-hidden="true" />
-                    </td>
-                    <td className="py-4">
-                      <p className="font-bold inline">{convertIntToFloat(order.from_amount, fromObject.decimals)}</p>
-                      <span className="text-gray-500"> {truncateString(fromObject.symbol, 4)}</span>
-                    </td>
-                    <td className="py-4">
-                      <p className="font-bold inline">{convertIntToFloat(order.to_amount, toObject.decimals)}</p>
-                      <span className="text-gray-500"> {truncateString(toObject.symbol, 4)}</span>
-                    </td>
-                    <td className="py-4">
-                      <p className="font-bold">{truncateString(order.maker_id, 8)} </p>
-                    </td>
-                    <td>{order.status}</td>
-                    <td className="py-4">{getOrderButton(order)}</td>
-                  </tr>
-                );
+                      </td>
+                      <td className="py-4">
+                        <p className="font-bold inline">{convertIntToFloat(order.from_amount, fromObject.decimals)}</p>
+                        <span className="text-gray-500"> {truncateString(fromObject.symbol, 4)}</span>
+                      </td>
+                      <td className="py-4">
+                        <p className="font-bold inline">{convertIntToFloat(order.to_amount, toObject.decimals)}</p>
+                        <span className="text-gray-500"> {truncateString(toObject.symbol, 4)}</span>
+                      </td>
+                      <td className="py-4">
+                        <p className="font-bold inline">{parseFloat((toAmountFloat / fromAmountFloat).toFixed(4))}</p>
+                      </td>
+                      <td className="py-4">
+                        <p className="font-bold">{truncateString(order.maker_id, 8)} </p>
+                      </td>
+                      <td>{order.status}</td>
+                      <td className="py-4">{getOrderButton(order)}</td>
+                    </tr>
+                  );
                 } else {
                   return (<></>)
                 }
-
               })}
             </tbody>
           </table>
         </div>
+        <FilterForm
+          orderObjects={orders}
+          setFilteredOrders={setFilteredOrders}
+          tokenObjects = {tokenObjects}
+        />
       </div>
     </div>
 
