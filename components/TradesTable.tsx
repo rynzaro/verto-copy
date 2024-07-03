@@ -76,12 +76,15 @@ export default function GetOrders({
   }, [sortOffer])
 
   useEffect(() => {
-    setFilteredOrders(orders)
+    sortOrders(orders, 'to_amount')
   }, [orders])
 
-  const sortOrders = (orders: Order[], sortBy: 'from_amount' | 'to_amount'): Order[] => {
+  const sortOrders = (orders: Order[], sortBy: 'from_amount' | 'to_amount')=> {
+
     // Use Array.prototype.sort() with a comparator function
-    return orders.slice().sort((a, b) => parseFloat(a[sortBy]) - parseFloat(b[sortBy]));
+    setFilteredOrders(orders.slice().sort((a, b) => {
+      return parseFloat(a[sortBy]) - parseFloat(b[sortBy])
+      }));
 };
 
   useEffect(() => {

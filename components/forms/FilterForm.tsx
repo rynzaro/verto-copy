@@ -18,8 +18,8 @@ export default function FilterForm({
         maxFromAmount: "",
         minToAmount: "",
         maxToAmount: "",
-        minPrice:"",
-        maxPrice:"",
+        minPrice: "",
+        maxPrice: "",
     });
     console.log(orderObjects)
     function onSubmit(event: { preventDefault: () => void; }) {
@@ -39,7 +39,7 @@ export default function FilterForm({
             const fromAmount = parseFloat(convertIntToFloat(order.from_amount, tokenObjects[order.from_contract_id].decimals));
             const toAmount = parseFloat(convertIntToFloat(order.to_amount, tokenObjects[order.to_contract_id].decimals));
             const price = toAmount / fromAmount;
-            
+
             console.log(tokenObjects[order.to_contract_id])
             return (
                 (fromAmount >= minFromAmount && fromAmount <= maxFromAmount)
@@ -48,6 +48,17 @@ export default function FilterForm({
             );
         });
         setFilteredOrders(newOrderObjects)
+    }
+
+    function clearFilter() {
+        setValues({
+            minFromAmount: "",
+            maxFromAmount: "",
+            minToAmount: "",
+            maxToAmount: "",
+            minPrice: "",
+            maxPrice: "",
+        });
     }
 
     return (
@@ -120,6 +131,10 @@ export default function FilterForm({
                     className="rounded-md bg-gradient-to-r from-green-400 to-lime-300 w-[60px] hover:from-green-300 py-1 text-sm font-semibold text-black shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
                     onClick={onSubmit}
                 >Filter</button>
+                <button
+                    className="rounded-md bg-gradient-to-r from-green-400 to-lime-300 w-[60px] hover:from-green-300 py-1 text-sm font-semibold text-black shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+                    onClick={clearFilter}
+                >Clear</button>
             </div>
 
         </div>
