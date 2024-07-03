@@ -7,6 +7,8 @@ import TokenDropdown from "@/components/TokenDropdown";
 import { availableTokens } from "@/lib/availableTokens";
 import { TokenMetadata, defaultTokenMetadata } from "@/lib/types/types";
 import useFetchTokenObjects from "@/hook/FetchTokenObjects";
+import numberSlice from "../numberSlice";
+import { stringify } from "querystring";
 
 const MAX_GAS = "300000000000000";
 
@@ -18,6 +20,7 @@ export default function CreateTradeForm() {
     const [privateTrade, setPrivateTrade] = useState(false);
     const [selectedFromToken, setSelectedFromToken] = useState<TokenMetadata>(defaultTokenMetadata);
     const [selectedToToken, setSelectedToToken] = useState<TokenMetadata>(defaultTokenMetadata);
+    const [isHovered, setHovered] = useState(false);
 
     const [values, setValues] = useState({
         from_amount: "",
@@ -25,15 +28,21 @@ export default function CreateTradeForm() {
     });
 
     useEffect(() => {
-        if (!tokenObjects) {
-            return;
-        }
         if (Object.values(tokenObjects)[0] && (selectedFromToken === defaultTokenMetadata || selectedToToken === defaultTokenMetadata)) {
             setSelectedFromToken(Object.values(tokenObjects)[0]);
             setSelectedToToken(Object.values(tokenObjects)[1]);
         }
         console.log(Object.values(tokenObjects)[0])
     }, [tokenObjects]);
+
+    function numSlice(num: number) {
+        if (isHovered) {
+            return num.toString() 
+        } else {
+            return num.toFixed(4) + "..."
+        }
+
+    }
     
     async function callTransferMethod(fromAmount: string, toAmount: string) {
         let transactions = []
@@ -146,8 +155,26 @@ export default function CreateTradeForm() {
                     /></div>
                 </div>
             </div>
+            {values.from_amount && values.to_amount ? 
+            <div className="flex flex-col py-4 px-4 w-full rounded-lg mb-2 mt-4 justify-between ring-1 ring-gray-500"> 
+                <div>EXCHANGE RATE:</div>
+                <div className="flex">
+                        1 {selectedFromToken.symbol} ⇌ 
+                        <div  
+                            onMouseEnter={() => setHovered(true)} 
+                            onMouseLeave={()=> setHovered(false)} 
+                            className="px-1"
+                        >
+                            {numSlice(values.to_amount / values.from_amount)}
+                        </div> 
+                        {selectedToToken.symbol}
+                </div>
+            </div> : <></>}
             <div className="my-8">
-                <fieldset>
+
+                {/* SPECIAL TRADE OPTIONS */}
+
+                {/* <fieldset>
                     <div className="space-y-5">
                         <div className="relative flex items-start">
                             <div className="flex h-6 items-center">
@@ -189,8 +216,11 @@ export default function CreateTradeForm() {
                         </div>
 
                     </div>
-                </fieldset>
-                {privateTrade ? (
+                </fieldset> */}
+
+                {/* PRIVATE TRADE LOGIC */}
+
+                {/* {privateTrade ? (
                     <>
                         <input
                             type="text"
@@ -203,7 +233,7 @@ export default function CreateTradeForm() {
                     </>
                 ) : (
                     <></>
-                )}
+                )} */}
             </div>
             {status === "unauthenticated" ? (
 

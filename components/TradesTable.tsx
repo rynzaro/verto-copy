@@ -10,6 +10,7 @@ import { MethodParameters } from "@/lib/types/types";
 import useFetchTokenObjects from "@/hook/FetchTokenObjects";
 import { Input } from "@headlessui/react";
 import FilterForm from "./forms/FilterForm";
+import { ArrowUpRightIcon, ArrowDownRightIcon, ArrowsUpDownIcon } from '@heroicons/react/20/solid'
 
 const TAKE_OFFER_TGAS = "300000000000000";
 
@@ -25,10 +26,63 @@ export default function GetOrders({
   const { viewMethod, callMethod, accountId, callMethods, status } = useNearWallet();
   const [orders, setOrders] = useState<Order[]>([]);
   const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
+  const [sortOffer, setSortOffer] = useState(0);
+  const [sortFor, setSortFor] = useState(0);
+
+  const cycleSort = (setStateFunction: Function) => {
+    setStateFunction((prevState: number) => (prevState + 1) % 3)
+  }
+
+  const resetSort = (setStateFunction: Function) => {
+    setStateFunction((prevState: number) => 0)
+  }
+
+  let sortIconOffer;
+  switch (sortOffer) {
+    case 0:
+      sortIconOffer = <ArrowsUpDownIcon className="h-6 w-6 pr-2"/>;
+      break;
+    case 1:
+      sortIconOffer = <ArrowUpRightIcon className="h-6 w-6 pr-2"/>;
+      break;
+    case 2:
+      sortIconOffer = <ArrowDownRightIcon className="h-6 w-6 pr-2"/>;
+      break;
+    default:
+      sortIconOffer = <ArrowsUpDownIcon className="h-6 w-6 pr-2"/>;
+  }
+
+  let sortIconFor;
+  switch (sortFor) {
+    case 0:
+      sortIconFor = <ArrowsUpDownIcon className="h-6 w-6 pr-2"/>;
+      break;
+    case 1:
+      sortIconFor = <ArrowUpRightIcon className="h-6 w-6 pr-2"/>;
+      break;
+    case 2:
+      sortIconFor = <ArrowDownRightIcon className="h-6 w-6 pr-2"/>;
+      break;
+    default:
+      sortIconFor = <ArrowsUpDownIcon className="h-6 w-6 pr-2"/>;
+  }
+
+  useEffect(() => {
+    resetSort(setSortOffer)
+  }, [sortFor])
+
+  useEffect(() => {
+    resetSort(setSortFor)
+  }, [sortOffer])
 
   useEffect(() => {
     setFilteredOrders(orders)
   }, [orders])
+
+  const sortOrders = (orders: Order[], sortBy: 'from_amount' | 'to_amount'): Order[] => {
+    // Use Array.prototype.sort() with a comparator function
+    return orders.slice().sort((a, b) => parseFloat(a[sortBy]) - parseFloat(b[sortBy]));
+};
 
   useEffect(() => {
     let method = "";
@@ -209,8 +263,16 @@ export default function GetOrders({
               <tr>
                 <th className="px-3 py-4">ID</th>
                 <th className="px-3 py-4">Pair</th>
-                <th className="px-3 py-4">Offering</th>
-                <th className="px-3 py-4">For</th>
+                <th className="px-3 py-4"> <button onClick={() => cycleSort(setSortOffer)} className="hover:bg-zinc-700 rounded-md px-3 py-2">
+                  
+                  {<span className="flex"> {sortIconOffer}
+                
+                  Offering</span>}</button></th>
+                  <th className="px-3 py-4"> <button onClick={() => cycleSort(setSortFor)} className="hover:bg-zinc-700 rounded-md px-3 py-2">
+                  
+                  <span className="flex"> {sortIconFor} 
+                
+                  For</span></button></th>
                 <th className="px-3 py-4">Price</th>
                 <th className="px-3 py-4">Creator</th>
                 <th className="px-3 py-4">Status</th>
