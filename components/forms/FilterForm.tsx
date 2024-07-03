@@ -10,7 +10,8 @@ export default function FilterForm({
     tokenObjects
 }: {
     orderObjects: Order[],
-    tokenObjects: TokenMetadata[]
+    setFilteredOrders: Dispatch<React.SetStateAction<Order[]>>,
+    tokenObjects: { [key: string]: TokenMetadata }
 }) {
     const [values, setValues] = useState({
         minFromAmount: "",
@@ -31,12 +32,7 @@ export default function FilterForm({
         const minPrice = values.minPrice ? parseFloat(values.minPrice) : -Infinity;
         const maxPrice = values.maxPrice ? parseFloat(values.maxPrice) : Infinity;
 
-        const newOrderObjects = orderObjects.filter((order: {
-            to_contract_id: any;
-            to_amount: string; 
-            from_contract_id: string;
-            from_amount: string; 
-        }) => {
+        const newOrderObjects = orderObjects.filter((order: Order) => {
             if (!(tokenObjects[order.from_contract_id] && tokenObjects[order.to_contract_id])) {
                 return false;
             }
