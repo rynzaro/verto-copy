@@ -85,7 +85,7 @@ export default function GetOrders({
     setFilteredOrders(orders.slice().sort((a, b) => {
       if (
         !tokenObjects ||
-        (tokenObjects[a.from_contract_id] === undefined) 
+        (tokenObjects[a.from_contract_id] === undefined)
         || (tokenObjects[b.from_contract_id] === undefined)
         || (tokenObjects[b.to_contract_id] === undefined)
         || (tokenObjects[b.to_contract_id] === undefined)
@@ -170,17 +170,18 @@ export default function GetOrders({
       .catch((error) => console.log(error));
   }, [accountId, CONTRACT, viewMethod, typeOfOrders]);
 
-  function handleFill(order: Order) {
+  async function handleFill(order: Order) {
     const jsonObject = {
       type: "take",
       id: order.id,
     };
 
     let transactions: MethodParameters[] = [];
-
+    let storage_balance = null
     const jsonString = JSON.stringify(jsonObject);
 
     if (order.to_contract_id === "near") {
+      console.log('in near', jsonString)
       callMethod({
         contractId: VertoContract,
         method: "take_order",
@@ -189,38 +190,43 @@ export default function GetOrders({
         deposit: order.to_amount,
       });
     } else {
-      viewMethod({
-        contractId: order.from_contract_id,
-        method: "storage_balance_of",
-        args: {
-          account_id: accountId,
-        },
-      }).then((balance) => {
-        if (balance === null) {
-          transactions.push({
-            contractId: order.from_contract_id,
-            method: "storage_deposit",
-            args: {
-              account_id: accountId,
-              registration_only: true,
-            },
-            gas: TAKE_OFFER_TGAS,
-            deposit: "100000000000000000000000",
-          });
-        }
-        transactions.push({
-          contractId: order.to_contract_id,
-          method: "ft_transfer_call",
+      if (order.from_contract_id !== "near") {
+        storage_balance = await viewMethod({
+          contractId: order.from_contract_id,
+          method: "storage_balance_of",
           args: {
-            receiver_id: VertoContract,
-            amount: order.to_amount,
-            msg: jsonString,
+            account_id: accountId,
+          },
+        })
+      }
+
+      if (storage_balance === null) {
+        transactions.push({
+          contractId: order.from_contract_id,
+          method: "storage_deposit",
+          args: {
+            account_id: accountId,
+            registration_only: true,
           },
           gas: TAKE_OFFER_TGAS,
-          deposit: "1",
+          deposit: "100000000000000000000000",
         });
-        callMethods(transactions).catch((error) => console.log(error));
+      }
+
+      transactions.push({
+        contractId: order.to_contract_id,
+        method: "ft_transfer_call",
+        args: {
+          receiver_id: VertoContract,
+          amount: order.to_amount,
+          msg: jsonString,
+        },
+        gas: TAKE_OFFER_TGAS,
+        deposit: "1",
       });
+
+      callMethods(transactions).catch((error) => console.log(error));
+
     }
   }
 
@@ -299,7 +305,7 @@ export default function GetOrders({
   return (
     <div className="flex flex-col justify-center items-center ">
       <div className="w-4/5">
-        <div className = "mt-4">
+        <div className="mt-4">
           <FilterForm
             orderObjects={orders}
             setFilteredOrders={setFilteredOrders}
