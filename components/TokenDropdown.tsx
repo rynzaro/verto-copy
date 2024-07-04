@@ -14,6 +14,9 @@ export default function TokenDropdown({
   selected, setSelected
 }: { selected: TokenMetadata, setSelected: Dispatch<SetStateAction<TokenMetadata>>}) {
   const tokenObjects = useGetTokenObjects();
+  if (!tokenObjects) {
+    return;
+  }
 
   return (
     <Listbox value={selected} onChange={setSelected}>

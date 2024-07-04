@@ -225,6 +225,8 @@ const NearWalletProvider = ({ children }: { children: ReactNode }) => {
         ],
       })),
     });
+
+    return outcome;
   };
 
   const getTransactionResult = async (transactionHash: string) => {
