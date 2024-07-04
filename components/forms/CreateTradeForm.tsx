@@ -106,15 +106,18 @@ export default function CreateTradeForm() {
         callMethods(transactions).catch((error) => console.log(error))
             .then((message) => {
                 if (message === undefined) {
+                    setSuccesfulCreation(false)
                     setFailedCreation(true);
                     return;
                 }
                 message.forEach((part: { [key: string]: string }) => {
                     if (!(part.final_execution_status === "EXECUTED_OPTIMISTIC")) {
+                        setSuccesfulCreation(false)
                         setFailedCreation(true);
                         return;
                     }
                 })
+                setFailedCreation(false)
                 setSuccesfulCreation(true)
             });
     }
