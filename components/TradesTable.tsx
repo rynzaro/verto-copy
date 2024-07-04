@@ -40,31 +40,31 @@ export default function GetOrders({
   let sortIconOffer;
   switch (sortOffer) {
     case 0:
-      sortIconOffer = <ArrowsUpDownIcon className="h-6 w-6 pr-2"/>;
+      sortIconOffer = <ArrowsUpDownIcon className="h-6 w-6 pr-2" />;
       break;
     case 1:
-      sortIconOffer = <ArrowUpRightIcon className="h-6 w-6 pr-2"/>;
+      sortIconOffer = <ArrowUpRightIcon className="h-6 w-6 pr-2" />;
       break;
     case 2:
-      sortIconOffer = <ArrowDownRightIcon className="h-6 w-6 pr-2"/>;
+      sortIconOffer = <ArrowDownRightIcon className="h-6 w-6 pr-2" />;
       break;
     default:
-      sortIconOffer = <ArrowsUpDownIcon className="h-6 w-6 pr-2"/>;
+      sortIconOffer = <ArrowsUpDownIcon className="h-6 w-6 pr-2" />;
   }
 
   let sortIconFor;
   switch (sortFor) {
     case 0:
-      sortIconFor = <ArrowsUpDownIcon className="h-6 w-6 pr-2"/>;
+      sortIconFor = <ArrowsUpDownIcon className="h-6 w-6 pr-2" />;
       break;
     case 1:
-      sortIconFor = <ArrowUpRightIcon className="h-6 w-6 pr-2"/>;
+      sortIconFor = <ArrowUpRightIcon className="h-6 w-6 pr-2" />;
       break;
     case 2:
-      sortIconFor = <ArrowDownRightIcon className="h-6 w-6 pr-2"/>;
+      sortIconFor = <ArrowDownRightIcon className="h-6 w-6 pr-2" />;
       break;
     default:
-      sortIconFor = <ArrowsUpDownIcon className="h-6 w-6 pr-2"/>;
+      sortIconFor = <ArrowsUpDownIcon className="h-6 w-6 pr-2" />;
   }
 
   useEffect(() => {
@@ -79,13 +79,13 @@ export default function GetOrders({
     sortOrders(orders, 'to_amount')
   }, [orders])
 
-  const sortOrders = (orders: Order[], sortBy: 'from_amount' | 'to_amount')=> {
+  const sortOrders = (orders: Order[], sortBy: 'from_amount' | 'to_amount') => {
 
     // Use Array.prototype.sort() with a comparator function
     setFilteredOrders(orders.slice().sort((a, b) => {
       return parseFloat(a[sortBy]) - parseFloat(b[sortBy])
-      }));
-};
+    }));
+  };
 
   useEffect(() => {
     let method = "";
@@ -249,7 +249,7 @@ export default function GetOrders({
   }
 
   if (!tokenObjects) {
-    return(
+    return (
       <div>LOADING</div>
     )
   }
@@ -257,6 +257,13 @@ export default function GetOrders({
   return (
     <div className="flex flex-col justify-center items-center ">
       <div className="w-4/5">
+        <div className = "mt-4">
+          <FilterForm
+            orderObjects={orders}
+            setFilteredOrders={setFilteredOrders}
+            tokenObjects={tokenObjects}
+          />
+        </div>
         <div className="block text-sm font-medium leading-6 text-verto_wt">
           {heading}
         </div>
@@ -267,15 +274,15 @@ export default function GetOrders({
                 <th className="px-3 py-4">ID</th>
                 <th className="px-3 py-4">Pair</th>
                 <th className="px-3 py-4"> <button onClick={() => cycleSort(setSortOffer)} className="hover:bg-zinc-700 rounded-md px-3 py-2">
-                  
+
                   {<span className="flex"> {sortIconOffer}
-                
-                  Offering</span>}</button></th>
-                  <th className="px-3 py-4"> <button onClick={() => cycleSort(setSortFor)} className="hover:bg-zinc-700 rounded-md px-3 py-2">
-                  
-                  <span className="flex"> {sortIconFor} 
-                
-                  For</span></button></th>
+
+                    Offering</span>}</button></th>
+                <th className="px-3 py-4"> <button onClick={() => cycleSort(setSortFor)} className="hover:bg-zinc-700 rounded-md px-3 py-2">
+
+                  <span className="flex"> {sortIconFor}
+
+                    For</span></button></th>
                 <th className="px-3 py-4">Price</th>
                 <th className="px-3 py-4">Creator</th>
                 <th className="px-3 py-4">Status</th>
@@ -283,7 +290,7 @@ export default function GetOrders({
               </tr>
             </thead>
             <tbody className="">
-  
+
               {filteredOrders.map((order: Order, index: Key) => {
                 let fromObject = tokenObjects[order.from_contract_id]
                 let toObject = tokenObjects[order.to_contract_id]
@@ -322,11 +329,6 @@ export default function GetOrders({
             </tbody>
           </table>
         </div>
-        <FilterForm
-          orderObjects={orders}
-          setFilteredOrders={setFilteredOrders}
-          tokenObjects = {tokenObjects}
-        />
       </div>
     </div>
 
