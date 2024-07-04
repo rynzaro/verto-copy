@@ -2,7 +2,7 @@
 
 import { VertoContract } from "@/lib/config/near";
 import { Order, TokenMetadata } from "@/lib/types/types";
-import { convertIntToFloat, handleInput, truncateString } from "@/lib/utils";
+import { convertFloatToInt, convertIntToFloat, handleInput, truncateString } from "@/lib/utils";
 import { useNearWallet } from "@/providers/wallet";
 import { FormEvent, Key, useEffect, useState } from "react";
 import Image from "next/image";
@@ -76,14 +76,30 @@ export default function GetOrders({
   }, [sortOffer])
 
   useEffect(() => {
-    sortOrders(orders, 'to_amount')
+    sortOrders(orders, 'from_amount')
   }, [orders])
 
   const sortOrders = (orders: Order[], sortBy: 'from_amount' | 'to_amount') => {
 
     // Use Array.prototype.sort() with a comparator function
     setFilteredOrders(orders.slice().sort((a, b) => {
-      return parseFloat(a[sortBy]) - parseFloat(b[sortBy])
+      if (!tokenObjects) {
+        return 0
+      }
+
+      if (
+        (tokenObjects[a.from_contract_id] === undefined) 
+        || (tokenObjects[b.from_contract_id] === undefined)
+        || (tokenObjects[b.to_contract_id] === undefined)
+        || (tokenObjects[b.to_contract_id] === undefined)
+      ) {
+        return 0
+      }
+      const a_decimals = (sortBy === 'from_amount') ? tokenObjects[a.from_contract_id].decimals : tokenObjects[a.to_contract_id].decimals
+      const b_decimals = (sortBy === 'from_amount') ? tokenObjects[b.from_contract_id].decimals : tokenObjects[b.to_contract_id].decimals
+      const a_float = parseFloat(convertIntToFloat(a[sortBy], a_decimals))
+      const b_float = parseFloat(convertIntToFloat(b[sortBy], b_decimals))
+      return (a_float - b_float);
     }));
   };
 

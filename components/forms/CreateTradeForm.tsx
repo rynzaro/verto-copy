@@ -20,6 +20,7 @@ export default function CreateTradeForm() {
     const [selectedFromToken, setSelectedFromToken] = useState<TokenMetadata>(defaultTokenMetadata);
     const [selectedToToken, setSelectedToToken] = useState<TokenMetadata>(defaultTokenMetadata);
     const [isHovered, setHovered] = useState(false);
+    const [succesfulCreation, setSuccesfulCreation] = useState(false)
 
     const [values, setValues] = useState({
         from_amount: "",
@@ -27,7 +28,7 @@ export default function CreateTradeForm() {
     });
 
     useEffect(() => {
-        if (!tokenObjects){
+        if (!tokenObjects) {
             return;
         }
         if (Object.values(tokenObjects)[0] && (selectedFromToken === defaultTokenMetadata || selectedToToken === defaultTokenMetadata)) {
@@ -39,13 +40,13 @@ export default function CreateTradeForm() {
 
     function numSlice(num: number) {
         if (isHovered) {
-            return num.toString() 
+            return num.toString()
         } else {
             return num.toFixed(4) + "..."
         }
 
     }
-    
+
     async function callTransferMethod(fromAmount: string, toAmount: string) {
         let transactions = []
         const jsonObject = {
@@ -101,10 +102,8 @@ export default function CreateTradeForm() {
                 deposit: "1",
             });
         }
-
-        callMethods(transactions).catch((error) => console.log(error));
-
-
+        callMethods(transactions).catch((error) => console.log(error))
+        .then(() => {setSuccesfulCreation(true)});
     }
 
     const handleSubmit = async (e: FormEvent) => {
@@ -118,65 +117,73 @@ export default function CreateTradeForm() {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <div className="flex flex-col py-4 px-4 w-full rounded-lg mb-2 justify-between ring-1 ring-gray-500">
-                <div className="uppercase mb-2 font-medium">Offering</div>
-                <div className="flex">
-                    <input
-                        type="text"
-                        name="from_amount"
-                        id="from_amount"
-                        value={values.from_amount}
-                        onChange={(e) => handleNumericInput(e, setValues, selectedFromToken.decimals)}
-                        autoComplete="off"
-                        className="w-3/4 p-0 text-4xl bg-transparent outline-none border-0 focus:outline-none"
-                        placeholder="Enter Amount"
-                    />
-                    <div className="w-1/4"><TokenDropdown
-                        selected={selectedFromToken}
-                        setSelected={setSelectedFromToken}
-                    /></div>
+        <div>
+            {succesfulCreation ?
+                <div className = "bg-green-500">
+                    Order Creation Succesful
                 </div>
-            </div>
-            <div className="flex flex-col mt-4 py-4 px-4 w-full rounded-lg mb-2 justify-between ring-1 ring-gray-500">
-                <div className="uppercase mb-2 font-medium">For</div>
-                <div className="flex ">
-                    <input
-                        type="text"
-                        name="to_amount"
-                        id="to_amount"
-                        value={values.to_amount}
-                        onChange={(e) => handleNumericInput(e, setValues, selectedToToken.decimals)}
-                        autoComplete="off"
-                        className="w-3/4 p-0 text-4xl bg-transparent outline-none border-0 focus:outline-none"
-                        placeholder="Enter Amount"
-                    />
-                    <div className="w-1/4"><TokenDropdown
-                        selected={selectedToToken}
-                        setSelected={setSelectedToToken}
-                    /></div>
-                </div>
-            </div>
-            {values.from_amount && values.to_amount ? 
-            <div className="flex flex-col py-4 px-4 w-full rounded-lg mb-2 mt-4 justify-between ring-1 ring-gray-500"> 
-                <div>EXCHANGE RATE:</div>
-                <div className="flex">
-                        1 {selectedFromToken.symbol} ⇌ 
-                        <div  
-                            onMouseEnter={() => setHovered(true)} 
-                            onMouseLeave={()=> setHovered(false)} 
-                            className="px-1"
-                        >
-                            {numSlice(parseFloat(values.to_amount) / parseFloat(values.from_amount))}
-                        </div> 
-                        {selectedToToken.symbol}
-                </div>
-            </div> : <></>}
-            <div className="my-8">
+                : <></>
+            }
 
-                {/* SPECIAL TRADE OPTIONS */}
+            <form onSubmit={handleSubmit}>
+                <div className="flex flex-col py-4 px-4 w-full rounded-lg mb-2 justify-between ring-1 ring-gray-500">
+                    <div className="uppercase mb-2 font-medium">Offering</div>
+                    <div className="flex">
+                        <input
+                            type="text"
+                            name="from_amount"
+                            id="from_amount"
+                            value={values.from_amount}
+                            onChange={(e) => handleNumericInput(e, setValues, selectedFromToken.decimals)}
+                            autoComplete="off"
+                            className="w-3/4 p-0 text-4xl bg-transparent outline-none border-0 focus:outline-none"
+                            placeholder="Enter Amount"
+                        />
+                        <div className="w-1/4"><TokenDropdown
+                            selected={selectedFromToken}
+                            setSelected={setSelectedFromToken}
+                        /></div>
+                    </div>
+                </div>
+                <div className="flex flex-col mt-4 py-4 px-4 w-full rounded-lg mb-2 justify-between ring-1 ring-gray-500">
+                    <div className="uppercase mb-2 font-medium">For</div>
+                    <div className="flex ">
+                        <input
+                            type="text"
+                            name="to_amount"
+                            id="to_amount"
+                            value={values.to_amount}
+                            onChange={(e) => handleNumericInput(e, setValues, selectedToToken.decimals)}
+                            autoComplete="off"
+                            className="w-3/4 p-0 text-4xl bg-transparent outline-none border-0 focus:outline-none"
+                            placeholder="Enter Amount"
+                        />
+                        <div className="w-1/4"><TokenDropdown
+                            selected={selectedToToken}
+                            setSelected={setSelectedToToken}
+                        /></div>
+                    </div>
+                </div>
+                {values.from_amount && values.to_amount ?
+                    <div className="flex flex-col py-4 px-4 w-full rounded-lg mb-2 mt-4 justify-between ring-1 ring-gray-500">
+                        <div>EXCHANGE RATE:</div>
+                        <div className="flex">
+                            1 {selectedFromToken.symbol} ⇌
+                            <div
+                                onMouseEnter={() => setHovered(true)}
+                                onMouseLeave={() => setHovered(false)}
+                                className="px-1"
+                            >
+                                {numSlice(parseFloat(values.to_amount) / parseFloat(values.from_amount))}
+                            </div>
+                            {selectedToToken.symbol}
+                        </div>
+                    </div> : <></>}
+                <div className="my-8">
 
-                {/* <fieldset>
+                    {/* SPECIAL TRADE OPTIONS */}
+
+                    {/* <fieldset>
                     <div className="space-y-5">
                         <div className="relative flex items-start">
                             <div className="flex h-6 items-center">
@@ -220,9 +227,9 @@ export default function CreateTradeForm() {
                     </div>
                 </fieldset> */}
 
-                {/* PRIVATE TRADE LOGIC */}
+                    {/* PRIVATE TRADE LOGIC */}
 
-                {/* {privateTrade ? (
+                    {/* {privateTrade ? (
                     <>
                         <input
                             type="text"
@@ -236,25 +243,27 @@ export default function CreateTradeForm() {
                 ) : (
                     <></>
                 )} */}
-            </div>
-            {status === "unauthenticated" ? (
+                </div>
+                {status === "unauthenticated" ? (
 
-                <button
-                    type="button"
-                    onClick = {signIn}
-                    className="w-full rounded-md bg-gradient-to-r from-green-400 to-lime-300 hover:from-green-300 px-3.5 py-2.5 text-sm font-semibold text-black shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
-                >
-                    Connect Wallet to Create Order
-                </button>
+                    <button
+                        type="button"
+                        onClick={signIn}
+                        className="w-full rounded-md bg-gradient-to-r from-green-400 to-lime-300 hover:from-green-300 px-3.5 py-2.5 text-sm font-semibold text-black shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+                    >
+                        Connect Wallet to Create Order
+                    </button>
 
-            ) : (
-                <button
-                    type="submit"
-                    className="w-full rounded-md bg-gradient-to-r from-green-400 to-lime-300 hover:from-green-300 px-3.5 py-2.5 text-sm font-semibold text-black shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
-                >
-                    Create Order
-                </button>
-            )}
-        </form>
+                ) : (
+                    <button
+                        type="submit"
+                        className="w-full rounded-md bg-gradient-to-r from-green-400 to-lime-300 hover:from-green-300 px-3.5 py-2.5 text-sm font-semibold text-black shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+                    >
+                        Create Order
+                    </button>
+                )}
+            </form>
+        </div>
+
     );
 }
