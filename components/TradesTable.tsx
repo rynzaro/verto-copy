@@ -33,9 +33,9 @@ export default function GetOrders({
     setStateFunction((prevState: number) => (prevState + 1) % 3)
   }
 
-  const resetSort = (setStateFunction: Function) => {
-    setStateFunction((prevState: number) => 0)
-  }
+  // const resetSort = (setStateFunction: Function) => {
+  //   setStateFunction((prevState: number) => 0)
+  // }
 
   let sortIconOffer;
   switch (sortOffer) {
@@ -68,26 +68,23 @@ export default function GetOrders({
   }
 
   useEffect(() => {
-    resetSort(setSortOffer)
+    // resetSort(setSortOffer)
+    setSortOffer(0)
+    setSortFor(sortFor)
   }, [sortFor])
 
   useEffect(() => {
-    resetSort(setSortFor)
+    setSortFor(0)
+    setSortOffer(sortOffer)
   }, [sortOffer])
 
-  useEffect(() => {
-    sortOrders(orders, 'from_amount')
-  }, [orders])
 
-  const sortOrders = (orders: Order[], sortBy: 'from_amount' | 'to_amount') => {
+  const sortOrders = (orders: Order[], sortBy: 'from_amount' | 'to_amount', ascending: Boolean) => {
 
     // Use Array.prototype.sort() with a comparator function
     setFilteredOrders(orders.slice().sort((a, b) => {
-      if (!tokenObjects) {
-        return 0
-      }
-
       if (
+        !tokenObjects ||
         (tokenObjects[a.from_contract_id] === undefined) 
         || (tokenObjects[b.from_contract_id] === undefined)
         || (tokenObjects[b.to_contract_id] === undefined)
@@ -99,9 +96,38 @@ export default function GetOrders({
       const b_decimals = (sortBy === 'from_amount') ? tokenObjects[b.from_contract_id].decimals : tokenObjects[b.to_contract_id].decimals
       const a_float = parseFloat(convertIntToFloat(a[sortBy], a_decimals))
       const b_float = parseFloat(convertIntToFloat(b[sortBy], b_decimals))
-      return (a_float - b_float);
+      return ascending ? (a_float - b_float) : -(a_float - b_float);
     }));
   };
+
+
+  useEffect(() => {
+    switch (sortFor) {
+      case 0:
+        setFilteredOrders(orders);
+        break;
+      case 1:
+        sortOrders(orders, 'to_amount', true);
+        break;
+      case 2:
+        sortOrders(orders, 'to_amount', false);
+        break;
+    }
+  }, [orders, sortFor])
+
+  useEffect(() => {
+    switch (sortOffer) {
+      case 0:
+        setFilteredOrders(orders);
+        break;
+      case 1:
+        sortOrders(orders, 'from_amount', true);
+        break;
+      case 2:
+        sortOrders(orders, 'from_amount', false);
+        break;
+    }
+  }, [orders, sortOffer])
 
   useEffect(() => {
     let method = "";
