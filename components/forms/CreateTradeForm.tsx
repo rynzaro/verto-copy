@@ -53,6 +53,10 @@ export default function CreateTradeForm() {
         let tempFrom = selectedFromToken
         setSelectedFromToken(selectedToToken)
         setSelectedToToken(tempFrom)
+        setValues((prev) => ({
+            from_amount: prev.to_amount,
+            to_amount: prev.from_amount,
+        }))
     }
 
     async function callTransferMethod(fromAmount: string, toAmount: string) {
@@ -119,6 +123,7 @@ export default function CreateTradeForm() {
                 }
                 setFailedCreation(false)
                 setSuccesfulCreation(true)
+                setValues({from_amount: "", to_amount: ""})
             });
     }
 
