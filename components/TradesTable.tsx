@@ -357,7 +357,7 @@ export default function GetOrders({
               </svg>
               <span className="sr-only">Info</span>
               <div>
-                <span className="font-medium">Success!</span> {action}ing the Order was succesful!
+                <span className="font-medium">{action}ing Order succesful!</span> 
               </div>
               <button onClick={() => setSuccesful(false)} className="ml-auto bg-green-50 text-green-800 rounded-lg focus:ring-2 focus:ring-green-400 p-1 hover:bg-red-200 dark:bg-gray-800 dark:text-green-400 dark:hover:bg-gray-700" aria-label="Close">
                 <span className="sr-only">Close</span>
@@ -376,7 +376,7 @@ export default function GetOrders({
               </svg>
               <span className="sr-only">Info</span>
               <div>
-                <span className="font-medium">Action failed!</span> The process was interrupted or the action was not submitted.
+                <span className="font-medium">The process was interrupted or the action was not submitted.</span>
               </div>
               <button onClick={() => setFailed(false)} className="ml-auto bg-red-50 text-red-800 rounded-lg focus:ring-2 focus:ring-red-400 p-1 hover:bg-red-200 dark:bg-gray-800 dark:text-red-400 dark:hover:bg-gray-700" aria-label="Close">
                 <span className="sr-only">Close</span>
@@ -395,7 +395,6 @@ export default function GetOrders({
           <table className="border-collapse border-spacing-2 table-auto text-center w-full">
             <thead className="border-b-2">
               <tr>
-                <th className="px-3 py-4">ID</th>
                 <th className="px-3 py-4">Pair</th>
                 <th className="px-3 py-4"> <button onClick={() => cycleSort(setSortOffer)} className="hover:bg-zinc-700 rounded-md px-3 py-2">
 
@@ -423,7 +422,6 @@ export default function GetOrders({
                   let toAmountFloat = Number(convertIntToFloat(order.to_amount, toObject.decimals))
                   return (
                     <tr key={index} className="my-2 border-b border-gray-700">
-                      <td className="py-4">{order.id}</td>
                       <td className="py-4 flex items-center justify-center">
                         <Image src={fromObject.icon} alt={fromObject.name} height={20} width={20} className="h-8 w-8 rounded-full object-cover -mr-1 border-zinc-400 border-2" aria-hidden="true" />
                         <Image src={toObject.icon} alt={toObject.name} height={20} width={20} className="h-8 w-8 rounded-full object-cover border-zinc-400 border-2" aria-hidden="true" />

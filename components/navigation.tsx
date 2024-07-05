@@ -11,9 +11,9 @@ import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 
 const navigation = [
-  { name: "Create Order", href: "/"},
-  { name: "Market", href: "/market"},
-  { name: "My Orders", href: "/created-orders"},
+  { name: "Create Order", href: "/" },
+  { name: "Market", href: "/market" },
+  { name: "My Orders", href: "/created-orders" },
 ];
 
 export default function Navigation() {
@@ -48,19 +48,24 @@ export default function Navigation() {
                 </div> */}
                 <div className="hidden sm:ml-6 sm:block">
                   <div className="flex space-x-4">
-                    {navigation.map((item) => (
-                      <a
-                        key={item.name}
-                        href={item.href}
-                        className={clsx(
-                          pathName.endsWith(item.href) ? 'bg-zinc-900 text-white' : 'text-zinc-300 hover:bg-zinc-700 hover:text-white',
-                          'rounded-md px-3 py-2 text-sm font-medium',
-                        )}
-                        aria-current={pathName.endsWith(item.href)  ? 'page' : undefined}
-                      >
-                        {item.name}
-                      </a>
-                    ))}
+                    {navigation.map((item) => {
+                      if (status === "unauthenticated" && item.name === "My Orders") {
+                        return <></>
+                      }
+                      return (
+                        <a
+                          key={item.name}
+                          href={item.href}
+                          className={clsx(
+                            pathName.endsWith(item.href) ? 'bg-zinc-900 text-white' : 'text-zinc-300 hover:bg-zinc-700 hover:text-white',
+                            'rounded-md px-3 py-2 text-sm font-medium',
+                          )}
+                          aria-current={pathName.endsWith(item.href) ? 'page' : undefined}
+                        >
+                          {item.name}
+                        </a>
+                      )
+                    })}
                   </div>
                 </div>
               </div>
@@ -138,10 +143,10 @@ export default function Navigation() {
                   as="a"
                   href={item.href}
                   className={clsx(
-                    pathName.endsWith(item.href)  ? 'bg-zinc-900 text-white' : 'text-zinc-300 hover:bg-zinc-700 hover:text-white',
+                    pathName.endsWith(item.href) ? 'bg-zinc-900 text-white' : 'text-zinc-300 hover:bg-zinc-700 hover:text-white',
                     'block rounded-md px-3 py-2 text-base font-medium',
                   )}
-                  aria-current={pathName.endsWith(item.href)  ? 'page' : undefined}
+                  aria-current={pathName.endsWith(item.href) ? 'page' : undefined}
                 >
                   {item.name}
                 </DisclosureButton>
