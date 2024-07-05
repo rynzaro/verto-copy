@@ -48,8 +48,11 @@ export default function CreateTradeForm() {
 
     }
 
-
-
+    function swapTradingPair() {
+        let tempFrom = selectedFromToken
+        setSelectedFromToken(selectedToToken)
+        setSelectedToToken(tempFrom)
+    }
 
     async function callTransferMethod(fromAmount: string, toAmount: string) {
         let transactions = []
@@ -167,9 +170,13 @@ export default function CreateTradeForm() {
                 </div>
                 : <></>
             }
+            <button
+                className ="text-white bg-blue-300"
+                onClick={swapTradingPair}
+            >Swap</button>
 
             <form onSubmit={handleSubmit}>
-                <div className="flex flex-col py-4 px-4 w-full rounded-lg mb-2 justify-between ring-1 ring-gray-500">
+                <div className="flex flex-col py-4 px-4 w-full rounded-lg mb-2 justify-between ring-1 ring-gray-500 hover:ring-2 focus-within:ring-gray-300 focus-within:ring-2">
                     <div className="uppercase mb-2 font-medium">Offering</div>
                     <div className="flex">
                         <input
@@ -179,7 +186,7 @@ export default function CreateTradeForm() {
                             value={values.from_amount}
                             onChange={(e) => handleNumericInput(e, setValues, selectedFromToken.decimals)}
                             autoComplete="off"
-                            className="w-3/4 p-0 text-4xl bg-transparent outline-none border-0 focus:outline-none"
+                            className="w-3/4 p-0 text-4xl bg-transparent outline-none border-0 focus:outline-none focus:ring-0 focus:border-none"
                             placeholder="Enter Amount"
                         />
                         <div className="w-1/4"><TokenDropdown
@@ -188,7 +195,7 @@ export default function CreateTradeForm() {
                         /></div>
                     </div>
                 </div>
-                <div className="flex flex-col mt-4 py-4 px-4 w-full rounded-lg mb-2 justify-between ring-1 ring-gray-500">
+                <div className="flex flex-col mt-4 py-4 px-4 w-full rounded-lg mb-2 justify-between ring-1 ring-gray-500 hover:ring-2 focus-within:ring-gray-300 focus-within:ring-2">
                     <div className="uppercase mb-2 font-medium">For</div>
                     <div className="flex ">
                         <input
@@ -198,7 +205,7 @@ export default function CreateTradeForm() {
                             value={values.to_amount}
                             onChange={(e) => handleNumericInput(e, setValues, selectedToToken.decimals)}
                             autoComplete="off"
-                            className="w-3/4 p-0 text-4xl bg-transparent outline-none border-0 focus:outline-none"
+                            className="w-3/4 p-0 text-4xl bg-transparent outline-none border-0 focus:outline-none focus:ring-0 focus:border-none"
                             placeholder="Enter Amount"
                         />
                         <div className="w-1/4"><TokenDropdown

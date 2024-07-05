@@ -12,7 +12,7 @@ import { TokenMetadata } from "@/lib/types/types";
 
 export default function TokenDropdown({
   selected, setSelected
-}: { selected: TokenMetadata, setSelected: Dispatch<SetStateAction<TokenMetadata>>}) {
+}: { selected: TokenMetadata, setSelected: Dispatch<SetStateAction<TokenMetadata>> }) {
   const tokenObjects = useGetTokenObjects();
   if (!tokenObjects) {
     return;
@@ -20,11 +20,26 @@ export default function TokenDropdown({
 
   return (
     <Listbox value={selected} onChange={setSelected}>
-      {({ open }) => ( 
+      {({ open }) => (
         <>
           <div className="relative mt-2 text-zinc-400 bg-transparent">
-            <ListboxButton className="relative w-full cursor-default rounded-md py-1.5 pl-3 pr-10 text-left text-zinc-400 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-green-400 sm:text-sm sm:leading-6">
-              <span className="block truncate">{selected ? selected.symbol : ''}</span>
+            <ListboxButton className="relative w-full cursor-default rounded-md py-1.5 pl-3 pr-10 text-left text-zinc-400 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none sm:text-sm sm:leading-6">
+
+              <div className="flex">
+                {selected.icon !== "loading" ?
+                  <span className='inset-y-0 left-0 flex items-center pl-1.5'>
+                    <Image src={selected.icon} alt={selected.name} height={20} width={20} className="h-5 w-5 rounded-full object-cover" aria-hidden="true" />
+                  </span>
+                  :
+                  <></>
+                }
+                <span className="font-normal truncate">
+                  {selected.symbol}
+                </span>
+
+              </div>
+
+
               <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                 <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
               </span>
