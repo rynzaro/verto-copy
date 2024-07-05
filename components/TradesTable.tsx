@@ -28,6 +28,9 @@ export default function GetOrders({
   const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
   const [sortOffer, setSortOffer] = useState(0);
   const [sortFor, setSortFor] = useState(0);
+  const [succesful, setSuccesful] = useState(false);
+  const [failed, setFailed] = useState(false);
+  const [action, setAction] = useState("")
 
   const cycleSort = (setStateFunction: Function) => {
     setStateFunction((prevState: number) => (prevState + 1) % 3)
@@ -200,7 +203,8 @@ export default function GetOrders({
         })
       }
 
-      if (storage_balance === null) {
+      if ((storage_balance === null) && (order.from_contract_id !== "near")) {
+
         transactions.push({
           contractId: order.from_contract_id,
           method: "storage_deposit",
@@ -225,7 +229,20 @@ export default function GetOrders({
         deposit: "1",
       });
 
-      callMethods(transactions).catch((error) => console.log(error));
+      callMethods(transactions).catch((error) => console.log(error))
+        .catch((error) => console.log(error))
+        .then((message) => {
+          setAction("Fill");
+          if (message === undefined) {
+            setSuccesful(false)
+            setFailed(true);
+            return;
+          }
+          setSuccesful(true)
+          setFailed(false);
+          setFilteredOrders(orders)
+          return;
+        })
 
     }
   }
@@ -238,6 +255,19 @@ export default function GetOrders({
       gas: TAKE_OFFER_TGAS,
       deposit: '1',
     })
+      .catch((error) => console.log(error))
+      .then((message) => {
+        setAction("Cancel");
+        if (message === undefined) {
+          setSuccesful(false)
+          setFailed(true);
+          return;
+        }
+        setSuccesful(true)
+        setFailed(false);
+        setFilteredOrders(orders)
+        return;
+      })
   }
 
   function handleClaim(order: Order) {
@@ -303,6 +333,7 @@ export default function GetOrders({
   }
 
   return (
+
     <div className="flex flex-col justify-center items-center ">
       <div className="w-4/5">
         <div className="mt-4">
@@ -311,6 +342,46 @@ export default function GetOrders({
             setFilteredOrders={setFilteredOrders}
             tokenObjects={tokenObjects}
           />
+        </div>
+
+        <div>
+          {succesful ?
+            <div className="flex items-center p-4 my-4 text-sm text-green-800 border border-green-300 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400 dark:border-green-800 fixed bottom-5 w-4/5" role="alert">
+              <svg className="flex-shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+              </svg>
+              <span className="sr-only">Info</span>
+              <div>
+                <span className="font-medium">Success!</span> {action}ing the Order was succesful!
+              </div>
+              <button onClick={() => setSuccesful(false)} className="ml-auto bg-green-50 text-green-800 rounded-lg focus:ring-2 focus:ring-green-400 p-1 hover:bg-red-200 dark:bg-gray-800 dark:text-green-400 dark:hover:bg-gray-700" aria-label="Close">
+                <span className="sr-only">Close</span>
+                <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 14 14">
+                  <path d="M10.833 3.833L7 7.667m0 0L3.167 3.833m3.833 3.834L3.167 10.5m3.833-3.833L10.833 10.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+            </div>
+            : <></>
+          }
+
+          {failed ?
+            <div className="flex items-center p-4 my-4 text-sm text-red-800 border border-red-300 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400 dark:border-red-800 fixed bottom-5 w-4/5" role="alert">
+              <svg className="flex-shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+              </svg>
+              <span className="sr-only">Info</span>
+              <div>
+                <span className="font-medium">Action failed!</span> The process was interrupted or the action was not submitted.
+              </div>
+              <button onClick={() => setFailed(false)} className="ml-auto bg-red-50 text-red-800 rounded-lg focus:ring-2 focus:ring-red-400 p-1 hover:bg-red-200 dark:bg-gray-800 dark:text-red-400 dark:hover:bg-gray-700" aria-label="Close">
+                <span className="sr-only">Close</span>
+                <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 14 14">
+                  <path d="M10.833 3.833L7 7.667m0 0L3.167 3.833m3.833 3.834L3.167 10.5m3.833-3.833L10.833 10.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+            </div>
+            : <></>
+          }
         </div>
         <div className="block text-sm font-medium leading-6 text-verto_wt">
           {heading}

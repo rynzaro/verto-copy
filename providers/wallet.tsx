@@ -226,6 +226,11 @@ const NearWalletProvider = ({ children }: { children: ReactNode }) => {
       })),
     });
 
+    if (!outcome) {
+      console.error("No outcome");
+      return null;
+    }
+
     return outcome;
   };
 

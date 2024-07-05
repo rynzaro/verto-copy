@@ -39,14 +39,17 @@ export default function CreateTradeForm() {
         console.log(Object.values(tokenObjects)[0])
     }, [tokenObjects]);
 
+    function removeTrailingZerosAndComma(input: string): string {
+        return input.replace(/(\.\d*?)0+$/, '$1').replace(/\.$/, '');
+    }
+
     function numSlice(num: number) {
-        if (isHovered) {
-            return num.toString()
-        } else {
-            return num.toFixed(4) + "..."
-        }
+        return removeTrailingZerosAndComma(num.toFixed(12))
 
     }
+
+
+
 
     async function callTransferMethod(fromAmount: string, toAmount: string) {
         let transactions = []
@@ -110,13 +113,6 @@ export default function CreateTradeForm() {
                     setFailedCreation(true);
                     return;
                 }
-                message.forEach((part: { [key: string]: string }) => {
-                    if (!(part.final_execution_status === "EXECUTED_OPTIMISTIC")) {
-                        setSuccesfulCreation(false)
-                        setFailedCreation(true);
-                        return;
-                    }
-                })
                 setFailedCreation(false)
                 setSuccesfulCreation(true)
             });
@@ -199,9 +195,10 @@ export default function CreateTradeForm() {
                         /></div>
                     </div>
                 </div>
-                {values.from_amount && values.to_amount ?
-                    <div className="flex flex-col py-4 px-4 w-full rounded-lg mb-2 mt-4 justify-between ring-1 ring-gray-500">
-                        <div>EXCHANGE RATE:</div>
+
+                <div className="flex flex-col py-4 px-4 w-full rounded-lg mb-2 mt-4 justify-between ring-1 ring-gray-500">
+                    <div>EXCHANGE RATE:</div>
+                    {values.from_amount && values.to_amount ?
                         <div className="flex">
                             1 {selectedFromToken.symbol} ⇌
                             <div
@@ -213,12 +210,15 @@ export default function CreateTradeForm() {
                             </div>
                             {selectedToToken.symbol}
                         </div>
-                    </div> : <></>}
-                <div className="my-8">
+                        :
+                        <div>-</div>}
 
-                    {/* SPECIAL TRADE OPTIONS */}
+                </div>
+                {/* <div className="my-8"> */}
 
-                    {/* <fieldset>
+                {/* SPECIAL TRADE OPTIONS */}
+
+                {/* <fieldset>
                     <div className="space-y-5">
                         <div className="relative flex items-start">
                             <div className="flex h-6 items-center">
@@ -262,9 +262,9 @@ export default function CreateTradeForm() {
                     </div>
                 </fieldset> */}
 
-                    {/* PRIVATE TRADE LOGIC */}
+                {/* PRIVATE TRADE LOGIC */}
 
-                    {/* {privateTrade ? (
+                {/* {privateTrade ? (
                     <>
                         <input
                             type="text"
@@ -278,13 +278,13 @@ export default function CreateTradeForm() {
                 ) : (
                     <></>
                 )} */}
-                </div>
+                {/* </div> */}
                 {status === "unauthenticated" ? (
 
                     <button
                         type="button"
                         onClick={signIn}
-                        className="w-full rounded-md bg-gradient-to-r from-green-400 to-lime-300 hover:from-green-300 px-3.5 py-2.5 text-sm font-semibold text-black shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+                        className="w-full rounded-md bg-gradient-to-r from-green-400 to-lime-300 hover:from-green-300 mt-2 px-3.5 py-2.5 text-sm font-semibold text-black shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
                     >
                         Connect Wallet to Create Order
                     </button>
@@ -292,7 +292,13 @@ export default function CreateTradeForm() {
                 ) : (
                     <button
                         type="submit"
-                        className="w-full rounded-md bg-gradient-to-r from-green-400 to-lime-300 hover:from-green-300 px-3.5 py-2.5 text-sm font-semibold text-black shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+                        className=
+                        {
+                            (values.from_amount !== "" && values.to_amount !== "") ?
+                                "w-full rounded-md bg-gradient-to-r from-green-400 to-lime-300 hover:from-green-300 mt-2 px-3.5 py-2.5 text-sm font-semibold text-black shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+                                :
+                                "w-full rounded-md bg-gradient-to-r from-blue-400 hover:cursor-default to-blue-300 mt-2 px-3.5 py-2.5 text-sm font-semibold text-black shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+                        }
                     >
                         Create Order
                     </button>
