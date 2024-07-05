@@ -8,6 +8,7 @@ import { availableTokens } from "@/lib/availableTokens";
 import { TokenMetadata, defaultTokenMetadata } from "@/lib/types/types";
 import useFetchTokenObjects from "@/hook/FetchTokenObjects";
 import { stringify } from "querystring";
+import { ArrowsUpDownIcon } from "@heroicons/react/24/solid";
 
 const MAX_GAS = "300000000000000";
 
@@ -170,10 +171,7 @@ export default function CreateTradeForm() {
                 </div>
                 : <></>
             }
-            <button
-                className ="text-white bg-blue-300"
-                onClick={swapTradingPair}
-            >Swap</button>
+
 
             <form onSubmit={handleSubmit}>
                 <div className="flex flex-col py-4 px-4 w-full rounded-lg mb-2 justify-between ring-1 ring-gray-500 hover:ring-2 focus-within:ring-gray-300 focus-within:ring-2">
@@ -195,7 +193,18 @@ export default function CreateTradeForm() {
                         /></div>
                     </div>
                 </div>
-                <div className="flex flex-col mt-4 py-4 px-4 w-full rounded-lg mb-2 justify-between ring-1 ring-gray-500 hover:ring-2 focus-within:ring-gray-300 focus-within:ring-2">
+
+                <div className="flex justify-center">
+                    <button
+                        className="absolute -mt-5 text-white bg-black ring-1 rounded-md ring-gray-500 p-2 hover:ring-2"
+                        onClick={swapTradingPair}
+                    >
+                        <ArrowsUpDownIcon
+                            className="h-6 w-6"
+                        />
+                    </button>
+                </div>
+                <div className="flex flex-col my-2 py-4 px-4 w-full rounded-lg  justify-between ring-1 ring-gray-500 hover:ring-2 focus-within:ring-gray-300 focus-within:ring-2">
                     <div className="uppercase mb-2 font-medium">For</div>
                     <div className="flex ">
                         <input

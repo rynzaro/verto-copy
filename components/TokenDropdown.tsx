@@ -27,16 +27,15 @@ export default function TokenDropdown({
 
               <div className="flex">
                 {selected.icon !== "loading" ?
-                  <span className='inset-y-0 left-0 flex items-center pl-1.5'>
+                  <span className='inset-y-0 left-0 flex items-center pl-0'>
                     <Image src={selected.icon} alt={selected.name} height={20} width={20} className="h-5 w-5 rounded-full object-cover" aria-hidden="true" />
                   </span>
                   :
                   <></>
                 }
-                <span className="font-normal truncate">
+                <span className="font-normal truncate ml-2">
                   {selected.symbol}
                 </span>
-
               </div>
 
 
