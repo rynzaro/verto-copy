@@ -11,10 +11,9 @@ import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 
 const navigation = [
-  { name: "Trade now", href: "/"},
+  { name: "Create Order", href: "/"},
   { name: "Market", href: "/market"},
-  { name: "Created Orders", href: "/created-orders"},
-  { name: "Getting Started", href: "/getting-started"},
+  { name: "My Orders", href: "/created-orders"},
 ];
 
 export default function Navigation() {
@@ -40,13 +39,13 @@ export default function Navigation() {
                 </DisclosureButton>
               </div>
               <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-                <div className="flex flex-shrink-0 items-center">
+                {/* <div className="flex flex-shrink-0 items-center">
                   <img
                     className="h-8 w-auto"
                     src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
                     alt="Your Company"
                   />
-                </div>
+                </div> */}
                 <div className="hidden sm:ml-6 sm:block">
                   <div className="flex space-x-4">
                     {navigation.map((item) => (
