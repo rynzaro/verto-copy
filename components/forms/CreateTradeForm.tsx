@@ -55,7 +55,7 @@ export default function CreateTradeForm() {
         setSelectedToToken(tempFrom)
         setValues((prev) => ({
             from_amount: prev.to_amount,
-            to_amount: prev.from_amount,
+            to_amount: prev.from_amount
         }))
     }
 
@@ -123,7 +123,10 @@ export default function CreateTradeForm() {
                 }
                 setFailedCreation(false)
                 setSuccesfulCreation(true)
-                setValues({from_amount: "", to_amount: ""})
+                setValues({
+                    from_amount: "",
+                    to_amount: "",
+                })
             });
     }
 
@@ -201,6 +204,7 @@ export default function CreateTradeForm() {
 
                 <div className="flex justify-center">
                     <button
+                        type='button'
                         className="absolute -mt-5 text-white bg-black ring-1 rounded-md ring-gray-500 p-2 hover:ring-2"
                         onClick={swapTradingPair}
                     >
