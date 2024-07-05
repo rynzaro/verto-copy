@@ -9,6 +9,7 @@ import Image from "next/image";
 import { MethodParameters } from "@/lib/types/types";
 import useFetchTokenObjects from "@/hook/FetchTokenObjects";
 import { Input } from "@headlessui/react";
+import { Field, Label, Switch } from '@headlessui/react'
 import FilterForm from "./forms/FilterForm";
 import { ArrowUpRightIcon, ArrowDownRightIcon, ArrowsUpDownIcon } from '@heroicons/react/20/solid'
 
@@ -17,9 +18,11 @@ const TAKE_OFFER_TGAS = "300000000000000";
 export default function GetOrders({
   typeOfOrders,
   heading,
+  showCompletedToggle,
 }: {
   typeOfOrders: string;
   heading: string;
+  showCompletedToggle: boolean;
 }) {
   const tokenObjects = useFetchTokenObjects();
   const CONTRACT = VertoContract;
@@ -341,7 +344,9 @@ export default function GetOrders({
             orderObjects={orders}
             setFilteredOrders={setFilteredOrders}
             tokenObjects={tokenObjects}
+            showCompletedToggle={showCompletedToggle}
           />
+          
         </div>
 
         <div>

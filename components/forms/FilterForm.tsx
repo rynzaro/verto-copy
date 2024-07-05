@@ -2,17 +2,19 @@
 
 import { Order, TokenMetadata } from "@/lib/types/types";
 import { convertIntToFloat, handleNumericInput } from "@/lib/utils";
-import { MenuButton } from "@headlessui/react";
+import { Field, Label, MenuButton, Switch } from "@headlessui/react";
 import { Dispatch, useState } from "react";
 
 export default function FilterForm({
     orderObjects,
     setFilteredOrders,
-    tokenObjects
+    tokenObjects,
+    showCompletedToggle,
 }: {
     orderObjects: Order[],
     setFilteredOrders: Dispatch<React.SetStateAction<Order[]>>,
-    tokenObjects: { [key: string]: TokenMetadata }
+    tokenObjects: { [key: string]: TokenMetadata },
+    showCompletedToggle: boolean,
 }) {
     const [values, setValues] = useState({
         minFromAmount: "",
@@ -21,6 +23,7 @@ export default function FilterForm({
         maxToAmount: "",
         minPrice: "",
         maxPrice: "",
+        showCompleted: true,
     });
     const [visible, setVisible] = useState(false);
     const filterIcon =
@@ -28,10 +31,13 @@ export default function FilterForm({
             <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
         </svg>)
 
-    console.log(orderObjects)
     function onSubmit(event: { preventDefault: () => void; }) {
         event.preventDefault();
+        filterOrders();
 
+    }
+
+    function filterOrders() {
         const minFromAmount = values.minFromAmount ? parseFloat(values.minFromAmount) : -Infinity;
         const maxFromAmount = values.maxFromAmount ? parseFloat(values.maxFromAmount) : Infinity;
         const minToAmount = values.minToAmount ? parseFloat(values.minToAmount) : -Infinity;
@@ -47,11 +53,13 @@ export default function FilterForm({
             const toAmount = parseFloat(convertIntToFloat(order.to_amount, tokenObjects[order.to_contract_id].decimals));
             const price = toAmount / fromAmount;
 
-            console.log(tokenObjects[order.to_contract_id])
+            console.log(order.status, (values.showCompleted || (order.status === 'Open')))
+
             return (
                 (fromAmount >= minFromAmount && fromAmount <= maxFromAmount)
                 && (toAmount >= minToAmount && toAmount <= maxToAmount)
                 && (price >= minPrice && price <= maxPrice)
+                && (!values.showCompleted || (order.status === 'Open'))
             );
         });
         setFilteredOrders(newOrderObjects)
@@ -65,6 +73,7 @@ export default function FilterForm({
             maxToAmount: "",
             minPrice: "",
             maxPrice: "",
+            showCompleted: true,
         });
     }
 
@@ -72,28 +81,59 @@ export default function FilterForm({
         setVisible(prev => !prev);
     }
 
-    const filterButton =
-        (<button
-            className="relative flex rounded-md bg-zinc-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-zinc-800"
-            onClick={toggleVisible}>
-            <span className="absolute -inset-1.5" />
-            <span className="sr-only">Open user menu</span>
-            <span className="inline-flex items-center gap-x-1.5 rounded-md bg-gradient-to-r from-green-400 to-lime-300  hover:from-green-300 px-3.5 py-2 text-sm font-semibold text-black shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
-                </svg>
-                Filter
-            </span>
-        </button>)
+    function toggleShowCompleted() {
+        console.log('Toggled', values.showCompleted)
+        setValues((prev) => ({
+            ...prev,
+            showCompleted: !prev.showCompleted
+        }))
+        filterOrders();
+    }
+
+    const filterMenu = (
+        <div className="flex">
+            <button
+                className="relative flex rounded-md bg-zinc-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-zinc-800"
+                onClick={toggleVisible}>
+                <span className="absolute -inset-1.5" />
+                <span className="sr-only">Open user menu</span>
+                <span className="inline-flex items-center gap-x-1.5 rounded-md bg-gradient-to-r from-green-400 to-lime-300  hover:from-green-300 px-3.5 py-2 text-sm font-semibold text-black shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
+                    </svg>
+                    Filter
+                </span>
+            </button>
+            {showCompletedToggle ?  
+            <Field className="flex items-center relative text-white mx-4">
+                <Switch
+                    checked={values.showCompleted}
+                    onChange={toggleShowCompleted}
+                    className="group relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-200 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 data-[checked]:bg-indigo-600"
+                >
+                    <span
+                        aria-hidden="true"
+                        className="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out group-data-[checked]:translate-x-5"
+                    />
+                </Switch>
+                <Label as="span" className="ml-3 text-sm ">
+                    <span className="font-medium text-white">Show Completed</span>{' '}
+                </Label>
+            </Field>
+            :
+            <></>
+            }
+        </div>
+    )
 
     if (!visible) {
-        return filterButton
+        return filterMenu
     }
 
     return (
 
         <div className="relative">
-            {filterButton}
+            {filterMenu}
             <div className="w-[450px] bg-black mb-2 ring-1 ring-white rounded-xl px-3 py-4 absolute mt-2">
                 <div className="uppercase mb-1">From Amount</div>
                 <div className="flex justify-center items-center gap-2">
@@ -194,17 +234,16 @@ export default function FilterForm({
 
                 <div className="flex justify-center items-center gap-2 mt-2">
 
-                        <button
-                            className="rounded-md w-full py-2 px-2 bg-gradient-to-r from-green-400 to-lime-300 hover:from-green-300  text-sm font-semibold text-black shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
-                            onClick={onSubmit}
-                        >Filter</button>
-                        <button
-                            className="rounded-md w-full py-2 px-2 bg-gradient-to-r from-green-400 to-lime-300 hover:from-green-300 text-sm font-semibold text-black shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
-                            onClick={clearFilter}
-                        >Clear</button>
+                    <button
+                        className="rounded-md w-full py-2 px-2 bg-gradient-to-r from-green-400 to-lime-300 hover:from-green-300  text-sm font-semibold text-black shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+                        onClick={onSubmit}
+                    >Filter</button>
+                    <button
+                        className="rounded-md w-full py-2 px-2 bg-gradient-to-r from-green-400 to-lime-300 hover:from-green-300 text-sm font-semibold text-black shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+                        onClick={clearFilter}
+                    >Clear</button>
                 </div>
             </div>
-
         </div>
     )
 
