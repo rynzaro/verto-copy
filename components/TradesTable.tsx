@@ -346,7 +346,7 @@ export default function GetOrders({
             tokenObjects={tokenObjects}
             showCompletedToggle={showCompletedToggle}
           />
-          
+
         </div>
 
         <div>
@@ -357,7 +357,7 @@ export default function GetOrders({
               </svg>
               <span className="sr-only">Info</span>
               <div>
-                <span className="font-medium">{action}ing Order succesful!</span> 
+                <span className="font-medium">{action}ing Order succesful!</span>
               </div>
               <button onClick={() => setSuccesful(false)} className="ml-auto bg-green-50 text-green-800 rounded-lg focus:ring-2 focus:ring-green-400 p-1 hover:bg-red-200 dark:bg-gray-800 dark:text-green-400 dark:hover:bg-gray-700" aria-label="Close">
                 <span className="sr-only">Close</span>
@@ -396,19 +396,21 @@ export default function GetOrders({
             <thead className="border-b-2">
               <tr>
                 <th className="px-3 py-4">Pair</th>
-                <th className="px-3 py-4"> <button onClick={() => cycleSort(setSortOffer)} className="hover:bg-zinc-700 rounded-md px-3 py-2">
-
-                  {<span className="flex"> {sortIconOffer}
-
-                    Offering</span>}</button></th>
-                <th className="px-3 py-4"> <button onClick={() => cycleSort(setSortFor)} className="hover:bg-zinc-700 rounded-md px-3 py-2">
-
-                  <span className="flex"> {sortIconFor}
-
-                    For</span></button></th>
-                <th className="px-3 py-4">Price</th>
-                <th className="px-3 py-4">Creator</th>
-                <th className="px-3 py-4">Status</th>
+                <th className="px-3 py-4">
+                  <button onClick={() => cycleSort(setSortOffer)} className="hover:bg-zinc-700 rounded-md px-3 py-2">
+                    {<span className="flex"> {sortIconOffer}
+                      Offering</span>}
+                  </button>
+                </th>
+                <th className="px-3 py-4">
+                  <button onClick={() => cycleSort(setSortFor)} className="hover:bg-zinc-700 rounded-md px-3 py-2">
+                    <span className="flex"> {sortIconFor}
+                      For</span>
+                  </button>
+                </th>
+                <th className="px-3 py-4 hidden md:table-cell">Price</th>
+                <th className="px-3 py-4 hidden md:table-cell">Creator</th>
+                <th className="px-3 py-4 hidden md:table-cell">Status</th>
                 <th className="px-3 py-4">Action</th>
               </tr>
             </thead>
@@ -430,17 +432,17 @@ export default function GetOrders({
                         <p className="font-bold inline">{convertIntToFloat(order.from_amount, fromObject.decimals)}</p>
                         <span className="text-gray-500"> {truncateString(fromObject.symbol, 4)}</span>
                       </td>
-                      <td className="py-4">
+                      <td className="py-4 ">
                         <p className="font-bold inline">{convertIntToFloat(order.to_amount, toObject.decimals)}</p>
                         <span className="text-gray-500"> {truncateString(toObject.symbol, 4)}</span>
                       </td>
-                      <td className="py-4">
+                      <td className="py-4 hidden md:table-cell">
                         <p className="font-bold inline">{parseFloat((toAmountFloat / fromAmountFloat).toFixed(4))}</p>
                       </td>
-                      <td className="py-4">
+                      <td className="py-4 hidden md:table-cell">
                         <p className="font-bold">{truncateString(order.maker_id, 8)} </p>
                       </td>
-                      <td>{order.status}</td>
+                      <td className = "hidden md:table-cell">{order.status}</td>
                       <td className="py-4">{getOrderButton(order)}</td>
                     </tr>
                   );
