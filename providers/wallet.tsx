@@ -85,7 +85,7 @@ const NearWalletProvider = ({ children }: { children: ReactNode }) => {
     })
 
     const selector = setupWalletSelector({
-      network: "testnet",
+      network: NetworkId,
       modules: [meteorWallet],
     }).then((selector) => {
       setWalletSelector(selector);
