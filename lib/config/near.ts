@@ -1,5 +1,5 @@
 const contractPerNetwork = {
-    mainnet: 'verto.near',
+    mainnet: 'verto.testnet',
     testnet: 'verto.testnet',
   };
   
