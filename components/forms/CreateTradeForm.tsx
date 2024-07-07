@@ -9,6 +9,7 @@ import { TokenMetadata, defaultTokenMetadata } from "@/lib/types/types";
 import useFetchTokenObjects from "@/hook/FetchTokenObjects";
 import { stringify } from "querystring";
 import { ArrowsUpDownIcon } from "@heroicons/react/24/solid";
+import { VertoContract } from "@/lib/config/near";
 
 const MAX_GAS = "300000000000000";
 
@@ -95,7 +96,7 @@ export default function CreateTradeForm() {
 
         if (selectedFromToken.contractId === "near") {
             transactions.push({
-                contractId: "verto.testnet",
+                contractId: VertoContract,
                 method: "make_order",
                 args: { msg: jsonString },
                 gas: MAX_GAS,
@@ -106,7 +107,7 @@ export default function CreateTradeForm() {
                 contractId: selectedFromToken.contractId,
                 method: "ft_transfer_call",
                 args: {
-                    receiver_id: "verto.testnet",
+                    receiver_id: VertoContract,
                     amount: fromAmount,
                     msg: jsonString,
                 },
