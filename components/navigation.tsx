@@ -21,10 +21,10 @@ export default function Navigation() {
   const pathName = usePathname();
 
   return (
-    <Disclosure as="nav" className="">
+    <Disclosure as="nav" className="bg-verto_bg border-b-2 border-b-verto_border py-2 font-bold">
       {({ open }) => (
         <>
-          <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 w-5/6">
             <div className="relative flex h-16 items-center justify-between">
               <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
                 {/* Mobile menu button*/}
@@ -57,7 +57,7 @@ export default function Navigation() {
                           key={item.name}
                           href={item.href}
                           className={clsx(
-                            pathName.endsWith(item.href) ? 'bg-zinc-900 text-white' : 'text-zinc-300 hover:bg-zinc-700 hover:text-white',
+                            pathName.endsWith(item.href) ? 'bg-zinc-800 text-white' : 'text-zinc-300 hover:bg-zinc-700 hover:text-white',
                             'rounded-md px-3 py-2 text-sm font-medium',
                           )}
                           aria-current={pathName.endsWith(item.href) ? 'page' : undefined}
@@ -76,7 +76,7 @@ export default function Navigation() {
                   <button
                     type="button"
                     onClick={signIn}
-                    className="inline-flex items-center gap-x-1.5 rounded-md bg-gradient-to-r from-green-400 to-lime-300  hover:from-green-300 px-3.5 py-2.5 text-sm font-semibold text-black shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">
+                    className="inline-flex items-center gap-x-1.5 rounded-md bg-gradient-to-r button-gradient px-3.5 py-2.5 text-sm font-semibold text-black shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2">
                     <WalletIcon
                       className="-ml-0.5 h-5 w-5"
                       aria-hidden="true"
@@ -94,7 +94,7 @@ export default function Navigation() {
                         <MenuButton className="relative flex rounded-md bg-zinc-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-zinc-800">
                           <span className="absolute -inset-1.5" />
                           <span className="sr-only">Open user menu</span>
-                          <span className="inline-flex items-center gap-x-1.5 rounded-md bg-gradient-to-r from-green-400 to-lime-300  hover:from-green-300 px-3.5 py-2.5 text-sm font-semibold text-black shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">
+                          <span className="inline-flex items-center gap-x-1.5 rounded-md bg-gradient-to-r from-green-400 to-lime-300  hover:from-green-300 px-3.5 py-2.5 text-sm font-semibold text-black shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">
                             <WalletIcon
                               className="-ml-0.5 h-5 w-5"
                               aria-hidden="true"
