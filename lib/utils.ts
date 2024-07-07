@@ -82,3 +82,21 @@ export function truncateString(str: string, length: number) {
     }
     return str;
 }
+
+
+export function formatNumber(number: number) {
+    // Convert number to a string
+    let formattedNumber = number.toString();
+
+    // Check if the number contains 'e' (scientific notation)
+    if (formattedNumber.includes('e')) {
+        formattedNumber = number.toFixed(20); // Convert to fixed-point notation with sufficient decimal places
+    }
+    // Remove trailing zeros and the decimal point if there are no decimals
+    formattedNumber = formattedNumber.replace(/(\.\d*?[1-9])0+$/g, '$1').replace(/\.0+$/, '');
+
+    if (Number(formattedNumber) >= 1000) {
+        formattedNumber = Number(formattedNumber).toLocaleString('en-US');
+    }
+    return formattedNumber;
+}

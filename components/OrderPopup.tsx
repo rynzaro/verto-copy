@@ -3,7 +3,7 @@
 import useFetchTokenObjects from "@/hook/FetchTokenObjects"
 import { Order, TokenMetadata } from "@/lib/types/types"
 import Image from "next/image";
-import { convertIntToFloat } from "@/lib/utils";
+import { convertIntToFloat, formatNumber } from "@/lib/utils";
 import { useEffect, useState } from "react";
 
 export default function OrderPopup({ order, close, tokenObjects, orderActionButton }: {
@@ -21,22 +21,6 @@ export default function OrderPopup({ order, close, tokenObjects, orderActionButt
     const fromObject = tokenObjects[order.from_contract_id]
     const toObject = tokenObjects[order.to_contract_id]
 
-    function formatNumber(number: number) {
-        // Convert number to a string
-        let formattedNumber = number.toString();
-
-        // Check if the number contains 'e' (scientific notation)
-        if (formattedNumber.includes('e')) {
-            formattedNumber = number.toFixed(20); // Convert to fixed-point notation with sufficient decimal places
-        }
-        // Remove trailing zeros and the decimal point if there are no decimals
-        formattedNumber = formattedNumber.replace(/(\.\d*?[1-9])0+$/g, '$1').replace(/\.0+$/, '');
-
-        if (Number(formattedNumber) >= 1000) {
-            formattedNumber = Number(formattedNumber).toLocaleString('en-US');
-        }
-        return formattedNumber;
-    }
 
     return (
         <div className="flex justify-center">

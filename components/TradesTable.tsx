@@ -2,7 +2,7 @@
 
 import { VertoContract } from "@/lib/config/near";
 import { Order, TokenMetadata } from "@/lib/types/types";
-import { convertFloatToInt, convertIntToFloat, handleInput, truncateString } from "@/lib/utils";
+import { convertFloatToInt, convertIntToFloat, formatNumber, handleInput, truncateString } from "@/lib/utils";
 import { useNearWallet } from "@/providers/wallet";
 import { FormEvent, Key, useEffect, useState } from "react";
 import Image from "next/image";
@@ -454,15 +454,15 @@ export default function GetOrders({
                         <Image src={toObject.icon} alt={toObject.name} height={20} width={20} className="h-8 w-8 rounded-full object-cover border-zinc-400 border-2" aria-hidden="true" />
                       </td>
                       <td className="py-4">
-                        <p className="font-bold inline">{convertIntToFloat(order.from_amount, fromObject.decimals)}</p>
+                        <p className="font-bold inline">{formatNumber(Number(convertIntToFloat(order.from_amount, fromObject.decimals)))}</p>
                         <span className="text-gray-500"> {truncateString(fromObject.symbol, 4)}</span>
                       </td>
                       <td className="py-4 ">
-                        <p className="font-bold inline">{convertIntToFloat(order.to_amount, toObject.decimals)}</p>
+                        <p className="font-bold inline">{formatNumber(Number(convertIntToFloat(order.to_amount, toObject.decimals)))}</p>
                         <span className="text-gray-500"> {truncateString(toObject.symbol, 4)}</span>
                       </td>
                       <td className="py-4 hidden md:table-cell">
-                        <p className="font-bold inline">{parseFloat((toAmountFloat / fromAmountFloat).toFixed(4))}</p>
+                        <p className="font-bold inline">{formatNumber(Number(parseFloat((toAmountFloat / fromAmountFloat).toFixed(4))))}</p>
                       </td>
                       <td className="py-4 hidden md:table-cell">
                         <p className="font-bold">{truncateString(order.maker_id, 8)} </p>
