@@ -24,11 +24,45 @@ export default function CreateTradeForm() {
     const [isHovered, setHovered] = useState(false);
     const [succesfulCreation, setSuccesfulCreation] = useState(false)
     const [failedCreation, setFailedCreation] = useState(false)
+    
+    const [balances, setBalances] = useState({
+        from_balance: 0,
+        to_balance: 0
+    })
 
     const [values, setValues] = useState({
         from_amount: "",
         to_amount: "",
     });
+
+        useEffect(() => {
+            const fetchBalances = async () => {
+                try {
+                    const fromBalance = await viewMethod({
+                        contractId: selectedFromToken.contractId,
+                        method: "ft_balance_of",
+                        args: {
+                            account_id: "n1lyv.testnet",
+                        },
+                    });
+                    const toBalance = await viewMethod({
+                        contractId: selectedToToken.contractId,
+                        method: "ft_balance_of",
+                        args: {
+                            account_id: "n1lyv.testnet",
+                        },
+                    });
+                    setBalances({
+                        from_balance: fromBalance,
+                        to_balance: toBalance
+                    });
+                } catch (error) {
+                    console.error("Failed to fetch balances", error);
+                }
+            };
+    
+            fetchBalances();
+        }, [selectedFromToken.contractId, selectedToToken.contractId]);
 
     useEffect(() => {
         if (!tokenObjects) {
@@ -141,6 +175,8 @@ export default function CreateTradeForm() {
         callTransferMethod(fromAmount, toAmount)
     };
 
+    // const offering_vals = (parseFloat(values.from_amount) <= balances.from_balance) && !isActive
+
     return (
         <div>
             {succesfulCreation ?
@@ -183,7 +219,7 @@ export default function CreateTradeForm() {
 
 
             <form onSubmit={handleSubmit}>
-                <div className="flex flex-col py-4 px-4 w-full rounded-lg mb-2 justify-between ring-1 ring-gray-500 hover:ring-2 focus-within:ring-gray-300 focus-within:ring-2">
+                <div className={`flex flex-col py-4 px-4 w-full rounded-lg mb-2 justify-between ${balances.from_balance >= parseFloat(values.from_amount) ? 'ring-lime-400 ring-2' : 'ring-red-600 ring-2'} ring-gray-500 hover:ring-2 focus-within:ring-gray-300 focus-within:ring-2`}>
                     <div className="uppercase mb-2 font-medium">Offering</div>
                     <div className="flex">
                         <input
@@ -201,12 +237,15 @@ export default function CreateTradeForm() {
                             setSelected={setSelectedFromToken}
                         /></div>
                     </div>
+                    <div className="text-sm pt-2">
+                        Balance: {balances.from_balance}
+                    </div>
                 </div>
 
                 <div className="flex justify-center">
                     <button
                         type='button'
-                        className="absolute -mt-5 text-white bg-black ring-1 rounded-md ring-gray-500 p-2 hover:ring-2"
+                        className="absolute -mt-5 text-white bg-verto_bg ring-1 rounded-md ring-gray-500 p-2 hover:ring-2"
                         onClick={swapTradingPair}
                     >
                         <ArrowsUpDownIcon
@@ -231,6 +270,9 @@ export default function CreateTradeForm() {
                             selected={selectedToToken}
                             setSelected={setSelectedToToken}
                         /></div>
+                    </div>
+                    <div className="text-sm pt-2">
+                        Balance: {balances.to_balance}
                     </div>
                 </div>
 

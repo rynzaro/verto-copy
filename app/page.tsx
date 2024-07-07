@@ -9,10 +9,10 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <div className="mt-20">
+    <div className="pt-10">
       <div className="mx-auto max-w-7xl my-10 px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl">
-          <PageHeading title="Trade now" /> <CreateTradeForm />
+          <PageHeading title="Trade Details" /> <CreateTradeForm />
         </div>
       </div>
     </div>

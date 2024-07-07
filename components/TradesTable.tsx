@@ -43,10 +43,6 @@ export default function GetOrders({
     setStateFunction((prevState: number) => (prevState + 1) % 3)
   }
 
-  // const resetSort = (setStateFunction: Function) => {
-  //   setStateFunction((prevState: number) => 0)
-  // }
-
   let sortIconOffer;
   switch (sortOffer) {
     case 0:
@@ -96,7 +92,7 @@ export default function GetOrders({
       if (
         !tokenObjects ||
         (tokenObjects[a.from_contract_id] === undefined)
-        || (tokenObjects[b.from_contract_id] === undefined)
+        || (tokenObjects[a.from_contract_id] === undefined)
         || (tokenObjects[b.to_contract_id] === undefined)
         || (tokenObjects[b.to_contract_id] === undefined)
       ) {
