@@ -12,6 +12,8 @@ import { Input } from "@headlessui/react";
 import { Field, Label, Switch } from '@headlessui/react'
 import FilterForm from "./forms/FilterForm";
 import { ArrowUpRightIcon, ArrowDownRightIcon, ArrowsUpDownIcon } from '@heroicons/react/20/solid'
+import OrderPopup from "./OrderPopup";
+import clsx from "clsx";
 
 const TAKE_OFFER_TGAS = "300000000000000";
 
@@ -33,7 +35,9 @@ export default function GetOrders({
   const [sortFor, setSortFor] = useState(0);
   const [succesful, setSuccesful] = useState(false);
   const [failed, setFailed] = useState(false);
-  const [action, setAction] = useState("")
+  const [action, setAction] = useState("");
+  const [orderPopupOpen, setOrderPopupOpen] = useState(false)
+  const [currentOrderDetails, setCurrentOrderDetails] = useState<Order | null>(null)
 
   const cycleSort = (setStateFunction: Function) => {
     setStateFunction((prevState: number) => (prevState + 1) % 3)
@@ -277,11 +281,14 @@ export default function GetOrders({
     console.log("claim order");
   }
 
-  function getOrderButton(order: Order) {
+  function getOrderButton(order: Order | null) {
     let button = <></>;
+    if (order === null) {
+      return <></>
+    }
     let state = order.status;
     let buttonClass =
-      "rounded-md bg-gradient-to-r from-green-400 to-lime-300 w-[60px] hover:from-green-300 py-1 text-sm font-semibold text-black shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500";
+      "w-full rounded-md bg-gradient-to-r from-green-400 to-lime-300 w-[60px] hover:from-green-300 py-1 text-sm font-semibold text-black shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500";
 
     if (status === 'unauthenticated') {
       return
@@ -313,7 +320,7 @@ export default function GetOrders({
     order.status === "Open" ? (
       <button
         onClick={() => handleFill(order)}
-        className="w-full rounded-md bg-gradient-to-r from-vblue to-lime-400 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gradient-to-r hover:from-green-300 hover:to-lime-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+        className="w-full rounded-md bg-gradient-to-r from-green-400 to-lime-300 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gradient-to-r hover:from-green-300 hover:to-lime-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
       >
         Fill
       </button>
@@ -329,6 +336,12 @@ export default function GetOrders({
     }
   }
 
+  function showOrderDetails(order: Order) {
+    setCurrentOrderDetails(order)
+    setOrderPopupOpen(true)
+  }
+
+
   if (!tokenObjects) {
     return (
       <div>LOADING</div>
@@ -336,8 +349,22 @@ export default function GetOrders({
   }
 
   return (
-
     <div className="flex flex-col justify-center items-center ">
+      <div className={clsx(
+        'fixed inset-0 flex items-center justify-center z-50',
+        { 'hidden': !orderPopupOpen }
+      )}>
+        <div className = "p-5 bg-gray-900">
+          <OrderPopup
+            order={currentOrderDetails}
+            close={() => setOrderPopupOpen(false)}
+            tokenObjects={tokenObjects}
+            orderActionButton = {getOrderButton(currentOrderDetails)}
+
+          />
+        </div>
+
+      </div>
       <div className="w-4/5">
         <div className="mt-4">
           <FilterForm
@@ -346,7 +373,6 @@ export default function GetOrders({
             tokenObjects={tokenObjects}
             showCompletedToggle={showCompletedToggle}
           />
-
         </div>
 
         <div>
@@ -442,8 +468,18 @@ export default function GetOrders({
                       <td className="py-4 hidden md:table-cell">
                         <p className="font-bold">{truncateString(order.maker_id, 8)} </p>
                       </td>
-                      <td className = "hidden md:table-cell">{order.status}</td>
-                      <td className="py-4">{getOrderButton(order)}</td>
+                      <td className="hidden md:table-cell">{order.status}</td>
+                      <td className="py-4">
+                        <button
+                          type='button'
+                          className="w-full rounded-md bg-gradient-to-r from-green-400 to-lime-300 hover:from-green-300 py-1 text-sm font-semibold text-black shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+                          onClick={
+                            () => { showOrderDetails(order) }
+                          }
+                        >
+                          Details
+                        </button>
+                      </td>
                     </tr>
                   );
                 } else {
@@ -454,7 +490,7 @@ export default function GetOrders({
           </table>
         </div>
       </div>
-    </div>
+    </div >
 
   );
 }

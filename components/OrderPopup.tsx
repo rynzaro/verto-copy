@@ -1,9 +1,24 @@
-export default function Page() {
-    const tokenFrom = "NEAR"
-    const tokenTo = "BLACKDRAGON"
-    const user = "vertouser.near"
-    const offerAmount = "8000000000000"
-    const receiveAmount = "620"
+'use client'
+
+import useFetchTokenObjects from "@/hook/FetchTokenObjects"
+import { Order, TokenMetadata } from "@/lib/types/types"
+import { convertIntToFloat } from "@/lib/utils";
+import { useEffect, useState } from "react";
+
+export default function OrderPopup({ order, close, tokenObjects, orderActionButton }: {
+    order: Order | null,
+    close: () => void,
+    tokenObjects: { [key: string]: TokenMetadata}
+    orderActionButton: JSX.Element | undefined
+}) {
+
+
+    if (!order) {
+        return null;
+    }
+
+    const fromObject = tokenObjects[order.from_contract_id]
+    const toObject = tokenObjects[order.to_contract_id]
 
     function formatNumber(number: number) {
         // Convert number to a string
@@ -13,40 +28,49 @@ export default function Page() {
         if (formattedNumber.includes('e')) {
             formattedNumber = number.toFixed(20); // Convert to fixed-point notation with sufficient decimal places
         }
-        formattedNumber = Number(formattedNumber).toLocaleString('en-US');
-
         // Remove trailing zeros and the decimal point if there are no decimals
         formattedNumber = formattedNumber.replace(/(\.\d*?[1-9])0+$/g, '$1').replace(/\.0+$/, '');
+
+        if (Number(formattedNumber) >= 1000) {
+            formattedNumber = Number(formattedNumber).toLocaleString('en-US');
+        }
         return formattedNumber;
     }
 
     return (
         <div className="flex justify-center">
             <div className="w-[360px]">
-                <div className="border border-gray-600 rounded-md divide-y divide-gray-600 w-full my-4">
+                <div className="border border-gray-600 rounded-md divide-y divide-gray-600 w-full my-2">
                     <div className="flex justify-between px-4 py-3 font-bold text-sm">
                         <div className="text-gray-400">Trading Pair</div>
-                        <div>{tokenFrom} - {tokenTo}</div>
+                        <div>{fromObject.symbol} - {toObject.symbol}</div>
                     </div>
                     <div className="flex justify-between px-4 py-3 font-bold text-sm">
                         <div className="text-gray-400">Trade Type</div>
                         <div className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-lime-300">Single Fill</div>
                     </div>
                     <div className="flex justify-between px-4 py-3 font-bold text-sm">
-                        <div className="text-gray-400">Order Creator</div>
-                        <div>{user}</div>
+                        <div className="text-gray-400">Order Status</div>
+                        <div className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-lime-300">{order.status.charAt(0).toUpperCase() + order.status.substring(1)}</div>
                     </div>
                     <div className="flex justify-between px-4 py-3 font-bold text-sm">
                         <div className="text-gray-400">You send</div>
-                        <div>{formatNumber(Number(offerAmount))}</div>
+                        <div>{formatNumber(Number(convertIntToFloat(order.to_amount, toObject.decimals)))}</div>
                     </div>
                     <div className="flex justify-between px-4 py-3 font-bold text-sm">
                         <div className="text-gray-400">You receive</div>
-                        <div>{receiveAmount}</div>
+                        <div>{formatNumber(Number(convertIntToFloat(order.from_amount, fromObject.decimals)))}</div>
                     </div>
                     <div className="flex justify-between px-4 py-3 font-bold text-sm">
                         <div className="text-gray-400">Price Per Token</div>
-                        <div>{formatNumber(Number(offerAmount) / Number(receiveAmount))}</div>
+                        <div>{formatNumber(
+                            parseFloat(convertIntToFloat(order.from_amount, fromObject.decimals)) /
+                            parseFloat(convertIntToFloat(order.to_amount, toObject.decimals))
+                        )}</div>
+                    </div>
+                    <div className="flex justify-between px-4 py-3 font-bold text-sm">
+                        <div className="text-gray-400">Order Creator</div>
+                        <div>{order.maker_id}</div>
                     </div>
                     <div className="flex justify-between px-4 py-3 font-bold text-sm">
                         <div className="text-gray-400">Fill Type</div>
@@ -58,12 +82,15 @@ export default function Page() {
                     </div>
                 </div>
                 <div className="flex space-x-2">
-                    <button className="flex-grow text-sm inline-flex w-full justify-center items-center gap-x-1.5 rounded-md bg-gradient-to-r px-3.5 py-2.5 font-semibold text-white shadow-sm border-2 border-lime-300">
-                            Back
+                    <button
+                        className="text-sm inline-flex w-full justify-center items-center gap-x-1.5 rounded-md bg-gradient-to-r px-3.5 py-2.5 font-semibold text-white shadow-sm border-2 border-green-300"
+                        type='button'
+                        onClick={close}
+                    >
+                        Back
                     </button>
-                    <button className="flex-grow text-sm inline-flex w-full justify-center items-center gap-x-1.5 rounded-md bg-gradient-to-r from-green-400 to-lime-300 px-3.5 py-2.5 font-semibold text-black shadow-sm">
-                            Buy
-                    </button>
+                    {orderActionButton}
+
                 </div>
             </div>
         </div>

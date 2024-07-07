@@ -14,7 +14,6 @@ const navigation = [
   { name: "Create Order", href: "/" },
   { name: "Market", href: "/market" },
   { name: "My Orders", href: "/created-orders" },
-  { name: "Trade Overview", href: "/trade-overview" },
 ];
 
 export default function Navigation() {
