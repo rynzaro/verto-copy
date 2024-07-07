@@ -2,13 +2,14 @@
 
 import useFetchTokenObjects from "@/hook/FetchTokenObjects"
 import { Order, TokenMetadata } from "@/lib/types/types"
+import Image from "next/image";
 import { convertIntToFloat } from "@/lib/utils";
 import { useEffect, useState } from "react";
 
 export default function OrderPopup({ order, close, tokenObjects, orderActionButton }: {
     order: Order | null,
     close: () => void,
-    tokenObjects: { [key: string]: TokenMetadata}
+    tokenObjects: { [key: string]: TokenMetadata }
     orderActionButton: JSX.Element | undefined
 }) {
 
@@ -43,7 +44,14 @@ export default function OrderPopup({ order, close, tokenObjects, orderActionButt
                 <div className="border border-gray-600 rounded-md divide-y divide-gray-600 w-full my-2">
                     <div className="flex justify-between px-4 py-3 font-bold text-sm">
                         <div className="text-gray-400">Trading Pair</div>
-                        <div>{fromObject.symbol} - {toObject.symbol}</div>
+                        <div>
+                            <span className="flex items-center justify-center">
+                                <Image src={fromObject.icon} alt={fromObject.name} height={20} width={20} className="mr-1 rounded-full object-cover border-2 border-black" aria-hidden="true" />
+                                {fromObject.symbol} - 
+                                <Image src={toObject.icon} alt={toObject.name} height={20} width={20} className="mr-1 rounded-full object-cover border-2 border-black" aria-hidden="true" />
+                                {toObject.symbol}
+                            </span>
+                        </div>
                     </div>
                     <div className="flex justify-between px-4 py-3 font-bold text-sm">
                         <div className="text-gray-400">Trade Type</div>
@@ -55,11 +63,11 @@ export default function OrderPopup({ order, close, tokenObjects, orderActionButt
                     </div>
                     <div className="flex justify-between px-4 py-3 font-bold text-sm">
                         <div className="text-gray-400">You send</div>
-                        <div>{formatNumber(Number(convertIntToFloat(order.to_amount, toObject.decimals)))}</div>
+                        <div>{formatNumber(Number(convertIntToFloat(order.to_amount, toObject.decimals)))} {toObject.symbol}</div>
                     </div>
                     <div className="flex justify-between px-4 py-3 font-bold text-sm">
                         <div className="text-gray-400">You receive</div>
-                        <div>{formatNumber(Number(convertIntToFloat(order.from_amount, fromObject.decimals)))}</div>
+                        <div>{formatNumber(Number(convertIntToFloat(order.from_amount, fromObject.decimals)))} {fromObject.symbol}</div>
                     </div>
                     <div className="flex justify-between px-4 py-3 font-bold text-sm">
                         <div className="text-gray-400">Price Per Token</div>
@@ -71,10 +79,6 @@ export default function OrderPopup({ order, close, tokenObjects, orderActionButt
                     <div className="flex justify-between px-4 py-3 font-bold text-sm">
                         <div className="text-gray-400">Order Creator</div>
                         <div>{order.maker_id}</div>
-                    </div>
-                    <div className="flex justify-between px-4 py-3 font-bold text-sm">
-                        <div className="text-gray-400">Fill Type</div>
-                        <div className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-lime-300">Single Fill</div>
                     </div>
                     <div className="flex justify-between px-4 py-3 font-bold text-sm">
                         <div className="text-gray-400">Privacy Type</div>

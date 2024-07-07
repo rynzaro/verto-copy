@@ -351,7 +351,7 @@ export default function GetOrders({
   return (
     <div className="flex flex-col justify-center items-center ">
       <div className={clsx(
-        'fixed inset-0 flex items-center justify-center z-50',
+        'fixed inset-0 flex items-center justify-center',
         { 'hidden': !orderPopupOpen }
       )}>
         <div className = "p-5 bg-gray-900">
@@ -360,7 +360,6 @@ export default function GetOrders({
             close={() => setOrderPopupOpen(false)}
             tokenObjects={tokenObjects}
             orderActionButton = {getOrderButton(currentOrderDetails)}
-
           />
         </div>
 
@@ -472,7 +471,7 @@ export default function GetOrders({
                       <td className="py-4">
                         <button
                           type='button'
-                          className="w-full rounded-md bg-gradient-to-r from-green-400 to-lime-300 hover:from-green-300 py-1 text-sm font-semibold text-black shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+                          className="rounded-md bg-gradient-to-r from-green-400 to-lime-300 w-[60px] hover:from-green-300 py-1 text-sm font-semibold text-black shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
                           onClick={
                             () => { showOrderDetails(order) }
                           }
