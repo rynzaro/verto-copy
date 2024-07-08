@@ -1,7 +1,7 @@
 import PageHeading from "@/components/PageHeading";
 import CreateTradeForm from "@/components/forms/CreateTradeForm";
 import { Metadata } from "next";
-import Image from "next/image";
+// import '/home/n1lyv/Projects/verto9/app/globals.css'
 
 export const metadata: Metadata = {
   title: "VERTO",
