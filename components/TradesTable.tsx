@@ -389,7 +389,7 @@ export default function GetOrders({
   }
 
   return (
-    <div className="flex flex-col justify-center items-center">
+    <div className="flex flex-col justify-center items-center text-white">
       <div className={clsx(
         'fixed inset-0 flex items-center justify-center',
         { 'hidden': !orderPopupOpen }
