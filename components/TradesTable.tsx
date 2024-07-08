@@ -363,7 +363,7 @@ export default function GetOrders({
 
       </div>
       <div className="w-4/5">
-        <div className="pt-4 pr-48 justify-end flex">
+        <div className="pt-4 flex">
           {/* <RefreshButton /> */}
           <FilterForm
             orderObjects={orders}
@@ -420,7 +420,7 @@ export default function GetOrders({
             <thead className="border-b-2">
               <tr>
                 <th className="px-3 py-4">Pair</th>
-                <th className=" py-4">
+                <th className="py-4">
                   <button onClick={() => cycleSort(setSortOffer)} className="hover:bg-zinc-700 rounded-md px-3 py-2">
                     {<span className="flex"> {sortIconOffer}
                       Offering</span>}
