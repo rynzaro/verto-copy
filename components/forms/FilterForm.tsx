@@ -185,7 +185,7 @@ export default function FilterForm({
                             />
                         </div>
                     </div>
-                    <div className="flex flex-col py-2 px-2 w-full rounded-lg mb-2 justify-between ring-1 ring-gray-500">
+                    <div className="flex flex-col py-2 px-2 w-full rounded-lg mb-2 justify-between ring-1 ring-verto_border">
                         <div className="flex">
                             <input
                                 type="text"
@@ -203,7 +203,7 @@ export default function FilterForm({
 
                 <div className="uppercase mb-1">Price</div>
                 <div className="flex justify-center items-center gap-2">
-                    <div className="flex flex-col py-2 px-2 w-full rounded-lg mb-2 justify-between ring-1 ring-gray-500">
+                    <div className="flex flex-col py-2 px-2 w-full rounded-lg mb-2 justify-between ring-1 ring-verto_border">
                         <div className="flex">
                             <input
                                 type="text"
@@ -217,7 +217,7 @@ export default function FilterForm({
                             />
                         </div>
                     </div>
-                    <div className="flex flex-col py-2 px-2 w-full rounded-lg mb-2 justify-between ring-1 ring-gray-500">
+                    <div className="flex flex-col py-2 px-2 w-full rounded-lg mb-2 justify-between ring-1 ring-verto_border">
                         <div className="flex">
                             <input
                                 type="text"

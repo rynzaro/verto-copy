@@ -361,7 +361,8 @@ export default function GetOrders({
 
       </div>
       <div className="w-4/5">
-        <div className="mt-4">
+        <div className="pt-4 pr-48 justify-end flex">
+          {/* <RefreshButton /> */}
           <FilterForm
             orderObjects={orders}
             setFilteredOrders={setFilteredOrders}
@@ -431,10 +432,11 @@ export default function GetOrders({
                 </th>
                 <th className="px-3 py-4 hidden md:table-cell">Price</th>
                 <th className="px-3 py-4 hidden md:table-cell">Creator</th>
-                <th className="px-3 py-4 hidden md:table-cell">Status</th>
+                {/* <th className="px-3 py-4 hidden md:table-cell">Status</th> */}
                 <th className="px-3 py-4">Action</th>
               </tr>
             </thead>
+
             <tbody className="">
 
               {filteredOrders.map((order: Order, index: Key) => {
@@ -463,7 +465,7 @@ export default function GetOrders({
                       <td className="py-4 hidden md:table-cell">
                         <p className="font-bold">{truncateString(order.maker_id, 8)} </p>
                       </td>
-                      <td className="hidden md:table-cell">{order.status}</td>
+                      {/* <td className="hidden md:table-cell">{order.status}</td> */}
                       <td className="py-4">
                         <button
                           type='button'
