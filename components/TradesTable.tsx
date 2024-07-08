@@ -1,15 +1,13 @@
 "use client";
 
 import { VertoContract } from "@/lib/config/near";
-import { Order, TokenMetadata } from "@/lib/types/types";
-import { convertFloatToInt, convertIntToFloat, formatNumber, handleInput, truncateString } from "@/lib/utils";
+import { Order } from "@/lib/types/types";
+import { convertIntToFloat, formatNumber, handleInput, truncateString } from "@/lib/utils";
 import { useNearWallet } from "@/providers/wallet";
-import { FormEvent, Key, useEffect, useState } from "react";
+import { Key, useEffect, useState } from "react";
 import Image from "next/image";
 import { MethodParameters } from "@/lib/types/types";
 import useFetchTokenObjects from "@/hook/FetchTokenObjects";
-import { Input } from "@headlessui/react";
-import { Field, Label, Switch } from '@headlessui/react'
 import FilterForm from "./forms/FilterForm";
 import { ArrowUpRightIcon, ArrowDownRightIcon, ArrowsUpDownIcon } from '@heroicons/react/20/solid'
 import OrderPopup from "./OrderPopup";
@@ -243,7 +241,9 @@ export default function GetOrders({
           }
           setSuccesful(true)
           setFailed(false);
-          setFilteredOrders(orders)
+          setTimeout(() => {
+            window.location.reload();
+          }, 2000);
           return;
         })
 
@@ -268,7 +268,9 @@ export default function GetOrders({
         }
         setSuccesful(true)
         setFailed(false);
-        setFilteredOrders(orders)
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
         return;
       })
   }
