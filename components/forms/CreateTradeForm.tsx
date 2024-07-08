@@ -277,7 +277,8 @@ export default function CreateTradeForm() {
                     <div>
                     <button 
                         type='button'
-                        className={` ${ !auth ? "text-transparent hover:cursor-default" : "text-white" } text-sm pt-2 hover:text-lime-400`} 
+                        disabled={true}
+                        className={` ${ !auth ? "text-transparent hover:cursor-default" : "text-white" } text-sm pt-2`} 
                         onClick={() => setValues({from_amount: balances.from_balance.toString(), to_amount: values.to_amount})}
                     >
                         Balance: { !auth ? "N/A" : (tokenObjects === null || tokenObjects[selectedFromToken.contractId] === undefined) ? "N/A" : formatNumber(Number(convertIntToFloat(balances.from_balance.toString(), tokenObjects[selectedFromToken.contractId].decimals)))}
