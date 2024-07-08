@@ -2,7 +2,7 @@
 
 import { convertFloatToInt, convertIntToFloat, formatNumber, handleInput, handleNumericInput } from "@/lib/utils";
 import { useNearWallet } from "@/providers/wallet";
-import React, { FormEvent, useEffect, useState } from "react";
+import React, { FormEvent, useEffect, useState, useRef } from "react";
 import TokenDropdown from "@/components/TokenDropdown";
 import { availableTokens } from "@/lib/availableTokens";
 import { TokenMetadata, defaultTokenMetadata } from "@/lib/types/types";
@@ -10,6 +10,7 @@ import useFetchTokenObjects from "@/hook/FetchTokenObjects";
 import { stringify } from "querystring";
 import { ArrowsUpDownIcon } from "@heroicons/react/24/solid";
 import { VertoContract } from "@/lib/config/near";
+import { Preahvihear } from "next/font/google";
 
 const MAX_GAS = "300000000000000";
 
@@ -24,6 +25,7 @@ export default function CreateTradeForm() {
     const [isHovered, setHovered] = useState(false);
     const [succesfulCreation, setSuccesfulCreation] = useState(false)
     const [failedCreation, setFailedCreation] = useState(false)
+    const [exchangeRate, setExchangeRate] = useState("")
 
     const [activeInput, setActiveInput] = useState({
         fromInput: false,
@@ -189,6 +191,26 @@ export default function CreateTradeForm() {
         callTransferMethod(fromAmount, toAmount)
     };
 
+    useEffect(() => {
+        if (exchangeRate === "") {
+            return 
+        } else {
+            setValues({from_amount: (parseFloat(values.to_amount) * parseFloat(exchangeRate)).toString(), to_amount: values.to_amount})
+        }
+    },[exchangeRate])
+
+    useEffect(() => {
+        if (values.from_amount !== "" && values.to_amount !== "")
+        setExchangeRate((parseFloat(values.from_amount)/parseFloat(values.to_amount)).toString())
+    }, [values.from_amount, values.to_amount])
+
+
+    const [placeHolder, setPlaceHolder] = useState("")
+
+    useEffect(() => {
+        setPlaceHolder(numSlice(parseFloat(values.to_amount) / parseFloat(values.from_amount)))
+    }, [values.from_amount, values.to_amount])
+
 
     return (
         <div>
@@ -231,7 +253,7 @@ export default function CreateTradeForm() {
             }
 
             <form onSubmit={handleSubmit}>
-                <div className={`flex flex-col py-4 px-4 w-full rounded-lg mb-2 justify-between ${ !auth || noFrom ? "ring-verto_border ring-1 hover:ring-2" : (validFrom ? 'ring-lime-400 ring-2' : 'ring-red-600 ring-2 focus-within:ring-red-600')} ring-gray-500 hover:ring-2 focus-within:ring-gray-300 focus-within:ring-2`}>
+                <div className={`flex flex-col py-4 px-4 w-full rounded-lg mb-2 justify-between ${ !auth || noFrom ? "ring-verto_border ring-1 hover:ring-2" : (validFrom ? 'ring-lime-400 ring-2' : 'ring-red-600 ring-2 focus-within:ring-red-600')} ring-gray-500 hover:ring-2 focus-within:ring-2`}>
                     <div className="uppercase mb-2 font-medium">Offering</div>
                     <div className="flex">
                         <input
@@ -252,8 +274,14 @@ export default function CreateTradeForm() {
                             setSelected={setSelectedFromToken}
                         /></div>
                     </div>
-                    <div className={` ${ !auth ? "text-transparent hover:cursor-default" : "text-white" } text-sm pt-2`}>
-                        Balance: { status === "unauthenticated" ? "N/A" : (tokenObjects === null || tokenObjects[selectedFromToken.contractId] === undefined) ? "N/A" : formatNumber(Number(convertIntToFloat(balances.from_balance.toString(), tokenObjects[selectedFromToken.contractId].decimals)))}
+                    <div>
+                    <button 
+                        type='button'
+                        className={` ${ !auth ? "text-transparent hover:cursor-default" : "text-white" } text-sm pt-2 hover:text-lime-400`} 
+                        onClick={() => setValues({from_amount: balances.from_balance.toString(), to_amount: values.to_amount})}
+                    >
+                        Balance: { !auth ? "N/A" : (tokenObjects === null || tokenObjects[selectedFromToken.contractId] === undefined) ? "N/A" : formatNumber(Number(convertIntToFloat(balances.from_balance.toString(), tokenObjects[selectedFromToken.contractId].decimals)))}
+                    </button>
                     </div>
                 </div>
 
@@ -268,7 +296,7 @@ export default function CreateTradeForm() {
                         />
                     </button>
                 </div>
-                <div className={`flex flex-col my-2 py-4 px-4 w-full rounded-lg  justify-between ring-1 focus-within:ring-gray-300 focus-within:ring-2 ${ !auth || noFor ? "ring-verto_border ring-1 hover:ring-2" : ( validFor ? 'ring-lime-400 ring-2' : 'ring-red-600 ring-2 focus-within:ring-red-600') }`}>
+                <div className={`flex flex-col my-2 py-4 px-4 w-full rounded-lg  justify-between ring-1 focus-within:ring-2 ${ !auth || noFor ? "ring-verto_border ring-1 hover:ring-2" : ( validFor ? 'ring-lime-400 ring-2' : 'ring-red-600 ring-2 focus-within:ring-red-600') }`}>
                     <div className="uppercase mb-2 font-medium">For</div>
                     <div className="flex ">
                         <input
@@ -290,21 +318,26 @@ export default function CreateTradeForm() {
                         /></div>
                     </div>
                     <div className={` ${ !auth ? "text-transparent hover:cursor-default" : "text-white" } text-sm pt-2`}>
-                        Balance: { status === "unauthenticated" ? "N/A" : (tokenObjects === null || tokenObjects[selectedToToken.contractId] === undefined) ? "N/A" : formatNumber(Number(convertIntToFloat(balances.to_balance.toString(), tokenObjects[selectedToToken.contractId].decimals)))}
-
+                        Balance: { !auth ? "N/A" : (tokenObjects === null || tokenObjects[selectedToToken.contractId] === undefined) ? "N/A" : formatNumber(Number(convertIntToFloat(balances.to_balance.toString(), tokenObjects[selectedToToken.contractId].decimals)))}
                     </div>
                 </div>
 
                 <div className="flex flex-col py-4 px-4 w-full rounded-lg mb-2 mt-4 justify-between ring-1 ring-verto_border">
-                    <div className="font-semibold">EXCHANGE RATE</div>
+                    <div className="font-semibold mb-2">EXCHANGE RATE</div>
                     {values.from_amount && values.to_amount ?
-                        <div className="flex">
-                            1 {selectedFromToken.symbol} ⇌
-                            <div
-                                onMouseEnter={() => setHovered(true)}
-                                onMouseLeave={() => setHovered(false)}
-                                className="px-1"
-                            >
+                        <div className=" text-3xl flex">
+                            <span> 1 {selectedFromToken.symbol} ⇌ </span>
+                            <div className="px-1">
+                                {/* <input 
+                                    type="text"
+                                    name="exchange-rate"
+                                    placeholder={numSlice(parseFloat(values.to_amount) / parseFloat(values.from_amount))}
+                                    autoComplete="off"
+                                    className="p-0 text-3xl placeholder:verto-border bg-transparent outline-none border-0 focus:outline-none focus:ring-0 focus:border-none"
+                                    // value={`${exchangeRate !== "" ? exchangeRate : placeHolder} `}
+                                    // onChange={(e) => handleNumericInput(e, setExchangeRate, 10)}
+                                    disabled={true}
+                                />  */}
                                 {numSlice(parseFloat(values.to_amount) / parseFloat(values.from_amount))}
                             </div>
                             {selectedToToken.symbol}

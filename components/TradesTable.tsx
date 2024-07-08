@@ -38,6 +38,7 @@ export default function GetOrders({
   const [action, setAction] = useState("");
   const [orderPopupOpen, setOrderPopupOpen] = useState(false)
   const [currentOrderDetails, setCurrentOrderDetails] = useState<Order | null>(null)
+  const [sortPrice, setSortPrice] = useState(0)
 
   const cycleSort = (setStateFunction: Function) => {
     setStateFunction((prevState: number) => (prevState + 1) % 3)
@@ -73,19 +74,42 @@ export default function GetOrders({
       sortIconFor = <ArrowsUpDownIcon className="h-6 w-6 pr-2" />;
   }
 
+  let sortIconPrice;
+  switch (sortPrice) {
+    case 0:
+      sortIconPrice = <ArrowsUpDownIcon className="h-6 w-6 pr-2" />;
+      break;
+    case 1:
+      sortIconPrice = <ArrowUpRightIcon className="h-6 w-6 pr-2" />;
+      break;
+    case 2:
+      sortIconPrice = <ArrowDownRightIcon className="h-6 w-6 pr-2" />;
+      break;
+    default:
+      sortIconPrice = <ArrowsUpDownIcon className="h-6 w-6 pr-2" />;
+  }
+
   useEffect(() => {
     // resetSort(setSortOffer)
     setSortOffer(0)
+    setSortPrice(0)
     setSortFor(sortFor)
   }, [sortFor])
 
   useEffect(() => {
     setSortFor(0)
+    setSortPrice(0)
     setSortOffer(sortOffer)
   }, [sortOffer])
 
+  useEffect(() => {
+    setSortFor(0)
+    setSortOffer(0)
+    setSortPrice(sortPrice)
+  }, [sortPrice])
 
-  const sortOrders = (orders: Order[], sortBy: 'from_amount' | 'to_amount', ascending: Boolean) => {
+
+  const sortOrders = (orders: Order[], sortBy: 'from_amount' | 'to_amount', ascending: Boolean, price: Boolean) => {
 
     // Use Array.prototype.sort() with a comparator function
     setFilteredOrders(orders.slice().sort((a, b) => {
@@ -97,6 +121,10 @@ export default function GetOrders({
         || (tokenObjects[b.to_contract_id] === undefined)
       ) {
         return 0
+      } else if (price) {
+      const a_ratio = parseFloat(a["from_amount"]) / parseFloat(a["to_amount"]);
+      const b_ratio = parseFloat(b["from_amount"]) / parseFloat(b["to_amount"]);
+      return ascending ? (a_ratio - b_ratio) : (b_ratio - a_ratio);
       }
       const a_decimals = (sortBy === 'from_amount') ? tokenObjects[a.from_contract_id].decimals : tokenObjects[a.to_contract_id].decimals
       const b_decimals = (sortBy === 'from_amount') ? tokenObjects[b.from_contract_id].decimals : tokenObjects[b.to_contract_id].decimals
@@ -113,10 +141,10 @@ export default function GetOrders({
         setFilteredOrders(orders);
         break;
       case 1:
-        sortOrders(orders, 'to_amount', true);
+        sortOrders(orders, 'to_amount', true, false);
         break;
       case 2:
-        sortOrders(orders, 'to_amount', false);
+        sortOrders(orders, 'to_amount', false, false);
         break;
     }
   }, [orders, sortFor])
@@ -127,13 +155,27 @@ export default function GetOrders({
         setFilteredOrders(orders);
         break;
       case 1:
-        sortOrders(orders, 'from_amount', true);
+        sortOrders(orders, 'from_amount', true, false);
         break;
       case 2:
-        sortOrders(orders, 'from_amount', false);
+        sortOrders(orders, 'from_amount', false, false);
         break;
     }
   }, [orders, sortOffer])
+
+  useEffect(() => {
+    switch (sortPrice) {
+      case 0:
+        setFilteredOrders(orders);
+        break;
+      case 1:
+        sortOrders(orders, 'to_amount', true, true);
+        break;
+      case 2:
+        sortOrders(orders, 'to_amount', false, true);
+        break;
+    }
+  }, [orders, sortPrice])
 
   useEffect(() => {
     let method = "";
@@ -361,7 +403,7 @@ export default function GetOrders({
 
       </div>
       <div className="w-4/5">
-        <div className="pt-4 pr-48 justify-end flex">
+        <div className="pt-4 pr-48">
           {/* <RefreshButton /> */}
           <FilterForm
             orderObjects={orders}
@@ -427,10 +469,17 @@ export default function GetOrders({
                 <th className="px-3 py-4">
                   <button onClick={() => cycleSort(setSortFor)} className="hover:bg-zinc-700 rounded-md px-3 py-2">
                     <span className="flex"> {sortIconFor}
-                      For</span>
+                      For
+                    </span>
                   </button>
                 </th>
-                <th className="px-3 py-4 hidden md:table-cell">Price</th>
+                <th className="px-3 py-4 hidden md:table-cell">
+                  <button onClick={() => cycleSort(setSortPrice)} className="hover:bg-zinc-700 rounded-md px-3 py-2">
+                    <span className="flex"> {sortIconPrice}
+                      Price
+                    </span>
+                  </button>
+                </th>
                 <th className="px-3 py-4 hidden md:table-cell">Creator</th>
                 {/* <th className="px-3 py-4 hidden md:table-cell">Status</th> */}
                 <th className="px-3 py-4">Action</th>

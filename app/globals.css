@@ -42,3 +42,8 @@ body {
 .button-gradient:hover {
   background: linear-gradient(45deg, #8fffb8, #e0ffaf);
 }
+
+.input-auto-resize {
+  width: auto;
+  min-width: 20ch;
+}
