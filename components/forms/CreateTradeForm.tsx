@@ -1,6 +1,6 @@
 "use client";
 
-import { convertFloatToInt, handleInput, handleNumericInput } from "@/lib/utils";
+import { convertIntToFloat, convertFloatToInt, handleInput, handleNumericInput } from "@/lib/utils";
 import { useNearWallet } from "@/providers/wallet";
 import React, { FormEvent, useEffect, useState } from "react";
 import TokenDropdown from "@/components/TokenDropdown";
@@ -270,7 +270,7 @@ export default function CreateTradeForm() {
                         />
                     </button>
                 </div>
-                <div className={`flex flex-col my-2 py-4 px-4 w-full rounded-lg  justify-between ring-1 ring-verto_border hover:ring-2 focus-within:ring-gray-300 focus-within:ring-2 ${ !auth || noFor ? "ring-verto_border ring-1 hover:ring-2" : ( validFor ? 'ring-lime-400 ring-2' : 'ring-red-600 ring-2 focus-within:ring-red-600') }`}>
+                <div className={`flex flex-col my-2 py-4 px-4 w-full rounded-lg  justify-between ring-1 focus-within:ring-gray-300 focus-within:ring-2 ${ !auth || noFor ? "ring-verto_border ring-1 hover:ring-2" : ( validFor ? 'ring-lime-400 ring-2' : 'ring-red-600 ring-2 focus-within:ring-red-600') }`}>
                     <div className="uppercase mb-2 font-medium">For</div>
                     <div className="flex ">
                         <input
@@ -297,7 +297,7 @@ export default function CreateTradeForm() {
                 </div>
 
                 <div className="flex flex-col py-4 px-4 w-full rounded-lg mb-2 mt-4 justify-between ring-1 ring-verto_border">
-                    <div>EXCHANGE RATE:</div>
+                    <div className="font-semibold">EXCHANGE RATE</div>
                     {values.from_amount && values.to_amount ?
                         <div className="flex">
                             1 {selectedFromToken.symbol} ⇌
@@ -311,7 +311,7 @@ export default function CreateTradeForm() {
                             {selectedToToken.symbol}
                         </div>
                         :
-                        <div>-</div>}
+                        <div className="text-transparent hover:cursor-default">N/A</div>}
 
                 </div>
                 {/* <div className="my-8"> */}
@@ -399,6 +399,7 @@ export default function CreateTradeForm() {
                                 :
                                 "w-full rounded-md bg-gradient-to-r from-blue-400 hover:cursor-default to-blue-300 mt-2 px-3.5 py-2.5 text-sm font-semibold text-black shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
                         }
+                        disabled={ !(validFor && validFrom && validTokens)}
                     >
                         Create Order
                     </button>
