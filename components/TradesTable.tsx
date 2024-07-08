@@ -1,15 +1,13 @@
 "use client";
 
 import { VertoContract } from "@/lib/config/near";
-import { Order, TokenMetadata } from "@/lib/types/types";
-import { convertFloatToInt, convertIntToFloat, formatNumber, handleInput, truncateString } from "@/lib/utils";
+import { Order } from "@/lib/types/types";
+import { convertIntToFloat, formatNumber, handleInput, truncateString } from "@/lib/utils";
 import { useNearWallet } from "@/providers/wallet";
-import { FormEvent, Key, useEffect, useState } from "react";
+import { Key, useEffect, useState } from "react";
 import Image from "next/image";
 import { MethodParameters } from "@/lib/types/types";
 import useFetchTokenObjects from "@/hook/FetchTokenObjects";
-import { Input } from "@headlessui/react";
-import { Field, Label, Switch } from '@headlessui/react'
 import FilterForm from "./forms/FilterForm";
 import { ArrowUpRightIcon, ArrowDownRightIcon, ArrowsUpDownIcon } from '@heroicons/react/20/solid'
 import OrderPopup from "./OrderPopup";
@@ -285,7 +283,9 @@ export default function GetOrders({
           }
           setSuccesful(true)
           setFailed(false);
-          setFilteredOrders(orders)
+          setTimeout(() => {
+            window.location.reload();
+          }, 2000);
           return;
         })
 
@@ -310,7 +310,9 @@ export default function GetOrders({
         }
         setSuccesful(true)
         setFailed(false);
-        setFilteredOrders(orders)
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
         return;
       })
   }
@@ -387,23 +389,28 @@ export default function GetOrders({
   }
 
   return (
-    <div className="flex flex-col justify-center items-center ">
+    <div className="flex flex-col justify-center items-center">
       <div className={clsx(
         'fixed inset-0 flex items-center justify-center',
         { 'hidden': !orderPopupOpen }
       )}>
-        <div className = "p-5 bg-gray-900">
+        <div className="p-5 bg-gray-900">
           <OrderPopup
             order={currentOrderDetails}
             close={() => setOrderPopupOpen(false)}
             tokenObjects={tokenObjects}
-            orderActionButton = {getOrderButton(currentOrderDetails)}
+            orderActionButton={getOrderButton(currentOrderDetails)}
           />
         </div>
 
       </div>
-      <div className="w-4/5">
-        <div className="pt-4 pr-48">
+      <div className={clsx(
+        "w-4/5",
+        { "max-w-2xl": typeOfOrders === 'open',
+          "max-w-4xl": typeOfOrders !== 'open'
+         }
+      )}>
+        <div className="pt-4 flex">
           {/* <RefreshButton /> */}
           <FilterForm
             orderObjects={orders}
@@ -460,14 +467,14 @@ export default function GetOrders({
             <thead className="border-b-2">
               <tr>
                 <th className="px-3 py-4">Pair</th>
-                <th className="px-3 py-4">
-                  <button onClick={() => cycleSort(setSortOffer)} className="hover:bg-zinc-700 rounded-md px-3 py-2">
+                <th className="py-4 text-right">
+                  <button onClick={() => cycleSort(setSortOffer)} className="hover:bg-zinc-700 rounded-md py-2">
                     {<span className="flex"> {sortIconOffer}
                       Offering</span>}
                   </button>
                 </th>
-                <th className="px-3 py-4">
-                  <button onClick={() => cycleSort(setSortFor)} className="hover:bg-zinc-700 rounded-md px-3 py-2">
+                <th className="py-4 pr-6 text-right">
+                  <button onClick={() => cycleSort(setSortFor)} className="hover:bg-zinc-700 rounded-md py-2">
                     <span className="flex"> {sortIconFor}
                       For
                     </span>
@@ -480,6 +487,11 @@ export default function GetOrders({
                     </span>
                   </button>
                 </th>
+                <th className="px-3 py-4 hidden md:table-cell">Price</th>
+                {
+                  (typeOfOrders !== 'open') ?
+                    <th className="px-3 py-4 hidden md:table-cell">Status</th> : <></>
+                }
                 <th className="px-3 py-4 hidden md:table-cell">Creator</th>
                 {/* <th className="px-3 py-4 hidden md:table-cell">Status</th> */}
                 <th className="px-3 py-4">Action</th>
@@ -500,11 +512,11 @@ export default function GetOrders({
                         <Image src={fromObject.icon} alt={fromObject.name} height={20} width={20} className="h-8 w-8 rounded-full object-cover -mr-1 border-zinc-400 border-2" aria-hidden="true" />
                         <Image src={toObject.icon} alt={toObject.name} height={20} width={20} className="h-8 w-8 rounded-full object-cover border-zinc-400 border-2" aria-hidden="true" />
                       </td>
-                      <td className="py-4">
+                      <td className="py-4 text-right">
                         <p className="font-bold inline">{formatNumber(Number(convertIntToFloat(order.from_amount, fromObject.decimals)))}</p>
                         <span className="text-gray-500"> {truncateString(fromObject.symbol, 4)}</span>
                       </td>
-                      <td className="py-4 ">
+                      <td className="py-4 pr-6 text-right">
                         <p className="font-bold inline">{formatNumber(Number(convertIntToFloat(order.to_amount, toObject.decimals)))}</p>
                         <span className="text-gray-500"> {truncateString(toObject.symbol, 4)}</span>
                       </td>
@@ -514,7 +526,10 @@ export default function GetOrders({
                       <td className="py-4 hidden md:table-cell">
                         <p className="font-bold">{truncateString(order.maker_id, 8)} </p>
                       </td>
-                      {/* <td className="hidden md:table-cell">{order.status}</td> */}
+                      {
+                        (typeOfOrders !== 'open') ?
+                          <td className="hidden md:table-cell">{order.status}</td> : <></>
+                      }
                       <td className="py-4">
                         <button
                           type='button'

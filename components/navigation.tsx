@@ -94,7 +94,7 @@ export default function Navigation() {
                         <MenuButton className="relative flex rounded-md bg-zinc-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-zinc-800">
                           <span className="absolute -inset-1.5" />
                           <span className="sr-only">Open user menu</span>
-                          <span className="inline-flex items-center gap-x-1.5 rounded-md bg-gradient-to-r from-green-400 to-lime-300  hover:from-green-300 px-3.5 py-2.5 text-sm font-semibold text-black shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">
+                          <span className="inline-flex items-center gap-x-1.5 rounded-md  px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">
                             <WalletIcon
                               className="-ml-0.5 h-5 w-5"
                               aria-hidden="true"
@@ -117,7 +117,7 @@ export default function Navigation() {
                               <button
                                 type="button"
                                 onClick={signOut}
-                                className={clsx(focus ? 'bg-zinc-100' : '', 'block px-4 py-2 text-sm text-zinc-700')}
+                                className={clsx(focus ? 'bg-zinc-100' : '', 'block px-4 py-2 text-sm text-black w-full')}
                               >
                                 Sign out
                               </button>

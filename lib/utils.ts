@@ -84,5 +84,5 @@ export function truncateString(str: string, length: number) {
 }
 
 export function formatNumber(number: number) {
-    return number.toLocaleString('en-US');
+    return number.toLocaleString('en-US', { maximumFractionDigits: 12 });
 }
