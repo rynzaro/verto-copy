@@ -1,6 +1,6 @@
 "use client";
 
-import { convertFloatToInt, handleInput, handleNumericInput } from "@/lib/utils";
+import { convertFloatToInt, convertIntToFloat, formatNumber, handleInput, handleNumericInput } from "@/lib/utils";
 import { useNearWallet } from "@/providers/wallet";
 import React, { FormEvent, useEffect, useState } from "react";
 import TokenDropdown from "@/components/TokenDropdown";
@@ -24,8 +24,6 @@ export default function CreateTradeForm() {
     const [isHovered, setHovered] = useState(false);
     const [succesfulCreation, setSuccesfulCreation] = useState(false)
     const [failedCreation, setFailedCreation] = useState(false)
-
-
 
     const [activeInput, setActiveInput] = useState({
         fromInput: false,
@@ -255,7 +253,7 @@ export default function CreateTradeForm() {
                         /></div>
                     </div>
                     <div className={` ${ !auth ? "text-transparent hover:cursor-default" : "text-white" } text-sm pt-2`}>
-                        Balance: { status === "unauthenticated" ? "N/A" : balances.from_balance}
+                        Balance: { status === "unauthenticated" ? "N/A" : (tokenObjects === null || tokenObjects[selectedFromToken.contractId] === undefined) ? "N/A" : formatNumber(Number(convertIntToFloat(balances.from_balance.toString(), tokenObjects[selectedFromToken.contractId].decimals)))}
                     </div>
                 </div>
 
@@ -292,7 +290,8 @@ export default function CreateTradeForm() {
                         /></div>
                     </div>
                     <div className={` ${ !auth ? "text-transparent hover:cursor-default" : "text-white" } text-sm pt-2`}>
-                        Balance: { status === "unauthenticated" ? "N/A" : balances.to_balance}
+                        Balance: { status === "unauthenticated" ? "N/A" : (tokenObjects === null || tokenObjects[selectedToToken.contractId] === undefined) ? "N/A" : formatNumber(Number(convertIntToFloat(balances.to_balance.toString(), tokenObjects[selectedToToken.contractId].decimals)))}
+
                     </div>
                 </div>
 
