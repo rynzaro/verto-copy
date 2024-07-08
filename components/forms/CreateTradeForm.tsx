@@ -74,8 +74,8 @@ export default function CreateTradeForm() {
     const validFrom =  (0 < parseFloat(values.from_amount)) && (parseFloat(values.from_amount) <= balances.from_balance)
     const validFor = 0 < parseFloat(values.to_amount)
 
-    const noFrom = values.from_amount === ""
-    const noFor = values.to_amount === ""
+    const noFrom = isNaN(parseFloat(values.from_amount))
+    const noFor = isNaN(parseFloat(values.to_amount))
 
     const auth = status === "authenticated"
     const validTokens = selectedFromToken.contractId !== selectedToToken.contractId
@@ -191,7 +191,6 @@ export default function CreateTradeForm() {
         callTransferMethod(fromAmount, toAmount)
     };
 
-    // const offering_vals = (parseFloat(values.from_amount) <= balances.from_balance) && !isActive
 
     return (
         <div>
@@ -232,7 +231,6 @@ export default function CreateTradeForm() {
                 </div>
                 : <></>
             }
-{/* ${ activeInput.fromInput || values.from_amount === "" ? "" : ( ) } */}
 
             <form onSubmit={handleSubmit}>
                 <div className={`flex flex-col py-4 px-4 w-full rounded-lg mb-2 justify-between ${ !auth || noFrom ? "ring-verto_border ring-1 hover:ring-2" : (validFrom ? 'ring-lime-400 ring-2' : 'ring-red-600 ring-2 focus-within:ring-red-600')} ring-gray-500 hover:ring-2 focus-within:ring-gray-300 focus-within:ring-2`}>
@@ -244,6 +242,7 @@ export default function CreateTradeForm() {
                             id="from_amount"
                             value={values.from_amount}
                             onChange={(e) => handleNumericInput(e, setValues, selectedFromToken.decimals)}
+                            // use toLocaleString() for comma formatting
                             autoComplete="off"
                             className="w-3/4 p-0 text-4xl bg-transparent outline-none border-0 focus:outline-none focus:ring-0 focus:border-none"
                             placeholder="Enter Amount"
@@ -255,7 +254,7 @@ export default function CreateTradeForm() {
                             setSelected={setSelectedFromToken}
                         /></div>
                     </div>
-                    <div className="text-sm pt-2">
+                    <div className={` ${ !auth ? "text-transparent hover:cursor-default" : "text-white" } text-sm pt-2`}>
                         Balance: { status === "unauthenticated" ? "N/A" : balances.from_balance}
                     </div>
                 </div>
@@ -280,6 +279,7 @@ export default function CreateTradeForm() {
                             id="to_amount"
                             value={values.to_amount}
                             onChange={(e) => handleNumericInput(e, setValues, selectedToToken.decimals)}
+                            // onChange={(e) => handleInput(e, 'to')}
                             autoComplete="off"
                             className="w-3/4 p-0 text-4xl bg-transparent outline-none border-0 focus:outline-none focus:ring-0 focus:border-none"
                             placeholder="Enter Amount"
@@ -291,7 +291,7 @@ export default function CreateTradeForm() {
                             setSelected={setSelectedToToken}
                         /></div>
                     </div>
-                    <div className="text-sm pt-2">
+                    <div className={` ${ !auth ? "text-transparent hover:cursor-default" : "text-white" } text-sm pt-2`}>
                         Balance: { status === "unauthenticated" ? "N/A" : balances.to_balance}
                     </div>
                 </div>
@@ -379,12 +379,12 @@ export default function CreateTradeForm() {
                     <></>
                 )} */}
                 {/* </div> */}
-                {status === "unauthenticated" ? (
+                { !auth ? (
 
                     <button
                         type="button"
                         onClick={signIn}
-                        className="w-full rounded-md bg-gradient-to-r from-green-400 to-lime-300 hover:from-green-300 mt-2 px-3.5 py-2.5 text-sm font-semibold text-black shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+                        className="w-full rounded-md bg-gradient-to-r from-green-400 to-lime-300 hover:from-green-300 hover:to-lime-200 mt-2 px-3.5 py-2.5 text-sm font-semibold text-black shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
                     >
                         Connect Wallet to Create Order
                     </button>
@@ -395,7 +395,7 @@ export default function CreateTradeForm() {
                         className=
                         {
                             ( validFrom && validFor && validTokens ) ?
-                                "w-full rounded-md bg-gradient-to-r from-green-400 to-lime-300 hover:from-green-300 mt-2 px-3.5 py-2.5 text-sm font-semibold text-black shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+                                "w-full rounded-md bg-gradient-to-r from-green-400 to-lime-300 hover:from-green-300 hover:to-lime-200 mt-2 px-3.5 py-2.5 text-sm font-semibold text-black shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
                                 :
                                 "w-full rounded-md bg-gradient-to-r from-blue-400 hover:cursor-default to-blue-300 mt-2 px-3.5 py-2.5 text-sm font-semibold text-black shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
                         }
