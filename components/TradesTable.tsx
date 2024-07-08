@@ -347,22 +347,27 @@ export default function GetOrders({
   }
 
   return (
-    <div className="flex flex-col justify-center items-center ">
+    <div className="flex flex-col justify-center items-center">
       <div className={clsx(
         'fixed inset-0 flex items-center justify-center',
         { 'hidden': !orderPopupOpen }
       )}>
-        <div className = "p-5 bg-gray-900">
+        <div className="p-5 bg-gray-900">
           <OrderPopup
             order={currentOrderDetails}
             close={() => setOrderPopupOpen(false)}
             tokenObjects={tokenObjects}
-            orderActionButton = {getOrderButton(currentOrderDetails)}
+            orderActionButton={getOrderButton(currentOrderDetails)}
           />
         </div>
 
       </div>
-      <div className="w-4/5">
+      <div className={clsx(
+        "w-4/5",
+        { "max-w-2xl": typeOfOrders === 'open',
+          "max-w-4xl": typeOfOrders !== 'open'
+         }
+      )}>
         <div className="pt-4 flex">
           {/* <RefreshButton /> */}
           <FilterForm
@@ -420,19 +425,23 @@ export default function GetOrders({
             <thead className="border-b-2">
               <tr>
                 <th className="px-3 py-4">Pair</th>
-                <th className="py-4">
-                  <button onClick={() => cycleSort(setSortOffer)} className="hover:bg-zinc-700 rounded-md px-3 py-2">
+                <th className="py-4 text-right">
+                  <button onClick={() => cycleSort(setSortOffer)} className="hover:bg-zinc-700 rounded-md py-2">
                     {<span className="flex"> {sortIconOffer}
                       Offering</span>}
                   </button>
                 </th>
-                <th className="px-3 py-4">
-                  <button onClick={() => cycleSort(setSortFor)} className="hover:bg-zinc-700 rounded-md px-3 py-2">
+                <th className="py-4 pr-6 text-right">
+                  <button onClick={() => cycleSort(setSortFor)} className="hover:bg-zinc-700 rounded-md py-2">
                     <span className="flex"> {sortIconFor}
                       For</span>
                   </button>
                 </th>
                 <th className="px-3 py-4 hidden md:table-cell">Price</th>
+                {
+                  (typeOfOrders !== 'open') ?
+                    <th className="px-3 py-4 hidden md:table-cell">Status</th> : <></>
+                }
                 <th className="px-3 py-4 hidden md:table-cell">Creator</th>
                 {/* <th className="px-3 py-4 hidden md:table-cell">Status</th> */}
                 <th className="px-3 py-4">Action</th>
@@ -457,7 +466,7 @@ export default function GetOrders({
                         <p className="font-bold inline">{formatNumber(Number(convertIntToFloat(order.from_amount, fromObject.decimals)))}</p>
                         <span className="text-gray-500"> {truncateString(fromObject.symbol, 4)}</span>
                       </td>
-                      <td className="py-4 text-right">
+                      <td className="py-4 pr-6 text-right">
                         <p className="font-bold inline">{formatNumber(Number(convertIntToFloat(order.to_amount, toObject.decimals)))}</p>
                         <span className="text-gray-500"> {truncateString(toObject.symbol, 4)}</span>
                       </td>
@@ -467,7 +476,10 @@ export default function GetOrders({
                       <td className="py-4 hidden md:table-cell">
                         <p className="font-bold">{truncateString(order.maker_id, 8)} </p>
                       </td>
-                      {/* <td className="hidden md:table-cell">{order.status}</td> */}
+                      {
+                        (typeOfOrders !== 'open') ?
+                          <td className="hidden md:table-cell">{order.status}</td> : <></>
+                      }
                       <td className="py-4">
                         <button
                           type='button'
