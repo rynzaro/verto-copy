@@ -24,6 +24,13 @@ export default function CreateTradeForm() {
     const [isHovered, setHovered] = useState(false);
     const [succesfulCreation, setSuccesfulCreation] = useState(false)
     const [failedCreation, setFailedCreation] = useState(false)
+
+
+
+    const [activeInput, setActiveInput] = useState({
+        fromInput: false,
+        toInput: false
+    })
     
     const [balances, setBalances] = useState({
         from_balance: 0,
@@ -42,14 +49,14 @@ export default function CreateTradeForm() {
                         contractId: selectedFromToken.contractId,
                         method: "ft_balance_of",
                         args: {
-                            account_id: "n1lyv.testnet",
+                            account_id: accountId,
                         },
                     });
                     const toBalance = await viewMethod({
                         contractId: selectedToToken.contractId,
                         method: "ft_balance_of",
                         args: {
-                            account_id: "n1lyv.testnet",
+                            account_id: accountId,
                         },
                     });
                     setBalances({
@@ -57,12 +64,21 @@ export default function CreateTradeForm() {
                         to_balance: toBalance
                     });
                 } catch (error) {
-                    console.error("Failed to fetch balances", error);
+                    console.error("Failed to fetch balances!", error);
                 }
             };
     
             fetchBalances();
         }, [selectedFromToken.contractId, selectedToToken.contractId]);
+
+    const validFrom =  (0 < parseFloat(values.from_amount)) && (parseFloat(values.from_amount) <= balances.from_balance)
+    const validFor = 0 < parseFloat(values.to_amount)
+
+    const noFrom = values.from_amount === ""
+    const noFor = values.to_amount === ""
+
+    const auth = status === "authenticated"
+    const validTokens = selectedFromToken.contractId !== selectedToToken.contractId
 
     useEffect(() => {
         if (!tokenObjects) {
@@ -216,10 +232,10 @@ export default function CreateTradeForm() {
                 </div>
                 : <></>
             }
-
+{/* ${ activeInput.fromInput || values.from_amount === "" ? "" : ( ) } */}
 
             <form onSubmit={handleSubmit}>
-                <div className={`flex flex-col py-4 px-4 w-full rounded-lg mb-2 justify-between ${balances.from_balance >= parseFloat(values.from_amount) ? 'ring-lime-400 ring-2' : 'ring-red-600 ring-2'} ring-gray-500 hover:ring-2 focus-within:ring-gray-300 focus-within:ring-2`}>
+                <div className={`flex flex-col py-4 px-4 w-full rounded-lg mb-2 justify-between ${ !auth || noFrom ? "ring-verto_border ring-1 hover:ring-2" : (validFrom ? 'ring-lime-400 ring-2' : 'ring-red-600 ring-2 focus-within:ring-red-600')} ring-gray-500 hover:ring-2 focus-within:ring-gray-300 focus-within:ring-2`}>
                     <div className="uppercase mb-2 font-medium">Offering</div>
                     <div className="flex">
                         <input
@@ -231,6 +247,8 @@ export default function CreateTradeForm() {
                             autoComplete="off"
                             className="w-3/4 p-0 text-4xl bg-transparent outline-none border-0 focus:outline-none focus:ring-0 focus:border-none"
                             placeholder="Enter Amount"
+                            onFocus={() => setActiveInput({fromInput: true, toInput: false})}
+                            onBlur={() => setActiveInput({fromInput: false, toInput: false})}
                         />
                         <div className="w-1/4"><TokenDropdown
                             selected={selectedFromToken}
@@ -238,14 +256,14 @@ export default function CreateTradeForm() {
                         /></div>
                     </div>
                     <div className="text-sm pt-2">
-                        Balance: {balances.from_balance}
+                        Balance: { status === "unauthenticated" ? "N/A" : balances.from_balance}
                     </div>
                 </div>
 
                 <div className="flex justify-center">
                     <button
                         type='button'
-                        className="absolute -mt-5 text-white bg-verto_bg ring-1 rounded-md ring-gray-500 p-2 hover:ring-2"
+                        className="absolute -mt-5 text-white bg-verto_bg ring-1 rounded-md ring-verto_border p-2 hover:ring-2"
                         onClick={swapTradingPair}
                     >
                         <ArrowsUpDownIcon
@@ -253,7 +271,7 @@ export default function CreateTradeForm() {
                         />
                     </button>
                 </div>
-                <div className="flex flex-col my-2 py-4 px-4 w-full rounded-lg  justify-between ring-1 ring-gray-500 hover:ring-2 focus-within:ring-gray-300 focus-within:ring-2">
+                <div className={`flex flex-col my-2 py-4 px-4 w-full rounded-lg  justify-between ring-1 ring-verto_border hover:ring-2 focus-within:ring-gray-300 focus-within:ring-2 ${ !auth || noFor ? "ring-verto_border ring-1 hover:ring-2" : ( validFor ? 'ring-lime-400 ring-2' : 'ring-red-600 ring-2 focus-within:ring-red-600') }`}>
                     <div className="uppercase mb-2 font-medium">For</div>
                     <div className="flex ">
                         <input
@@ -265,6 +283,8 @@ export default function CreateTradeForm() {
                             autoComplete="off"
                             className="w-3/4 p-0 text-4xl bg-transparent outline-none border-0 focus:outline-none focus:ring-0 focus:border-none"
                             placeholder="Enter Amount"
+                            onFocus={() => setActiveInput({fromInput: false, toInput: true})}
+                            onBlur={() => setActiveInput({fromInput: false, toInput: false})}
                         />
                         <div className="w-1/4"><TokenDropdown
                             selected={selectedToToken}
@@ -272,11 +292,11 @@ export default function CreateTradeForm() {
                         /></div>
                     </div>
                     <div className="text-sm pt-2">
-                        Balance: {balances.to_balance}
+                        Balance: { status === "unauthenticated" ? "N/A" : balances.to_balance}
                     </div>
                 </div>
 
-                <div className="flex flex-col py-4 px-4 w-full rounded-lg mb-2 mt-4 justify-between ring-1 ring-gray-500">
+                <div className="flex flex-col py-4 px-4 w-full rounded-lg mb-2 mt-4 justify-between ring-1 ring-verto_border">
                     <div>EXCHANGE RATE:</div>
                     {values.from_amount && values.to_amount ?
                         <div className="flex">
@@ -374,7 +394,7 @@ export default function CreateTradeForm() {
                         type="submit"
                         className=
                         {
-                            (values.from_amount !== "" && values.to_amount !== "") ?
+                            ( validFrom && validFor && validTokens ) ?
                                 "w-full rounded-md bg-gradient-to-r from-green-400 to-lime-300 hover:from-green-300 mt-2 px-3.5 py-2.5 text-sm font-semibold text-black shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
                                 :
                                 "w-full rounded-md bg-gradient-to-r from-blue-400 hover:cursor-default to-blue-300 mt-2 px-3.5 py-2.5 text-sm font-semibold text-black shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"

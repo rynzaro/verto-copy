@@ -24,11 +24,7 @@ export default function Navigation() {
     <Disclosure as="nav" className="bg-verto_bg border-b-2 border-b-verto_border py-2 font-bold">
       {({ open }) => (
         <>
-<<<<<<< HEAD
           <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 bg-verto_bg">
-=======
-          <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 w-5/6">
->>>>>>> andrej
             <div className="relative flex h-16 items-center justify-between">
               <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
                 {/* Mobile menu button*/}

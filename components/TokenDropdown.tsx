@@ -23,7 +23,7 @@ export default function TokenDropdown({
       {({ open }) => (
         <>
           <div className="relative mt-2 text-zinc-400 bg-transparent">
-            <ListboxButton className="relative w-full cursor-default rounded-md py-1.5 pl-3 pr-10 text-left text-zinc-400 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none sm:text-sm sm:leading-6">
+            <ListboxButton className="relative w-full cursor-default rounded-md py-1.5 pl-3 pr-10 text-left text-zinc-400 shadow-sm ring-inset ring-verto_border ring-1 focus:outline-none sm:text-sm sm:leading-6 hover:ring-2">
 
               <div className="flex">
                 {selected.icon !== "loading" ?
@@ -45,13 +45,13 @@ export default function TokenDropdown({
             </ListboxButton>
 
             <Transition show={open} leave="transition ease-in duration-100" leaveFrom="opacity-100" leaveTo="opacity-0">
-              <ListboxOptions className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-zinc-900 py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+              <ListboxOptions className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-verto_bg py-1 text-base shadow-lg ring-1 ring-verto_border sm:text-sm">
                 {Object.values(tokenObjects).map((token) => (
                   <ListboxOption
                     key={token.name}
                     className={({ focus }) =>
                       clsx(
-                        focus ? 'bg-green-400 text-white cursor-pointer' : '',
+                        focus ? 'bg-zinc-700 text-white cursor-pointer' : '',
                         !focus ? 'text-zinc-400' : '',
                         'relative cursor-default select-none py-2 pl-8 pr-4'
                       )
