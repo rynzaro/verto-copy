@@ -420,7 +420,7 @@ export default function GetOrders({
             <thead className="border-b-2">
               <tr>
                 <th className="px-3 py-4">Pair</th>
-                <th className="px-3 py-4">
+                <th className=" py-4">
                   <button onClick={() => cycleSort(setSortOffer)} className="hover:bg-zinc-700 rounded-md px-3 py-2">
                     {<span className="flex"> {sortIconOffer}
                       Offering</span>}
@@ -453,11 +453,11 @@ export default function GetOrders({
                         <Image src={fromObject.icon} alt={fromObject.name} height={20} width={20} className="h-8 w-8 rounded-full object-cover -mr-1 border-zinc-400 border-2" aria-hidden="true" />
                         <Image src={toObject.icon} alt={toObject.name} height={20} width={20} className="h-8 w-8 rounded-full object-cover border-zinc-400 border-2" aria-hidden="true" />
                       </td>
-                      <td className="py-4">
+                      <td className="py-4 text-right">
                         <p className="font-bold inline">{formatNumber(Number(convertIntToFloat(order.from_amount, fromObject.decimals)))}</p>
                         <span className="text-gray-500"> {truncateString(fromObject.symbol, 4)}</span>
                       </td>
-                      <td className="py-4 ">
+                      <td className="py-4 text-right">
                         <p className="font-bold inline">{formatNumber(Number(convertIntToFloat(order.to_amount, toObject.decimals)))}</p>
                         <span className="text-gray-500"> {truncateString(toObject.symbol, 4)}</span>
                       </td>
