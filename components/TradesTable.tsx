@@ -394,7 +394,7 @@ export default function GetOrders({
         'fixed inset-0 flex items-center justify-center',
         { 'hidden': !orderPopupOpen }
       )}>
-        <div className="p-5 bg-gray-900">
+        <div className="p-5 bg-zinc-800">
           <OrderPopup
             order={currentOrderDetails}
             close={() => setOrderPopupOpen(false)}
