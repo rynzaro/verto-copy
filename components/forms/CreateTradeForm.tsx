@@ -203,11 +203,11 @@ export default function CreateTradeForm() {
     }
     let fromAmount = convertFloatToInt(
       values.from_amount,
-      selectedFromToken.decimals,
+      selectedFromToken.decimals
     );
     let toAmount = convertFloatToInt(
       values.to_amount,
-      selectedToToken.decimals,
+      selectedToToken.decimals
     );
     callTransferMethod(fromAmount, toAmount);
   };
@@ -230,7 +230,7 @@ export default function CreateTradeForm() {
       setExchangeRate(
         (
           parseFloat(values.from_amount) / parseFloat(values.to_amount)
-        ).toString(),
+        ).toString()
       );
   }, [values.from_amount, values.to_amount]);
 
@@ -238,12 +238,12 @@ export default function CreateTradeForm() {
 
   useEffect(() => {
     setPlaceHolder(
-      numSlice(parseFloat(values.to_amount) / parseFloat(values.from_amount)),
+      numSlice(parseFloat(values.to_amount) / parseFloat(values.from_amount))
     );
   }, [values.from_amount, values.to_amount]);
 
   return (
-    <div>
+    <div className="text-white">
       {succesfulCreation ? (
         <div
           className="flex items-center p-4 mb-4 text-sm text-green-800 border border-green-300 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400 dark:border-green-800"
@@ -390,9 +390,9 @@ export default function CreateTradeForm() {
                       Number(
                         convertIntToFloat(
                           balances.from_balance.toString(),
-                          tokenObjects[selectedFromToken.contractId].decimals,
-                        ),
-                      ),
+                          tokenObjects[selectedFromToken.contractId].decimals
+                        )
+                      )
                     )}
             </button>
           </div>
@@ -451,9 +451,9 @@ export default function CreateTradeForm() {
                     Number(
                       convertIntToFloat(
                         balances.to_balance.toString(),
-                        tokenObjects[selectedToToken.contractId].decimals,
-                      ),
-                    ),
+                        tokenObjects[selectedToToken.contractId].decimals
+                      )
+                    )
                   )}
           </div>
         </div>
@@ -465,7 +465,7 @@ export default function CreateTradeForm() {
               <span> 1 {selectedFromToken.symbol} ⇌ </span>
               <div className="px-1">
                 {numSlice(
-                  parseFloat(values.to_amount) / parseFloat(values.from_amount),
+                  parseFloat(values.to_amount) / parseFloat(values.from_amount)
                 )}
               </div>
               {selectedToToken.symbol}
