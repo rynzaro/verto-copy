@@ -329,16 +329,6 @@ export default function CreateTradeForm() {
                         <div className=" text-3xl flex">
                             <span> 1 {selectedFromToken.symbol} ⇌ </span>
                             <div className="px-1">
-                                {/* <input 
-                                    type="text"
-                                    name="exchange-rate"
-                                    placeholder={numSlice(parseFloat(values.to_amount) / parseFloat(values.from_amount))}
-                                    autoComplete="off"
-                                    className="p-0 text-3xl placeholder:verto-border bg-transparent outline-none border-0 focus:outline-none focus:ring-0 focus:border-none"
-                                    // value={`${exchangeRate !== "" ? exchangeRate : placeHolder} `}
-                                    // onChange={(e) => handleNumericInput(e, setExchangeRate, 10)}
-                                    disabled={true}
-                                />  */}
                                 {numSlice(parseFloat(values.to_amount) / parseFloat(values.from_amount))}
                             </div>
                             {selectedToToken.symbol}
