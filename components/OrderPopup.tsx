@@ -102,6 +102,14 @@ export default function OrderPopup({
             <div className="text-gray-400">Order Creator</div>
             <div>{order.maker_id}</div>
           </div>
+          {order.taker_id !== null && order.status === "Completed" ? (
+            <div className="flex justify-between px-4 py-3 font-bold text-sm">
+              <div className="text-gray-400">Order Taker</div>
+              <div>{order.taker_id}</div>
+            </div>
+          ) : (
+            <></>
+          )}
           <div className="flex justify-between px-4 py-3 font-bold text-sm">
             <div className="text-gray-400">Order Creator</div>
             <div>{order.maker_id}</div>
