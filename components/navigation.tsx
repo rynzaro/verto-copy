@@ -1,10 +1,21 @@
 "use client";
 
 import { useNearWallet } from "@/providers/wallet";
-import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems, Transition } from "@headlessui/react";
+import {
+  Disclosure,
+  DisclosureButton,
+  DisclosurePanel,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuItems,
+  Transition,
+} from "@headlessui/react";
 import {
   Bars3Icon,
-  BellIcon, WalletIcon, XMarkIcon
+  BellIcon,
+  WalletIcon,
+  XMarkIcon,
 } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import { usePathname } from "next/navigation";
@@ -22,7 +33,10 @@ export default function Navigation() {
   const pathName = usePathname();
 
   return (
-    <Disclosure as="nav" className="bg-verto_bg border-b-2 border-b-verto_border py-2 font-bold">
+    <Disclosure
+      as="nav"
+      className="bg-verto_bg border-b-2 border-b-verto_border py-2 font-bold"
+    >
       {({ open }) => (
         <>
           <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 bg-verto_bg">
@@ -50,34 +64,42 @@ export default function Navigation() {
                 <div className="hidden sm:ml-6 sm:block">
                   <div className="flex space-x-4">
                     {navigation.map((item) => {
-                      if (status === "unauthenticated" && item.name === "My Orders") {
-                        return <></>
+                      if (
+                        status === "unauthenticated" &&
+                        item.name === "My Orders"
+                      ) {
+                        return <></>;
                       }
                       return (
                         <a
                           key={item.name}
                           href={item.href}
                           className={clsx(
-                            pathName.endsWith(item.href) ? 'bg-zinc-800 text-white' : 'text-zinc-300 hover:bg-zinc-700 hover:text-white',
-                            'rounded-md px-3 py-2 text-sm font-medium',
+                            pathName.endsWith(item.href)
+                              ? "bg-zinc-800 text-white"
+                              : "text-zinc-300 hover:bg-zinc-700 hover:text-white",
+                            "rounded-md px-3 py-2 text-sm font-medium",
                           )}
-                          aria-current={pathName.endsWith(item.href) ? 'page' : undefined}
+                          aria-current={
+                            pathName.endsWith(item.href) ? "page" : undefined
+                          }
                         >
                           {item.name}
                         </a>
-                      )
+                      );
                     })}
                   </div>
                 </div>
               </div>
               {/* User area */}
               <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-                { /* Unauthenticated */}
+                {/* Unauthenticated */}
                 {status === "unauthenticated" ? (
                   <button
                     type="button"
                     onClick={signIn}
-                    className="inline-flex items-center gap-x-1.5 rounded-md bg-gradient-to-r button-gradient px-3.5 py-2.5 text-sm font-semibold text-black shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2">
+                    className="inline-flex items-center gap-x-1.5 rounded-md bg-gradient-to-r button-gradient px-3.5 py-2.5 text-sm font-semibold text-black shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                  >
                     <WalletIcon
                       className="-ml-0.5 h-5 w-5"
                       aria-hidden="true"
@@ -118,7 +140,10 @@ export default function Navigation() {
                               <button
                                 type="button"
                                 onClick={signOut}
-                                className={clsx(focus ? 'bg-zinc-100' : '', 'block px-4 py-2 text-sm text-black w-full')}
+                                className={clsx(
+                                  focus ? "bg-zinc-100" : "",
+                                  "block px-4 py-2 text-sm text-black w-full",
+                                )}
                               >
                                 Sign out
                               </button>
@@ -128,10 +153,10 @@ export default function Navigation() {
                       </Transition>
                     </Menu>
                   </>
-                ) : <></>
-                }
+                ) : (
+                  <></>
+                )}
                 {/* Profile dropdown */}
-
               </div>
             </div>
           </div>
@@ -144,10 +169,14 @@ export default function Navigation() {
                   as="a"
                   href={item.href}
                   className={clsx(
-                    pathName.endsWith(item.href) ? 'bg-zinc-900 text-white' : 'text-zinc-300 hover:bg-zinc-700 hover:text-white',
-                    'block rounded-md px-3 py-2 text-base font-medium',
+                    pathName.endsWith(item.href)
+                      ? "bg-zinc-900 text-white"
+                      : "text-zinc-300 hover:bg-zinc-700 hover:text-white",
+                    "block rounded-md px-3 py-2 text-base font-medium",
                   )}
-                  aria-current={pathName.endsWith(item.href) ? 'page' : undefined}
+                  aria-current={
+                    pathName.endsWith(item.href) ? "page" : undefined
+                  }
                 >
                   {item.name}
                 </DisclosureButton>

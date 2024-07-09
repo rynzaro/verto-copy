@@ -81,8 +81,7 @@ const NearWalletProvider = ({ children }: { children: ReactNode }) => {
   const [accountId, setAccountId] = useState<string | null>(null);
 
   useEffect(() => {
-    const meteorWallet = setupMeteorWallet({
-    })
+    const meteorWallet = setupMeteorWallet({});
 
     const selector = setupWalletSelector({
       network: NetworkId,

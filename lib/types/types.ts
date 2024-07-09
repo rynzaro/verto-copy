@@ -23,12 +23,12 @@ export type TokenMetadata = {
   name: string;
   icon: string;
   decimals: number;
-}
+};
 
 export const defaultTokenMetadata: TokenMetadata = {
-  contractId: 'loading',
-  symbol: 'LOADING',
-  name: 'loading',
-  icon: 'loading',
+  contractId: "loading",
+  symbol: "LOADING",
+  name: "loading",
+  icon: "loading",
   decimals: 0,
-}
+};

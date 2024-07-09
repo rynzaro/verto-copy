@@ -2,14 +2,23 @@
 
 import { VertoContract } from "@/lib/config/near";
 import { Order } from "@/lib/types/types";
-import { convertIntToFloat, formatNumber, handleInput, truncateString } from "@/lib/utils";
+import {
+  convertIntToFloat,
+  formatNumber,
+  handleInput,
+  truncateString,
+} from "@/lib/utils";
 import { useNearWallet } from "@/providers/wallet";
 import { Key, useEffect, useState } from "react";
 import Image from "next/image";
 import { MethodParameters } from "@/lib/types/types";
 import useFetchTokenObjects from "@/hook/FetchTokenObjects";
 import FilterForm from "./forms/FilterForm";
-import { ArrowUpRightIcon, ArrowDownRightIcon, ArrowsUpDownIcon } from '@heroicons/react/20/solid'
+import {
+  ArrowUpRightIcon,
+  ArrowDownRightIcon,
+  ArrowsUpDownIcon,
+} from "@heroicons/react/20/solid";
 import OrderPopup from "./OrderPopup";
 import clsx from "clsx";
 
@@ -26,7 +35,8 @@ export default function GetOrders({
 }) {
   const tokenObjects = useFetchTokenObjects();
   const CONTRACT = VertoContract;
-  const { viewMethod, callMethod, accountId, callMethods, status } = useNearWallet();
+  const { viewMethod, callMethod, accountId, callMethods, status } =
+    useNearWallet();
   const [orders, setOrders] = useState<Order[]>([]);
   const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
   const [sortOffer, setSortOffer] = useState(0);
@@ -34,13 +44,15 @@ export default function GetOrders({
   const [succesful, setSuccesful] = useState(false);
   const [failed, setFailed] = useState(false);
   const [action, setAction] = useState("");
-  const [orderPopupOpen, setOrderPopupOpen] = useState(false)
-  const [currentOrderDetails, setCurrentOrderDetails] = useState<Order | null>(null)
-  const [sortPrice, setSortPrice] = useState(0)
+  const [orderPopupOpen, setOrderPopupOpen] = useState(false);
+  const [currentOrderDetails, setCurrentOrderDetails] = useState<Order | null>(
+    null
+  );
+  const [sortPrice, setSortPrice] = useState(0);
 
   const cycleSort = (setStateFunction: Function) => {
-    setStateFunction((prevState: number) => (prevState + 1) % 3)
-  }
+    setStateFunction((prevState: number) => (prevState + 1) % 3);
+  };
 
   let sortIconOffer;
   switch (sortOffer) {
@@ -89,91 +101,100 @@ export default function GetOrders({
 
   useEffect(() => {
     // resetSort(setSortOffer)
-    setSortOffer(0)
-    setSortPrice(0)
-    setSortFor(sortFor)
-  }, [sortFor])
+    setSortOffer(0);
+    setSortPrice(0);
+    setSortFor(sortFor);
+  }, [sortFor]);
 
   useEffect(() => {
-    setSortFor(0)
-    setSortPrice(0)
-    setSortOffer(sortOffer)
-  }, [sortOffer])
+    setSortFor(0);
+    setSortPrice(0);
+    setSortOffer(sortOffer);
+  }, [sortOffer]);
 
   useEffect(() => {
-    setSortFor(0)
-    setSortOffer(0)
-    setSortPrice(sortPrice)
-  }, [sortPrice])
+    setSortFor(0);
+    setSortOffer(0);
+    setSortPrice(sortPrice);
+  }, [sortPrice]);
 
-
-  const sortOrders = (orders: Order[], sortBy: 'from_amount' | 'to_amount', ascending: Boolean, price: Boolean) => {
-
+  const sortOrders = (
+    orders: Order[],
+    sortBy: "from_amount" | "to_amount",
+    ascending: Boolean,
+    price: Boolean
+  ) => {
     // Use Array.prototype.sort() with a comparator function
-    setFilteredOrders(orders.slice().sort((a, b) => {
-      if (
-        !tokenObjects ||
-        (tokenObjects[a.from_contract_id] === undefined)
-        || (tokenObjects[a.from_contract_id] === undefined)
-        || (tokenObjects[b.to_contract_id] === undefined)
-        || (tokenObjects[b.to_contract_id] === undefined)
-      ) {
-        return 0
-      } else if (price) {
-      const a_ratio = parseFloat(a["from_amount"]) / parseFloat(a["to_amount"]);
-      const b_ratio = parseFloat(b["from_amount"]) / parseFloat(b["to_amount"]);
-      return ascending ? (a_ratio - b_ratio) : (b_ratio - a_ratio);
-      }
-      const a_decimals = (sortBy === 'from_amount') ? tokenObjects[a.from_contract_id].decimals : tokenObjects[a.to_contract_id].decimals
-      const b_decimals = (sortBy === 'from_amount') ? tokenObjects[b.from_contract_id].decimals : tokenObjects[b.to_contract_id].decimals
-      const a_float = parseFloat(convertIntToFloat(a[sortBy], a_decimals))
-      const b_float = parseFloat(convertIntToFloat(b[sortBy], b_decimals))
-      return ascending ? (a_float - b_float) : -(a_float - b_float);
-    }));
+    setFilteredOrders(
+      orders.slice().sort((a, b) => {
+        if (
+          !tokenObjects ||
+          tokenObjects[a.from_contract_id] === undefined ||
+          tokenObjects[a.to_contract_id] === undefined ||
+          tokenObjects[b.from_contract_id] === undefined ||
+          tokenObjects[b.to_contract_id] === undefined
+        ) {
+          return 0;
+        } else if (price) {
+          const a_ratio =
+            parseFloat(a["to_amount"]) / parseFloat(a["from_amount"]);
+          const b_ratio =
+            parseFloat(b["to_amount"]) / parseFloat(b["from_amount"]);
+          return ascending ? a_ratio - b_ratio : b_ratio - a_ratio;
+        }
+        const a_decimals =
+          sortBy === "from_amount"
+            ? tokenObjects[a.from_contract_id].decimals
+            : tokenObjects[a.to_contract_id].decimals;
+        const b_decimals =
+          sortBy === "from_amount"
+            ? tokenObjects[b.from_contract_id].decimals
+            : tokenObjects[b.to_contract_id].decimals;
+        const a_float = parseFloat(convertIntToFloat(a[sortBy], a_decimals));
+        const b_float = parseFloat(convertIntToFloat(b[sortBy], b_decimals));
+        return ascending ? a_float - b_float : -(a_float - b_float);
+      })
+    );
   };
-
 
   useEffect(() => {
     switch (sortFor) {
       case 0:
-        setFilteredOrders(orders);
         break;
       case 1:
-        sortOrders(orders, 'to_amount', true, false);
+        sortOrders(filteredOrders, "to_amount", true, false);
         break;
       case 2:
-        sortOrders(orders, 'to_amount', false, false);
+        sortOrders(filteredOrders, "to_amount", false, false);
         break;
     }
-  }, [orders, sortFor])
+  }, [filteredOrders, sortFor]);
 
   useEffect(() => {
     switch (sortOffer) {
       case 0:
-        setFilteredOrders(orders);
         break;
       case 1:
-        sortOrders(orders, 'from_amount', true, false);
+        sortOrders(filteredOrders, "from_amount", true, false);
         break;
       case 2:
-        sortOrders(orders, 'from_amount', false, false);
+        sortOrders(filteredOrders, "from_amount", false, false);
         break;
     }
-  }, [orders, sortOffer])
+  }, [filteredOrders, sortOffer]);
 
   useEffect(() => {
     switch (sortPrice) {
       case 0:
-        setFilteredOrders(orders);
         break;
       case 1:
-        sortOrders(orders, 'to_amount', true, true);
+        sortOrders(filteredOrders, "to_amount", true, true);
         break;
       case 2:
-        sortOrders(orders, 'to_amount', false, true);
+        sortOrders(filteredOrders, "to_amount", false, true);
         break;
     }
-  }, [orders, sortPrice])
+  }, [filteredOrders, sortPrice]);
 
   useEffect(() => {
     let method = "";
@@ -223,11 +244,11 @@ export default function GetOrders({
     };
 
     let transactions: MethodParameters[] = [];
-    let storage_balance = null
+    let storage_balance = null;
     const jsonString = JSON.stringify(jsonObject);
 
     if (order.to_contract_id === "near") {
-      console.log('in near', jsonString)
+      console.log("in near", jsonString);
       callMethod({
         contractId: VertoContract,
         method: "take_order",
@@ -243,11 +264,10 @@ export default function GetOrders({
           args: {
             account_id: accountId,
           },
-        })
+        });
       }
 
-      if ((storage_balance === null) && (order.from_contract_id !== "near")) {
-
+      if (storage_balance === null && order.from_contract_id !== "near") {
         transactions.push({
           contractId: order.from_contract_id,
           method: "storage_deposit",
@@ -272,49 +292,49 @@ export default function GetOrders({
         deposit: "1",
       });
 
-      callMethods(transactions).catch((error) => console.log(error))
+      callMethods(transactions)
+        .catch((error) => console.log(error))
         .catch((error) => console.log(error))
         .then((message) => {
           setAction("Fill");
           if (message === undefined) {
-            setSuccesful(false)
+            setSuccesful(false);
             setFailed(true);
             return;
           }
-          setSuccesful(true)
+          setSuccesful(true);
           setFailed(false);
           setTimeout(() => {
             window.location.reload();
           }, 2000);
           return;
-        })
-
+        });
     }
   }
 
   function handleCancel(order: Order) {
     callMethod({
       contractId: VertoContract,
-      method: 'cancel_order',
+      method: "cancel_order",
       args: { order_id: order.id },
       gas: TAKE_OFFER_TGAS,
-      deposit: '1',
+      deposit: "1",
     })
       .catch((error) => console.log(error))
       .then((message) => {
         setAction("Cancel");
         if (message === undefined) {
-          setSuccesful(false)
+          setSuccesful(false);
           setFailed(true);
           return;
         }
-        setSuccesful(true)
+        setSuccesful(true);
         setFailed(false);
         setTimeout(() => {
           window.location.reload();
         }, 2000);
         return;
-      })
+      });
   }
 
   function handleClaim(order: Order) {
@@ -324,14 +344,14 @@ export default function GetOrders({
   function getOrderButton(order: Order | null) {
     let button = <></>;
     if (order === null) {
-      return <></>
+      return <></>;
     }
     let state = order.status;
     let buttonClass =
       "w-full rounded-md bg-gradient-to-r from-green-400 to-lime-300 w-[60px] hover:from-green-300 py-1 text-sm font-semibold text-black shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500";
 
-    if (status === 'unauthenticated') {
-      return
+    if (status === "unauthenticated") {
+      return;
     }
 
     if (state == "Open" && order.maker_id === accountId) {
@@ -377,23 +397,21 @@ export default function GetOrders({
   }
 
   function showOrderDetails(order: Order) {
-    setCurrentOrderDetails(order)
-    setOrderPopupOpen(true)
+    setCurrentOrderDetails(order);
+    setOrderPopupOpen(true);
   }
 
-
   if (!tokenObjects) {
-    return (
-      <div>LOADING</div>
-    )
+    return <div>LOADING</div>;
   }
 
   return (
     <div className="flex flex-col justify-center items-center text-white">
-      <div className={clsx(
-        'fixed inset-0 flex items-center justify-center',
-        { 'hidden': !orderPopupOpen }
-      )}>
+      <div
+        className={clsx("fixed inset-0 flex items-center justify-center", {
+          hidden: !orderPopupOpen,
+        })}
+      >
         <div className="p-5 bg-zinc-800">
           <OrderPopup
             order={currentOrderDetails}
@@ -402,18 +420,18 @@ export default function GetOrders({
             orderActionButton={getOrderButton(currentOrderDetails)}
           />
         </div>
-
       </div>
-      <div className={clsx(
-        "w-4/5",
-        { "max-w-2xl": typeOfOrders === 'open',
-          "max-w-4xl": typeOfOrders !== 'open'
-         }
-      )}>
+      <div
+        className={clsx("w-4/5", {
+          "max-w-2xl": typeOfOrders === "open",
+          "max-w-4xl": typeOfOrders !== "open",
+        })}
+      >
         <div className="pt-4 flex">
           {/* <RefreshButton /> */}
           <FilterForm
             orderObjects={orders}
+            filteredOrders={filteredOrders}
             setFilteredOrders={setFilteredOrders}
             tokenObjects={tokenObjects}
             showCompletedToggle={showCompletedToggle}
@@ -421,43 +439,99 @@ export default function GetOrders({
         </div>
 
         <div>
-          {succesful ?
-            <div className="flex items-center p-4 my-4 text-sm text-green-800 border border-green-300 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400 dark:border-green-800 fixed bottom-5 w-4/5" role="alert">
-              <svg className="flex-shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+          {succesful ? (
+            <div
+              className="flex items-center p-4 my-4 text-sm text-green-800 border border-green-300 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400 dark:border-green-800 fixed bottom-5 w-4/5"
+              role="alert"
+            >
+              <svg
+                className="flex-shrink-0 inline w-4 h-4 me-3"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
                 <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
               </svg>
               <span className="sr-only">Info</span>
               <div>
-                <span className="font-medium">{action}ing Order succesful!</span>
+                <span className="font-medium">
+                  {action}ing Order succesful!
+                </span>
               </div>
-              <button onClick={() => setSuccesful(false)} className="ml-auto bg-green-50 text-green-800 rounded-lg focus:ring-2 focus:ring-green-400 p-1 hover:bg-red-200 dark:bg-gray-800 dark:text-green-400 dark:hover:bg-gray-700" aria-label="Close">
+              <button
+                onClick={() => setSuccesful(false)}
+                className="ml-auto bg-green-50 text-green-800 rounded-lg focus:ring-2 focus:ring-green-400 p-1 hover:bg-red-200 dark:bg-gray-800 dark:text-green-400 dark:hover:bg-gray-700"
+                aria-label="Close"
+              >
                 <span className="sr-only">Close</span>
-                <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 14 14">
-                  <path d="M10.833 3.833L7 7.667m0 0L3.167 3.833m3.833 3.834L3.167 10.5m3.833-3.833L10.833 10.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                <svg
+                  className="w-3 h-3"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                  viewBox="0 0 14 14"
+                >
+                  <path
+                    d="M10.833 3.833L7 7.667m0 0L3.167 3.833m3.833 3.834L3.167 10.5m3.833-3.833L10.833 10.5"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
                 </svg>
               </button>
             </div>
-            : <></>
-          }
+          ) : (
+            <></>
+          )}
 
-          {failed ?
-            <div className="flex items-center p-4 my-4 text-sm text-red-800 border border-red-300 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400 dark:border-red-800 fixed bottom-5 w-4/5" role="alert">
-              <svg className="flex-shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+          {failed ? (
+            <div
+              className="flex items-center p-4 my-4 text-sm text-red-800 border border-red-300 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400 dark:border-red-800 fixed bottom-5 w-4/5"
+              role="alert"
+            >
+              <svg
+                className="flex-shrink-0 inline w-4 h-4 me-3"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
                 <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
               </svg>
               <span className="sr-only">Info</span>
               <div>
-                <span className="font-medium">The process was interrupted or the action was not submitted.</span>
+                <span className="font-medium">
+                  The process was interrupted or the action was not submitted.
+                </span>
               </div>
-              <button onClick={() => setFailed(false)} className="ml-auto bg-red-50 text-red-800 rounded-lg focus:ring-2 focus:ring-red-400 p-1 hover:bg-red-200 dark:bg-gray-800 dark:text-red-400 dark:hover:bg-gray-700" aria-label="Close">
+              <button
+                onClick={() => setFailed(false)}
+                className="ml-auto bg-red-50 text-red-800 rounded-lg focus:ring-2 focus:ring-red-400 p-1 hover:bg-red-200 dark:bg-gray-800 dark:text-red-400 dark:hover:bg-gray-700"
+                aria-label="Close"
+              >
                 <span className="sr-only">Close</span>
-                <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 14 14">
-                  <path d="M10.833 3.833L7 7.667m0 0L3.167 3.833m3.833 3.834L3.167 10.5m3.833-3.833L10.833 10.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                <svg
+                  className="w-3 h-3"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                  viewBox="0 0 14 14"
+                >
+                  <path
+                    d="M10.833 3.833L7 7.667m0 0L3.167 3.833m3.833 3.834L3.167 10.5m3.833-3.833L10.833 10.5"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
                 </svg>
               </button>
             </div>
-            : <></>
-          }
+          ) : (
+            <></>
+          )}
         </div>
         <div className="block text-sm font-medium leading-6 text-verto_wt">
           {heading}
@@ -468,73 +542,148 @@ export default function GetOrders({
               <tr>
                 <th className="px-3 py-4">Pair</th>
                 <th className="py-4 text-right">
-                  <button onClick={() => cycleSort(setSortOffer)} className="hover:bg-zinc-700 rounded-md py-2">
-                    {<span className="flex"> {sortIconOffer}
-                      Offering</span>}
+                  <button
+                    onClick={() => cycleSort(setSortOffer)}
+                    className="hover:bg-zinc-700 rounded-md py-2"
+                  >
+                    {
+                      <span className="flex">
+                        {" "}
+                        {sortIconOffer}
+                        Offering
+                      </span>
+                    }
                   </button>
                 </th>
                 <th className="py-4 pr-6 text-right">
-                  <button onClick={() => cycleSort(setSortFor)} className="hover:bg-zinc-700 rounded-md py-2">
-                    <span className="flex"> {sortIconFor}
+                  <button
+                    onClick={() => cycleSort(setSortFor)}
+                    className="hover:bg-zinc-700 rounded-md py-2"
+                  >
+                    <span className="flex">
+                      {" "}
+                      {sortIconFor}
                       For
                     </span>
                   </button>
                 </th>
                 <th className="px-3 py-4 hidden md:table-cell">
-                  <button onClick={() => cycleSort(setSortPrice)} className="hover:bg-zinc-700 rounded-md px-3 py-2">
-                    <span className="flex"> {sortIconPrice}
+                  <button
+                    onClick={() => cycleSort(setSortPrice)}
+                    className=" rounded-md px-3 hover:bg-zinc-700 py-2"
+                  >
+                    <span className="flex">
+                      {" "}
+                      {sortIconPrice}
                       Price
                     </span>
                   </button>
                 </th>
                 <th className="px-3 py-4 hidden md:table-cell">Creator</th>
-                {
-                  (typeOfOrders !== 'open') ?
-                    <th className="px-3 py-4 hidden md:table-cell">Status</th> : <></>
-                }
+                {typeOfOrders !== "open" ? (
+                  <th className="px-3 py-4 hidden md:table-cell">Status</th>
+                ) : (
+                  <></>
+                )}
                 <th className="px-3 py-4">Action</th>
               </tr>
             </thead>
 
             <tbody className="">
-
-              {filteredOrders.map((order: Order, index: Key) => {
-                let fromObject = tokenObjects[order.from_contract_id]
-                let toObject = tokenObjects[order.to_contract_id]
+              {filteredOrders.map((order: Order) => {
+                let fromObject = tokenObjects[order.from_contract_id];
+                let toObject = tokenObjects[order.to_contract_id];
                 if (fromObject && toObject) {
-                  let fromAmountFloat = Number(convertIntToFloat(order.from_amount, fromObject.decimals))
-                  let toAmountFloat = Number(convertIntToFloat(order.to_amount, toObject.decimals))
+                  let fromAmountFloat = Number(
+                    convertIntToFloat(order.from_amount, fromObject.decimals)
+                  );
+                  let toAmountFloat = Number(
+                    convertIntToFloat(order.to_amount, toObject.decimals)
+                  );
                   return (
-                    <tr key={index} className="my-2 border-b border-gray-700">
+                    <tr
+                      key={order.id}
+                      className="my-2 border-b border-gray-700"
+                    >
                       <td className="py-4 flex items-center justify-center">
-                        <Image src={fromObject.icon} alt={fromObject.name} height={20} width={20} className="h-8 w-8 rounded-full object-cover -mr-1 border-zinc-400 border-2" aria-hidden="true" />
-                        <Image src={toObject.icon} alt={toObject.name} height={20} width={20} className="h-8 w-8 rounded-full object-cover border-zinc-400 border-2" aria-hidden="true" />
+                        <Image
+                          src={fromObject.icon}
+                          alt={fromObject.name}
+                          height={20}
+                          width={20}
+                          className="h-8 w-8 rounded-full object-cover -mr-1 border-zinc-400 border-2"
+                          aria-hidden="true"
+                        />
+                        <Image
+                          src={toObject.icon}
+                          alt={toObject.name}
+                          height={20}
+                          width={20}
+                          className="h-8 w-8 rounded-full object-cover border-zinc-400 border-2"
+                          aria-hidden="true"
+                        />
                       </td>
                       <td className="py-4 text-right">
-                        <p className="font-bold inline">{formatNumber(Number(convertIntToFloat(order.from_amount, fromObject.decimals)))}</p>
-                        <span className="text-gray-500"> {truncateString(fromObject.symbol, 4)}</span>
+                        <p className="font-bold inline">
+                          {formatNumber(
+                            Number(
+                              convertIntToFloat(
+                                order.from_amount,
+                                fromObject.decimals
+                              )
+                            )
+                          )}
+                        </p>
+                        <span className="text-gray-500">
+                          {" "}
+                          {truncateString(fromObject.symbol, 4)}
+                        </span>
                       </td>
                       <td className="py-4 pr-6 text-right">
-                        <p className="font-bold inline">{formatNumber(Number(convertIntToFloat(order.to_amount, toObject.decimals)))}</p>
-                        <span className="text-gray-500"> {truncateString(toObject.symbol, 4)}</span>
+                        <p className="font-bold inline">
+                          {formatNumber(
+                            Number(
+                              convertIntToFloat(
+                                order.to_amount,
+                                toObject.decimals
+                              )
+                            )
+                          )}
+                        </p>
+                        <span className="text-gray-500">
+                          {" "}
+                          {truncateString(toObject.symbol, 4)}
+                        </span>
                       </td>
                       <td className="py-4 hidden md:table-cell">
-                        <p className="font-bold inline">{formatNumber(Number(parseFloat((toAmountFloat / fromAmountFloat).toFixed(4))))}</p>
+                        <p className="font-bold inline">
+                          {formatNumber(
+                            Number(
+                              parseFloat(
+                                (toAmountFloat / fromAmountFloat).toFixed(4)
+                              )
+                            )
+                          )}
+                        </p>
                       </td>
                       <td className="py-4 hidden md:table-cell">
-                        <p className="font-bold">{truncateString(order.maker_id, 8)} </p>
+                        <p className="font-bold">
+                          {truncateString(order.maker_id, 8)}{" "}
+                        </p>
                       </td>
-                      {
-                        (typeOfOrders !== 'open') ?
-                          <td className="hidden md:table-cell">{order.status}</td> : <></>
-                      }
+                      {typeOfOrders !== "open" ? (
+                        <td className="hidden md:table-cell">{order.status}</td>
+                      ) : (
+                        <></>
+                      )}
                       <td className="py-4">
                         <button
-                          type='button'
+                          type="button"
                           className="rounded-md bg-gradient-to-r from-green-400 to-lime-300 w-[60px] hover:from-green-300 py-1 text-sm font-semibold text-black shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
-                          onClick={
-                            () => { showOrderDetails(order) }
-                          }
+                          onClick={() => {
+                            console.log(order);
+                            showOrderDetails(order);
+                          }}
                         >
                           Details
                         </button>
@@ -542,14 +691,13 @@ export default function GetOrders({
                     </tr>
                   );
                 } else {
-                  return (<></>)
+                  return <></>;
                 }
               })}
             </tbody>
           </table>
         </div>
       </div>
-    </div >
-
+    </div>
   );
 }
