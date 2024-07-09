@@ -143,7 +143,7 @@ export default function FilterForm({
   }, [orderObjects, buyMept, visible, values]);
 
   const filterMenu = (
-    <div className="flex">
+    <div className="flex flex-wrap gap-x-2 gap-y-4">
       <button
         className="relative flex rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-zinc-800"
         onClick={toggleVisible}
@@ -168,6 +168,27 @@ export default function FilterForm({
           Filter
         </span>
       </button>
+
+      <div className="relative flex text-sm">
+        <button
+          type="button"
+          className={`px-3.5 py-2 mr-1 h-full shadow-sm rounded-md font-semibold text-white focus:outline-none focus:ring-2 focus:ring-white focus-visible:outline ${buyMept ? "bg-zinc-600" : "bg-zinc-800"}`}
+          onClick={() => {
+            handleCurrencyClick(true);
+          }}
+        >
+          From MEPT
+        </button>
+        <button
+          type="button"
+          className={`px-3.5 py-2 h-full shadow-sm rounded-md font-semibold text-white focus:outline-none focus:ring-2 focus:ring-white focus-visible:outline ${!buyMept ? "bg-zinc-600" : "bg-zinc-800"}`}
+          onClick={() => {
+            handleCurrencyClick(false);
+          }}
+        >
+          To MEPT
+        </button>
+      </div>
       {showCompletedToggle ? (
         <Field className="flex items-center relative text-white mx-4">
           <Switch
@@ -189,26 +210,6 @@ export default function FilterForm({
       ) : (
         <></>
       )}
-      <div className="relative flex text-sm px-5">
-        <button
-          type="button"
-          className={`px-3.5 py-2 mr-1 h-full shadow-sm rounded-md font-semibold text-white focus:outline-none focus:ring-2 focus:ring-white focus-visible:outline ${buyMept ? "bg-zinc-600" : "bg-zinc-800"}`}
-          onClick={() => {
-            handleCurrencyClick(true);
-          }}
-        >
-          From MEPT
-        </button>
-        <button
-          type="button"
-          className={`px-3.5 py-2 h-full shadow-sm rounded-md font-semibold text-white focus:outline-none focus:ring-2 focus:ring-white focus-visible:outline ${!buyMept ? "bg-zinc-600" : "bg-zinc-800"}`}
-          onClick={() => {
-            handleCurrencyClick(false);
-          }}
-        >
-          To MEPT
-        </button>
-      </div>
     </div>
   );
 
