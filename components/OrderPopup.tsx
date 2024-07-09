@@ -69,7 +69,7 @@ export default function OrderPopup({
             <div className="text-gray-400">You send</div>
             <div>
               {formatNumber(
-                Number(convertIntToFloat(order.to_amount, toObject.decimals)),
+                Number(convertIntToFloat(order.to_amount, toObject.decimals))
               )}{" "}
               {toObject.symbol}
             </div>
@@ -79,8 +79,8 @@ export default function OrderPopup({
             <div>
               {formatNumber(
                 Number(
-                  convertIntToFloat(order.from_amount, fromObject.decimals),
-                ),
+                  convertIntToFloat(order.from_amount, fromObject.decimals)
+                )
               )}{" "}
               {fromObject.symbol}
             </div>
@@ -90,13 +90,17 @@ export default function OrderPopup({
             <div>
               {formatNumber(
                 parseFloat(
-                  convertIntToFloat(order.from_amount, fromObject.decimals),
+                  convertIntToFloat(order.from_amount, fromObject.decimals)
                 ) /
                   parseFloat(
-                    convertIntToFloat(order.to_amount, toObject.decimals),
-                  ),
+                    convertIntToFloat(order.to_amount, toObject.decimals)
+                  )
               )}
             </div>
+          </div>
+          <div className="flex justify-between px-4 py-3 font-bold text-sm">
+            <div className="text-gray-400">Order Creator</div>
+            <div>{order.maker_id}</div>
           </div>
           <div className="flex justify-between px-4 py-3 font-bold text-sm">
             <div className="text-gray-400">Order Creator</div>
