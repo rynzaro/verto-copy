@@ -248,7 +248,6 @@ export default function GetOrders({
     const jsonString = JSON.stringify(jsonObject);
 
     if (order.to_contract_id === "near") {
-      console.log("in near", jsonString);
       callMethod({
         contractId: VertoContract,
         method: "take_order",
@@ -293,7 +292,6 @@ export default function GetOrders({
       });
 
       callMethods(transactions)
-        .catch((error) => console.log(error))
         .catch((error) => console.log(error))
         .then((message) => {
           setAction("Fill");
@@ -681,7 +679,6 @@ export default function GetOrders({
                           type="button"
                           className="rounded-md bg-gradient-to-r from-green-400 to-lime-300 w-[60px] hover:from-green-300 py-1 text-sm font-semibold text-black shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
                           onClick={() => {
-                            console.log(order);
                             showOrderDetails(order);
                           }}
                         >
