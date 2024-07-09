@@ -111,10 +111,6 @@ export default function OrderPopup({
             <></>
           )}
           <div className="flex justify-between px-4 py-3 font-bold text-sm">
-            <div className="text-gray-400">Order Creator</div>
-            <div>{order.maker_id}</div>
-          </div>
-          <div className="flex justify-between px-4 py-3 font-bold text-sm">
             <div className="text-gray-400">Privacy Type</div>
             <div className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-lime-300">
               Public
