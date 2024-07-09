@@ -422,7 +422,7 @@ export default function GetOrders({
         </div>
       </div>
       <div
-        className={clsx("w-4/5", {
+        className={clsx("w-4/5 sm:w-full sm:px-4", {
           "max-w-2xl": typeOfOrders === "open",
           "max-w-4xl": typeOfOrders !== "open",
         })}

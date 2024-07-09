@@ -220,7 +220,7 @@ export default function FilterForm({
   return (
     <div className="relative">
       {filterMenu}
-      <div className="w-[450px] bg-verto_bg mb-2 ring-2 ring-verto_border rounded-xl px-3 py-4 absolute mt-2">
+      <div className="w-[480px] sm:w-[320px] bg-verto_bg mb-2 ring-2 ring-verto_border rounded-xl px-3 py-4 absolute mt-2">
         <div className="uppercase mb-1">From Amount</div>
         <div className="flex justify-center items-center gap-2">
           <div className="flex flex-col py-2 px-2 rounded-lg mb-2 ring-1 ring-verto_border">
