@@ -202,6 +202,8 @@ export default function GetOrders({
       case "all":
         method = "get_orders";
         break;
+      case "all_user":
+        method = "get_all_orders_of_user";
       case "open":
         method = "get_public_open_orders";
         break;

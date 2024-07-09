@@ -25,6 +25,7 @@ const navigation = [
   { name: "Create Order", href: "/" },
   { name: "Market", href: "/market" },
   { name: "Created Orders", href: "/created-orders" },
+  { name: "My Orders", href: "/my-orders" },
 ];
 
 export default function Navigation() {
@@ -65,7 +66,8 @@ export default function Navigation() {
                     {navigation.map((item) => {
                       if (
                         status === "unauthenticated" &&
-                        item.name === "My Orders"
+                        (item.name === "Created Orders" ||
+                          item.name === "My Orders")
                       ) {
                         return <></>;
                       }
