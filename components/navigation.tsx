@@ -15,6 +15,7 @@ const navigation = [
   { name: "Market", href: "/market" },
   { name: "My Orders", href: "/created-orders" },
   { name: "All Orders", href: "/all-orders" },
+  { name: "Debug", href: "/debugging" },
 ];
 
 export default function Navigation() {
