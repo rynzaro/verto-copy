@@ -487,11 +487,11 @@ export default function GetOrders({
                     </span>
                   </button>
                 </th>
+                <th className="px-3 py-4 hidden md:table-cell">Creator</th>
                 {
                   (typeOfOrders !== 'open') ?
                     <th className="px-3 py-4 hidden md:table-cell">Status</th> : <></>
                 }
-                <th className="px-3 py-4 hidden md:table-cell">Creator</th>
                 <th className="px-3 py-4">Action</th>
               </tr>
             </thead>
