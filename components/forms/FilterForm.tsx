@@ -131,7 +131,6 @@ export default function FilterForm({
   }
 
   function toggleShowCompleted() {
-    console.log("Toggled", values.showCompleted);
     setValues((prev) => ({
       ...prev,
       showCompleted: !prev.showCompleted,

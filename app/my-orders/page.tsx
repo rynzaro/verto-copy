@@ -193,12 +193,13 @@ export default function Page() {
   useEffect(() => {
     viewMethod({
       contractId: CONTRACT,
-      method: "all",
+      method: "get_orders",
       args: { account_id: accountId },
     })
-      .then((orders) => {
+      .then((result) => {
         setOrders(
-          orders.filter((order: Order) => {
+          result.filter((order: Order) => {
+            console.log(order);
             if (order.maker_id == accountId || order.taker_id == accountId) {
               return true;
             }
