@@ -24,6 +24,8 @@ import clsx from "clsx";
 
 const TAKE_OFFER_TGAS = "300000000000000";
 
+const sortOptions = ["price", "amountOffer", "amountFor"] as const;
+
 export default function GetOrders({
   typeOfOrders,
   heading,
@@ -49,152 +51,61 @@ export default function GetOrders({
     null
   );
   const [sortPrice, setSortPrice] = useState(0);
+  const [sort, setSort] = useState<{
+    value: (typeof sortOptions)[number];
+    order: "asc" | "desc";
+  }>({
+    value: "price",
+    order: "asc",
+  });
 
-  const cycleSort = (setStateFunction: Function) => {
-    setStateFunction((prevState: number) => (prevState + 1) % 3);
-  };
-
-  let sortIconOffer;
-  switch (sortOffer) {
-    case 0:
-      sortIconOffer = <ArrowsUpDownIcon className="h-6 w-6 pr-2" />;
-      break;
-    case 1:
-      sortIconOffer = <ArrowUpRightIcon className="h-6 w-6 pr-2" />;
-      break;
-    case 2:
-      sortIconOffer = <ArrowDownRightIcon className="h-6 w-6 pr-2" />;
-      break;
-    default:
-      sortIconOffer = <ArrowsUpDownIcon className="h-6 w-6 pr-2" />;
+  function handleSort(orderBy: (typeof sortOptions)[number]) {
+    setSort((prev) => {
+      if (prev.value == orderBy) {
+        return {
+          value: prev.order == "desc" ? "price" : orderBy,
+          order: prev.order == "desc" ? "asc" : "desc",
+        };
+      }
+      return {
+        value: orderBy,
+        order: "asc",
+      };
+    });
   }
 
-  let sortIconFor;
-  switch (sortFor) {
-    case 0:
-      sortIconFor = <ArrowsUpDownIcon className="h-6 w-6 pr-2" />;
-      break;
-    case 1:
-      sortIconFor = <ArrowUpRightIcon className="h-6 w-6 pr-2" />;
-      break;
-    case 2:
-      sortIconFor = <ArrowDownRightIcon className="h-6 w-6 pr-2" />;
-      break;
-    default:
-      sortIconFor = <ArrowsUpDownIcon className="h-6 w-6 pr-2" />;
-  }
-
-  let sortIconPrice;
-  switch (sortPrice) {
-    case 0:
-      sortIconPrice = <ArrowsUpDownIcon className="h-6 w-6 pr-2" />;
-      break;
-    case 1:
-      sortIconPrice = <ArrowUpRightIcon className="h-6 w-6 pr-2" />;
-      break;
-    case 2:
-      sortIconPrice = <ArrowDownRightIcon className="h-6 w-6 pr-2" />;
-      break;
-    default:
-      sortIconPrice = <ArrowsUpDownIcon className="h-6 w-6 pr-2" />;
-  }
-
-  useEffect(() => {
-    // resetSort(setSortOffer)
-    setSortOffer(0);
-    setSortPrice(0);
-    setSortFor(sortFor);
-  }, [sortFor]);
-
-  useEffect(() => {
-    setSortFor(0);
-    setSortPrice(0);
-    setSortOffer(sortOffer);
-  }, [sortOffer]);
-
-  useEffect(() => {
-    setSortFor(0);
-    setSortOffer(0);
-    setSortPrice(sortPrice);
-  }, [sortPrice]);
-
-  useEffect(() => {
-    switch (sortOffer) {
-      case 0:
-        break;
-      case 1:
-        sortOrders(filteredOrders, "from_amount", true, false);
-        break;
-      case 2:
-        sortOrders(filteredOrders, "from_amount", false, false);
-        break;
-    }
-  }, [filteredOrders, sortOffer]);
-
-  useEffect(() => {
-    switch (sortPrice) {
-      case 0:
-        break;
-      case 1:
-        sortOrders(filteredOrders, "to_amount", true, true);
-        break;
-      case 2:
-        sortOrders(filteredOrders, "to_amount", false, true);
-        break;
-    }
-  }, [filteredOrders, sortPrice]);
-
-  const sortOrders = (
-    orders: Order[],
-    sortBy: "from_amount" | "to_amount",
-    ascending: Boolean,
-    price: Boolean
-  ) => {
+  const sortOrders = (orders: Order[]) => {
     // Use Array.prototype.sort() with a comparator function
-    setFilteredOrders((prev) => {
-      return prev.slice().sort((a, b) => {
-        if (
-          !tokenObjects ||
-          tokenObjects[a.from_contract_id] === undefined ||
-          tokenObjects[a.to_contract_id] === undefined ||
-          tokenObjects[b.from_contract_id] === undefined ||
-          tokenObjects[b.to_contract_id] === undefined
-        ) {
-          return 0;
-        } else if (price) {
-          const a_ratio =
-            parseFloat(a["to_amount"]) / parseFloat(a["from_amount"]);
-          const b_ratio =
-            parseFloat(b["to_amount"]) / parseFloat(b["from_amount"]);
-          return ascending ? a_ratio - b_ratio : b_ratio - a_ratio;
-        }
-        const a_decimals =
-          sortBy === "from_amount"
-            ? tokenObjects[a.from_contract_id].decimals
-            : tokenObjects[a.to_contract_id].decimals;
-        const b_decimals =
-          sortBy === "from_amount"
-            ? tokenObjects[b.from_contract_id].decimals
-            : tokenObjects[b.to_contract_id].decimals;
-        const a_float = parseFloat(convertIntToFloat(a[sortBy], a_decimals));
-        const b_float = parseFloat(convertIntToFloat(b[sortBy], b_decimals));
-        return ascending ? a_float - b_float : -(a_float - b_float);
-      });
+    return orders.sort((a, b) => {
+      if (
+        !tokenObjects ||
+        tokenObjects[a.from_contract_id] === undefined ||
+        tokenObjects[a.to_contract_id] === undefined ||
+        tokenObjects[b.from_contract_id] === undefined ||
+        tokenObjects[b.to_contract_id] === undefined
+      ) {
+        return 0;
+      } else if (sort.value === "price") {
+        const a_ratio =
+          parseFloat(a["to_amount"]) / parseFloat(a["from_amount"]);
+        const b_ratio =
+          parseFloat(b["to_amount"]) / parseFloat(b["from_amount"]);
+        return sort.order === "asc" ? a_ratio - b_ratio : b_ratio - a_ratio;
+      }
+      const sortBy = sort.value === "amountOffer" ? "from_amount" : "to_amount";
+      const a_decimals =
+        sort.value === "amountOffer"
+          ? tokenObjects[a.from_contract_id].decimals
+          : tokenObjects[a.to_contract_id].decimals;
+      const b_decimals =
+        sort.value === "amountOffer"
+          ? tokenObjects[b.from_contract_id].decimals
+          : tokenObjects[b.to_contract_id].decimals;
+      const a_float = parseFloat(convertIntToFloat(a[sortBy], a_decimals));
+      const b_float = parseFloat(convertIntToFloat(b[sortBy], b_decimals));
+      return sort.order === "asc" ? a_float - b_float : -(a_float - b_float);
     });
   };
-
-  useEffect(() => {
-    switch (sortFor) {
-      case 0:
-        break;
-      case 1:
-        sortOrders(filteredOrders, "to_amount", true, false);
-        break;
-      case 2:
-        sortOrders(filteredOrders, "to_amount", false, false);
-        break;
-    }
-  }, [filteredOrders, sortFor]);
 
   useEffect(() => {
     let method = "";
@@ -543,13 +454,18 @@ export default function GetOrders({
                 <th className="py-4">Pair</th>
                 <th className="py-4 text-right">
                   <button
-                    onClick={() => cycleSort(setSortOffer)}
+                    onClick={() => handleSort("amountOffer")}
                     className="px-3 rounded-md hover:bg-zinc-700 py-2"
                   >
                     {
                       <span className="flex">
-                        {" "}
-                        {sortIconOffer}
+                        {sort.value !== "amountOffer" ? (
+                          <ArrowsUpDownIcon className="h-6 w-6 pr-2" />
+                        ) : sort.order === "asc" ? (
+                          <ArrowUpRightIcon className="h-6 w-6 pr-2" />
+                        ) : (
+                          <ArrowDownRightIcon className="h-6 w-6 pr-2" />
+                        )}
                         Offering
                       </span>
                     }
@@ -557,24 +473,46 @@ export default function GetOrders({
                 </th>
                 <th className="py-4 pr-6 text-right">
                   <button
-                    onClick={() => cycleSort(setSortFor)}
+                    onClick={() => handleSort("amountFor")}
                     className="px-3 rounded-md hover:bg-zinc-700 py-2"
                   >
+                    {
+                      //   sortIconOffer = <ArrowsUpDownIcon className="h-6 w-6 pr-2" />;
+                      //   break;
+                      // case 1:
+                      //   sortIconOffer = <ArrowUpRightIcon className="h-6 w-6 pr-2" />;
+                      //   break;
+                      // case 2:
+                      //   sortIconOffer = <ArrowDownRightIcon className="h-6 w-6 pr-2" />;
+                      //   break;
+                      // default:
+                      //   sortIconOffer = <ArrowsUpDownIcon className="h-6 w-6 pr-2" />;
+                    }
                     <span className="flex">
-                      {" "}
-                      {sortIconFor}
+                      {sort.value !== "amountFor" ? (
+                        <ArrowsUpDownIcon className="h-6 w-6 pr-2" />
+                      ) : sort.order === "asc" ? (
+                        <ArrowUpRightIcon className="h-6 w-6 pr-2" />
+                      ) : (
+                        <ArrowDownRightIcon className="h-6 w-6 pr-2" />
+                      )}
                       For
                     </span>
                   </button>
                 </th>
                 <th className="py-4 hidden md:table-cell">
                   <button
-                    onClick={() => cycleSort(setSortPrice)}
+                    onClick={() => handleSort("price")}
                     className="px-3 rounded-md hover:bg-zinc-700 py-2"
                   >
                     <span className="flex">
-                      {" "}
-                      {sortIconPrice}
+                      {sort.value !== "price" ? (
+                        <ArrowsUpDownIcon className="h-6 w-6 pr-2" />
+                      ) : sort.order === "asc" ? (
+                        <ArrowUpRightIcon className="h-6 w-6 pr-2" />
+                      ) : (
+                        <ArrowDownRightIcon className="h-6 w-6 pr-2" />
+                      )}
                       Price
                     </span>
                   </button>
@@ -590,7 +528,7 @@ export default function GetOrders({
             </thead>
 
             <tbody className="">
-              {filteredOrders.map((order: Order) => {
+              {sortOrders(filteredOrders).map((order: Order) => {
                 let fromObject = tokenObjects[order.from_contract_id];
                 let toObject = tokenObjects[order.to_contract_id];
                 if (fromObject && toObject) {
