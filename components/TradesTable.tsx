@@ -118,6 +118,32 @@ export default function GetOrders({
     setSortPrice(sortPrice);
   }, [sortPrice]);
 
+  useEffect(() => {
+    switch (sortOffer) {
+      case 0:
+        break;
+      case 1:
+        sortOrders(filteredOrders, "from_amount", true, false);
+        break;
+      case 2:
+        sortOrders(filteredOrders, "from_amount", false, false);
+        break;
+    }
+  }, [filteredOrders, sortOffer]);
+
+  useEffect(() => {
+    switch (sortPrice) {
+      case 0:
+        break;
+      case 1:
+        sortOrders(filteredOrders, "to_amount", true, true);
+        break;
+      case 2:
+        sortOrders(filteredOrders, "to_amount", false, true);
+        break;
+    }
+  }, [filteredOrders, sortPrice]);
+
   const sortOrders = (
     orders: Order[],
     sortBy: "from_amount" | "to_amount",
@@ -125,8 +151,8 @@ export default function GetOrders({
     price: Boolean
   ) => {
     // Use Array.prototype.sort() with a comparator function
-    setFilteredOrders(
-      orders.slice().sort((a, b) => {
+    setFilteredOrders((prev) => {
+      return prev.slice().sort((a, b) => {
         if (
           !tokenObjects ||
           tokenObjects[a.from_contract_id] === undefined ||
@@ -153,8 +179,8 @@ export default function GetOrders({
         const a_float = parseFloat(convertIntToFloat(a[sortBy], a_decimals));
         const b_float = parseFloat(convertIntToFloat(b[sortBy], b_decimals));
         return ascending ? a_float - b_float : -(a_float - b_float);
-      })
-    );
+      });
+    });
   };
 
   useEffect(() => {
@@ -169,32 +195,6 @@ export default function GetOrders({
         break;
     }
   }, [filteredOrders, sortFor]);
-
-  useEffect(() => {
-    switch (sortOffer) {
-      case 0:
-        break;
-      case 1:
-        sortOrders(filteredOrders, "from_amount", true, false);
-        break;
-      case 2:
-        sortOrders(filteredOrders, "from_amount", false, false);
-        break;
-    }
-  }, [filteredOrders, sortOffer]);
-
-  useEffect(() => {
-    switch (sortPrice) {
-      case 0:
-        break;
-      case 1:
-        sortOrders(filteredOrders, "to_amount", true, true);
-        break;
-      case 2:
-        sortOrders(filteredOrders, "to_amount", false, true);
-        break;
-    }
-  }, [filteredOrders, sortPrice]);
 
   useEffect(() => {
     let method = "";
@@ -539,12 +539,12 @@ export default function GetOrders({
         <div className="mt-2">
           <table className="border-collapse border-spacing-2 table-auto text-center w-full">
             <thead className="border-b-2">
-              <tr>
-                <th className="px-3 py-4">Pair</th>
+              <tr className="gap-x-4">
+                <th className="py-4">Pair</th>
                 <th className="py-4 text-right">
                   <button
                     onClick={() => cycleSort(setSortOffer)}
-                    className="hover:bg-zinc-700 rounded-md py-2"
+                    className="px-3 rounded-md hover:bg-zinc-700 py-2"
                   >
                     {
                       <span className="flex">
@@ -558,7 +558,7 @@ export default function GetOrders({
                 <th className="py-4 pr-6 text-right">
                   <button
                     onClick={() => cycleSort(setSortFor)}
-                    className="hover:bg-zinc-700 rounded-md py-2"
+                    className="px-3 rounded-md hover:bg-zinc-700 py-2"
                   >
                     <span className="flex">
                       {" "}
@@ -567,10 +567,10 @@ export default function GetOrders({
                     </span>
                   </button>
                 </th>
-                <th className="px-3 py-4 hidden md:table-cell">
+                <th className="py-4 hidden md:table-cell">
                   <button
                     onClick={() => cycleSort(setSortPrice)}
-                    className=" rounded-md px-3 hover:bg-zinc-700 py-2"
+                    className="px-3 rounded-md hover:bg-zinc-700 py-2"
                   >
                     <span className="flex">
                       {" "}
@@ -601,10 +601,7 @@ export default function GetOrders({
                     convertIntToFloat(order.to_amount, toObject.decimals)
                   );
                   return (
-                    <tr
-                      key={order.id}
-                      className="my-2 border-b border-gray-700"
-                    >
+                    <tr key={order.id} className="border-b border-gray-700 ">
                       <td className="py-4 flex items-center justify-center">
                         <Image
                           src={fromObject.icon}
@@ -639,7 +636,7 @@ export default function GetOrders({
                           {truncateString(fromObject.symbol, 4)}
                         </span>
                       </td>
-                      <td className="py-4 pr-6 text-right">
+                      <td className="py-4 text-right">
                         <p className="font-bold inline">
                           {formatNumber(
                             Number(
