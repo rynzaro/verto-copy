@@ -19,7 +19,6 @@ export default function FilterForm({
   showCompletedToggle: boolean;
 }) {
   const [values, setValues] = useState({
-    accountId: "",
     minFromAmount: "",
     maxFromAmount: "",
     minToAmount: "",
@@ -102,11 +101,7 @@ export default function FilterForm({
         toAmount <= maxToAmount &&
         price >= minPrice &&
         price <= maxPrice &&
-        (values.showCompleted || order.status === "Open") &&
-        (values.accountId
-          ? order.taker_id === values.accountId ||
-            order.maker_id === values.accountId
-          : true)
+        (values.showCompleted || order.status === "Open")
       );
     });
 
@@ -116,7 +111,7 @@ export default function FilterForm({
   }
 
   function clearFilter() {
-    setValues((prev) => ({
+    setValues({
       minFromAmount: "",
       maxFromAmount: "",
       minToAmount: "",
@@ -124,8 +119,7 @@ export default function FilterForm({
       minPrice: "",
       maxPrice: "",
       showCompleted: true,
-      accountId: prev.accountId,
-    }));
+    });
   }
 
   function toggleVisible() {
@@ -146,7 +140,7 @@ export default function FilterForm({
 
   useEffect(() => {
     filterOrders();
-  }, [orderObjects, buyMept, visible]);
+  }, [orderObjects, buyMept, visible, values.showCompleted]);
 
   const filterMenu = (
     <div className="flex flex-wrap gap-x-2 gap-y-4">

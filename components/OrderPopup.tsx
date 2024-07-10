@@ -25,7 +25,7 @@ export default function OrderPopup({
   const toObject = tokenObjects[order.to_contract_id];
 
   return (
-    <div className="flex justify-center">
+    <div className="flex justify-center z-50">
       <div className="w-[360px]">
         <div className="border border-gray-600 rounded-md divide-y divide-gray-600 w-full my-2">
           <div className="flex justify-between px-4 py-3 font-bold text-sm">

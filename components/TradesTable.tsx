@@ -41,8 +41,6 @@ export default function GetOrders({
     useNearWallet();
   const [orders, setOrders] = useState<Order[]>([]);
   const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
-  const [sortOffer, setSortOffer] = useState(0);
-  const [sortFor, setSortFor] = useState(0);
   const [succesful, setSuccesful] = useState(false);
   const [failed, setFailed] = useState(false);
   const [action, setAction] = useState("");
@@ -50,7 +48,6 @@ export default function GetOrders({
   const [currentOrderDetails, setCurrentOrderDetails] = useState<Order | null>(
     null
   );
-  const [sortPrice, setSortPrice] = useState(0);
   const [sort, setSort] = useState<{
     value: (typeof sortOptions)[number];
     order: "asc" | "desc";
@@ -312,8 +309,12 @@ export default function GetOrders({
     setOrderPopupOpen(true);
   }
 
-  if (!tokenObjects) {
-    return <div>LOADING</div>;
+  if (!tokenObjects || (tokenObjects && !tokenObjects["gear.enleap.near"])) {
+    return (
+      <div className="h-[320px] flex justify-center items-center">
+        <div className="">LOADING</div>
+      </div>
+    );
   }
 
   return (
@@ -323,7 +324,7 @@ export default function GetOrders({
           hidden: !orderPopupOpen,
         })}
       >
-        <div className="p-5 bg-zinc-800">
+        <div className="p-3 pt-1 rounded-lg bg-zinc-800">
           <OrderPopup
             order={currentOrderDetails}
             close={() => setOrderPopupOpen(false)}
