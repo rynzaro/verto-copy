@@ -1,34 +1,22 @@
 "use client";
 
-import { Order, TokenMetadata } from "@/lib/types/types";
+import { FilterValues, Order, TokenMetadata } from "@/lib/types/types";
 import { convertIntToFloat, handleNumericInput } from "@/lib/utils";
 import { Field, Label, MenuButton, Switch } from "@headlessui/react";
 import { Dispatch, useEffect, useState } from "react";
 
 export default function FilterForm({
-  orderObjects,
-  filteredOrders,
-  setFilteredOrders,
-  tokenObjects,
   showCompletedToggle,
+  filterValues,
+  setFilterValues,
+  handleFilterOrders,
 }: {
-  orderObjects: Order[];
-  filteredOrders: Order[];
-  setFilteredOrders: Dispatch<React.SetStateAction<Order[]>>;
-  tokenObjects: { [key: string]: TokenMetadata };
   showCompletedToggle: boolean;
+  filterValues: FilterValues;
+  setFilterValues: Dispatch<React.SetStateAction<FilterValues>>;
+  handleFilterOrders: () => void;
 }) {
-  const [values, setValues] = useState({
-    minFromAmount: "",
-    maxFromAmount: "",
-    minToAmount: "",
-    maxToAmount: "",
-    minPrice: "",
-    maxPrice: "",
-    showCompleted: true,
-  });
   const [visible, setVisible] = useState(false);
-  const [buyMept, setBuyMept] = useState(true);
   const filterIcon = (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -46,80 +34,16 @@ export default function FilterForm({
     </svg>
   );
 
-  function filterOrders() {
-    const minFromAmount = values.minFromAmount
-      ? parseFloat(values.minFromAmount)
-      : -Infinity;
-    const maxFromAmount = values.maxFromAmount
-      ? parseFloat(values.maxFromAmount)
-      : Infinity;
-    const minToAmount = values.minToAmount
-      ? parseFloat(values.minToAmount)
-      : -Infinity;
-    const maxToAmount = values.maxToAmount
-      ? parseFloat(values.maxToAmount)
-      : Infinity;
-    const minPrice = values.minPrice ? parseFloat(values.minPrice) : -Infinity;
-    const maxPrice = values.maxPrice ? parseFloat(values.maxPrice) : Infinity;
-
-    const newOrderObjects = orderObjects.filter((order: Order) => {
-      if (
-        !(
-          tokenObjects[order.from_contract_id] &&
-          tokenObjects[order.to_contract_id]
-        )
-      ) {
-        return false;
-      }
-
-      if (buyMept && order.from_contract_id !== "pre.meteor-token.near") {
-        return false;
-      }
-
-      if (!buyMept && order.from_contract_id === "pre.meteor-token.near") {
-        return false;
-      }
-
-      const fromAmount = parseFloat(
-        convertIntToFloat(
-          order.from_amount,
-          tokenObjects[order.from_contract_id].decimals
-        )
-      );
-      const toAmount = parseFloat(
-        convertIntToFloat(
-          order.to_amount,
-          tokenObjects[order.to_contract_id].decimals
-        )
-      );
-      const price = toAmount / fromAmount;
-
-      return (
-        fromAmount >= minFromAmount &&
-        fromAmount <= maxFromAmount &&
-        toAmount >= minToAmount &&
-        toAmount <= maxToAmount &&
-        price >= minPrice &&
-        price <= maxPrice &&
-        (values.showCompleted || order.status === "Open")
-      );
-    });
-
-    setFilteredOrders(newOrderObjects);
-
-    setFilteredOrders(newOrderObjects);
-  }
-
   function clearFilter() {
-    setValues({
+    setFilterValues((prev) => ({
+      ...prev,
       minFromAmount: "",
       maxFromAmount: "",
       minToAmount: "",
       maxToAmount: "",
       minPrice: "",
       maxPrice: "",
-      showCompleted: true,
-    });
+    }));
   }
 
   function toggleVisible() {
@@ -127,20 +51,18 @@ export default function FilterForm({
   }
 
   function handleCurrencyClick(value: boolean) {
-    setBuyMept(value);
+    setFilterValues((prev) => ({
+      ...prev,
+      buyMept: !prev.buyMept,
+    }));
   }
 
   function toggleShowCompleted() {
-    setValues((prev) => ({
+    setFilterValues((prev) => ({
       ...prev,
       showCompleted: !prev.showCompleted,
     }));
-    filterOrders();
   }
-
-  useEffect(() => {
-    filterOrders();
-  }, [orderObjects, buyMept, visible, values.showCompleted]);
 
   const filterMenu = (
     <div className="flex flex-wrap gap-x-2 gap-y-4">
@@ -172,7 +94,7 @@ export default function FilterForm({
       <div className="relative flex text-sm">
         <button
           type="button"
-          className={`px-3.5 py-2 mr-1 h-full shadow-sm rounded-md font-semibold text-white focus:outline-none focus:ring-2 focus:ring-white focus-visible:outline ${buyMept ? "bg-zinc-600" : "bg-zinc-800"}`}
+          className={`px-3.5 py-2 mr-1 h-full shadow-sm rounded-md font-semibold text-white focus:outline-none focus:ring-2 focus:ring-white focus-visible:outline ${filterValues.buyMept ? "bg-zinc-600" : "bg-zinc-800"}`}
           onClick={() => {
             handleCurrencyClick(true);
           }}
@@ -181,7 +103,7 @@ export default function FilterForm({
         </button>
         <button
           type="button"
-          className={`px-3.5 py-2 h-full shadow-sm rounded-md font-semibold text-white focus:outline-none focus:ring-2 focus:ring-white focus-visible:outline ${!buyMept ? "bg-zinc-600" : "bg-zinc-800"}`}
+          className={`px-3.5 py-2 h-full shadow-sm rounded-md font-semibold text-white focus:outline-none focus:ring-2 focus:ring-white focus-visible:outline ${!filterValues.buyMept ? "bg-zinc-600" : "bg-zinc-800"}`}
           onClick={() => {
             handleCurrencyClick(false);
           }}
@@ -192,13 +114,13 @@ export default function FilterForm({
       {showCompletedToggle ? (
         <Field className="flex items-center relative text-white mx-4">
           <Switch
-            checked={values.showCompleted}
+            checked={filterValues.showCompleted}
             onChange={toggleShowCompleted}
             className="group relative inline-flex items-center h-8 w-16 flex-shrink-0 cursor-pointer rounded-full border-2 border-verto_border bg-verto_bg transition-colors duration-200 ease-in-out  data-[checked]:bg-lime-300"
           >
             <span
               aria-hidden="true"
-              className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-verto_bg shadow ring-0 transition duration-200  ease-in-out ${values.showCompleted ? "translate-x-9" : "translate-x-1"}`} // Adjusted translate values
+              className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-verto_bg shadow ring-0 transition duration-200  ease-in-out ${filterValues.showCompleted ? "translate-x-9" : "translate-x-1"}`}
             />
           </Switch>
           <Label as="span" className="ml-3 text-sm ">
@@ -229,8 +151,8 @@ export default function FilterForm({
                 type="text"
                 name="minFromAmount"
                 id="minFromAmount"
-                value={values.minFromAmount}
-                onChange={(e) => handleNumericInput(e, setValues, 20)}
+                value={filterValues.minFromAmount}
+                onChange={(e) => handleNumericInput(e, setFilterValues, 20)}
                 autoComplete="off"
                 className="p-0 bg-transparent outline-none border-0 focus:outline-none w-full min-w-0"
                 placeholder="MIN"
@@ -243,8 +165,8 @@ export default function FilterForm({
                 type="text"
                 name="maxFromAmount"
                 id="maxFromAmount"
-                value={values.maxFromAmount}
-                onChange={(e) => handleNumericInput(e, setValues, 20)}
+                value={filterValues.maxFromAmount}
+                onChange={(e) => handleNumericInput(e, setFilterValues, 20)}
                 autoComplete="off"
                 className="p-0 bg-transparent outline-none border-0 focus:outline-none w-full min-w-0"
                 placeholder="MAX"
@@ -261,8 +183,8 @@ export default function FilterForm({
                 type="text"
                 name="minToAmount"
                 id="minToAmount"
-                value={values.minToAmount}
-                onChange={(e) => handleNumericInput(e, setValues, 20)}
+                value={filterValues.minToAmount}
+                onChange={(e) => handleNumericInput(e, setFilterValues, 20)}
                 autoComplete="off"
                 className="p-0 bg-transparent outline-none border-0 focus:outline-none w-full min-w-0"
                 placeholder="MIN"
@@ -275,8 +197,8 @@ export default function FilterForm({
                 type="text"
                 name="maxToAmount"
                 id="maxToAmount"
-                value={values.maxToAmount}
-                onChange={(e) => handleNumericInput(e, setValues, 20)}
+                value={filterValues.maxToAmount}
+                onChange={(e) => handleNumericInput(e, setFilterValues, 20)}
                 autoComplete="off"
                 className="p-0 bg-transparent outline-none border-0 focus:outline-none w-full min-w-0"
                 placeholder="MAX"
@@ -293,8 +215,8 @@ export default function FilterForm({
                 type="text"
                 name="minPrice"
                 id="minPrice"
-                value={values.minPrice}
-                onChange={(e) => handleNumericInput(e, setValues, 20)}
+                value={filterValues.minPrice}
+                onChange={(e) => handleNumericInput(e, setFilterValues, 20)}
                 autoComplete="off"
                 className="p-0 bg-transparent outline-none border-0 focus:outline-none w-full min-w-0"
                 placeholder="MIN"
@@ -307,8 +229,8 @@ export default function FilterForm({
                 type="text"
                 name="maxPrice"
                 id="maxPrice"
-                value={values.maxPrice}
-                onChange={(e) => handleNumericInput(e, setValues, 20)}
+                value={filterValues.maxPrice}
+                onChange={(e) => handleNumericInput(e, setFilterValues, 20)}
                 autoComplete="off"
                 className="p-0 bg-transparent outline-none border-0 focus:outline-none w-full min-w-0"
                 placeholder="MAX"
@@ -320,7 +242,7 @@ export default function FilterForm({
         <div className="flex justify-center items-center gap-2 mt-2">
           <button
             className="rounded-md w-full py-2 px-2 bg-gradient-to-r from-green-400 to-lime-300 hover:from-green-300  text-sm font-semibold text-black shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
-            onClick={filterOrders}
+            onClick={handleFilterOrders}
           >
             Filter
           </button>

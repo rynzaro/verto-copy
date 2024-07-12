@@ -1,7 +1,7 @@
 "use client";
 
 import { VertoContract } from "@/lib/config/near";
-import { Order } from "@/lib/types/types";
+import { defaultFilterValues, FilterValues, Order } from "@/lib/types/types";
 import {
   convertIntToFloat,
   formatNumber,
@@ -55,6 +55,8 @@ export default function GetOrders({
     value: "price",
     order: "asc",
   });
+  const [filterValues, setFilterValues] =
+    useState<FilterValues>(defaultFilterValues);
 
   function handleSort(orderBy: (typeof sortOptions)[number]) {
     setSort((prev) => {
@@ -104,39 +106,98 @@ export default function GetOrders({
     });
   };
 
-  useEffect(() => {
-    let method = "";
-    switch (typeOfOrders) {
-      case "all":
-        method = "get_orders";
-        break;
-      case "all_user":
-        method = "get_all_orders_of_user";
-      case "open":
-        method = "get_public_open_orders";
-        break;
-      case "claimable":
-        method = "get_claimable_orders";
-        break;
-      case "offers":
-        method = "get_offers";
-        break;
-      case "make":
-        method = "get_make_orders";
-        break;
-      case "take":
-        method = "get_take_orders";
-        break;
-      case "completed":
-        method = "get_completed_orders";
-        break;
-      default:
-        return;
+  function filterOrders() {
+    console.log("Actual Filter Values:", filterValues);
+    if (!tokenObjects) {
+      return;
     }
+    const minFromAmount = filterValues.minFromAmount
+      ? parseFloat(filterValues.minFromAmount)
+      : -Infinity;
+    const maxFromAmount = filterValues.maxFromAmount
+      ? parseFloat(filterValues.maxFromAmount)
+      : Infinity;
+    const minToAmount = filterValues.minToAmount
+      ? parseFloat(filterValues.minToAmount)
+      : -Infinity;
+    const maxToAmount = filterValues.maxToAmount
+      ? parseFloat(filterValues.maxToAmount)
+      : Infinity;
+    const minPrice = filterValues.minPrice
+      ? parseFloat(filterValues.minPrice)
+      : -Infinity;
+    const maxPrice = filterValues.maxPrice
+      ? parseFloat(filterValues.maxPrice)
+      : Infinity;
 
+    const newOrderObjects = orders.filter((order: Order) => {
+      if (
+        !(
+          tokenObjects[order.from_contract_id] &&
+          tokenObjects[order.to_contract_id]
+        )
+      ) {
+        return false;
+      }
+
+      // if both are set, to be filtered out neither must be correct
+      if (filterValues.fromAccountId && filterValues.toAccountId) {
+        if (accountId !== order.maker_id && accountId !== order.taker_id) {
+          return false;
+        }
+        // if one is set, if it doesn't match, it's filtered out
+      } else if (
+        (filterValues.fromAccountId && accountId !== order.maker_id) ||
+        (filterValues.toAccountId && accountId !== order.taker_id)
+      ) {
+        return false;
+      }
+
+      if (
+        (filterValues.buyMept &&
+          order.from_contract_id !== "pre.meteor-token.near") ||
+        (!filterValues.buyMept &&
+          order.from_contract_id === "pre.meteor-token.near")
+      ) {
+        return false;
+      }
+
+      const fromAmount = parseFloat(
+        convertIntToFloat(
+          order.from_amount,
+          tokenObjects[order.from_contract_id].decimals
+        )
+      );
+      const toAmount = parseFloat(
+        convertIntToFloat(
+          order.to_amount,
+          tokenObjects[order.to_contract_id].decimals
+        )
+      );
+      const price = toAmount / fromAmount;
+
+      return (
+        fromAmount >= minFromAmount &&
+        fromAmount <= maxFromAmount &&
+        toAmount >= minToAmount &&
+        toAmount <= maxToAmount &&
+        price >= minPrice &&
+        price <= maxPrice &&
+        (filterValues.showCompleted || order.status === "Open")
+      );
+    });
+
+    setFilteredOrders(newOrderObjects);
+  }
+
+  useEffect(() => {
+    filterOrders();
+  }, [orders]);
+
+  useEffect(() => {
     viewMethod({
       contractId: CONTRACT,
-      method: method,
+      method: "get_orders",
       args: { account_id: accountId },
     })
       .then((orders) => setOrders(orders))
@@ -342,11 +403,10 @@ export default function GetOrders({
         <div className="pt-4 flex">
           {/* <RefreshButton /> */}
           <FilterForm
-            orderObjects={orders}
-            filteredOrders={filteredOrders}
-            setFilteredOrders={setFilteredOrders}
-            tokenObjects={tokenObjects}
             showCompletedToggle={showCompletedToggle}
+            filterValues={filterValues}
+            setFilterValues={setFilterValues}
+            handleFilterOrders={filterOrders}
           />
         </div>
 
