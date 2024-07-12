@@ -76,13 +76,12 @@ const NearWalletContext = createContext<{
 const NearWalletProvider = ({ children }: { children: ReactNode }) => {
   const [status, setStatus] = useState<AuthStatusType>("loading");
   const [walletSelector, setWalletSelector] = useState<WalletSelector | null>(
-    null,
+    null
   );
   const [accountId, setAccountId] = useState<string | null>(null);
 
   useEffect(() => {
-    const meteorWallet = setupMeteorWallet({
-    })
+    const meteorWallet = setupMeteorWallet({});
 
     const selector = setupWalletSelector({
       network: "testnet",
@@ -93,11 +92,11 @@ const NearWalletProvider = ({ children }: { children: ReactNode }) => {
       selector.store.observable
         .pipe(
           map((state) => state.accounts),
-          distinctUntilChanged(),
+          distinctUntilChanged()
         )
         .subscribe((accounts) => {
           const signedAccount = accounts.find(
-            (account) => account.active,
+            (account) => account.active
           )?.accountId;
           setAccountId(signedAccount || null);
           setStatus(signedAccount ? "authenticated" : "unauthenticated");
@@ -148,7 +147,8 @@ const NearWalletProvider = ({ children }: { children: ReactNode }) => {
     method: string;
     args?: Record<string, any>;
   }) => {
-    const url = `https://rpc.${NetworkId}.near.org`;
+    const url = "https://rpc.shitzuapes.xyz";
+    // const url = `https://rpc.${NetworkId}.near.org`;
     const provider = new providers.JsonRpcProvider({ url });
 
     let res = await provider.query({
