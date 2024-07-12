@@ -30,10 +30,12 @@ export default function GetOrders({
   typeOfOrders,
   heading,
   showCompletedToggle,
+  initialFilterValues,
 }: {
   typeOfOrders: string;
   heading: string;
   showCompletedToggle: boolean;
+  initialFilterValues: FilterValues;
 }) {
   const tokenObjects = useFetchTokenObjects();
   const CONTRACT = VertoContract;
@@ -55,8 +57,9 @@ export default function GetOrders({
     value: "price",
     order: "asc",
   });
-  const [filterValues, setFilterValues] =
-    useState<FilterValues>(defaultFilterValues);
+  const [filterValues, setFilterValues] = useState<FilterValues>({
+    ...initialFilterValues,
+  });
 
   function handleSort(orderBy: (typeof sortOptions)[number]) {
     setSort((prev) => {
@@ -192,7 +195,7 @@ export default function GetOrders({
 
   useEffect(() => {
     filterOrders();
-  }, [orders]);
+  }, [orders, filterValues.buyMept, filterValues.showCompleted]);
 
   useEffect(() => {
     viewMethod({

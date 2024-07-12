@@ -24,8 +24,8 @@ import { useEffect } from "react";
 const navigation = [
   { name: "Create Order", href: "/" },
   { name: "Market", href: "/market" },
-  { name: "Created Orders", href: "/created-orders" },
-  { name: "My Orders", href: "/my-orders" },
+  { name: "Orders Created", href: "/orders-created" },
+  { name: "Orders Filled", href: "/orders-filled" },
 ];
 
 export default function Navigation() {
