@@ -35,12 +35,14 @@ export default function GetOrders({
   typeOfOrders,
   heading,
   showCompletedToggle,
+  showOrderStatus,
   initialSort,
   initialFilterValues,
 }: {
   typeOfOrders: string;
   heading: string;
   showCompletedToggle: boolean;
+  showOrderStatus: boolean;
   initialSort: Sort;
   initialFilterValues: FilterValues;
 }) {
@@ -419,8 +421,8 @@ export default function GetOrders({
       </div>
       <div
         className={clsx("w-4/5 sm:w-full sm:px-4", {
-          "max-w-2xl": typeOfOrders === "open",
-          "max-w-4xl": typeOfOrders !== "open",
+          "max-w-2xl": !showOrderStatus,
+          "max-w-4xl": showOrderStatus,
         })}
       >
         <div className="pt-4 flex">
@@ -602,7 +604,7 @@ export default function GetOrders({
                   </button>
                 </th>
                 <th className="px-3 py-4 hidden md:table-cell">Creator</th>
-                {typeOfOrders !== "open" ? (
+                {showOrderStatus ? (
                   <th className="px-3 py-4 hidden md:table-cell">Status</th>
                 ) : (
                   <></>
@@ -690,7 +692,7 @@ export default function GetOrders({
                           {truncateString(order.maker_id, 8)}{" "}
                         </p>
                       </td>
-                      {typeOfOrders !== "open" ? (
+                      {showOrderStatus ? (
                         <td className="hidden md:table-cell">{order.status}</td>
                       ) : (
                         <></>

@@ -8,6 +8,7 @@ export default function Page() {
         typeOfOrders="open"
         heading=""
         showCompletedToggle={false}
+        showOrderStatus={false}
         initialSort={defaultSort}
         initialFilterValues={{
           ...defaultFilterValues,
