@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import React from "react"
+import React from "react";
 import Navigation from "@/components/navigation";
 import NearWalletProvider from "@/providers/wallet";
 
@@ -9,8 +9,7 @@ export const metadata: Metadata = {
   title: {
     default: "Verto",
     template: "%s | Verto",
-  }
-  ,
+  },
   description: "Trustless Swaps on NEAR",
 };
 

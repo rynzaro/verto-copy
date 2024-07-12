@@ -13,6 +13,14 @@ const config: Config = {
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
+      colors: {
+        verto_bg: "#111111",
+        verto_border: "#323634",
+        verto_green: "#BDEC65",
+        verto_blue: "#6ACEC4",
+        verto_blue_light: "#80D6AA",
+        verto_green_light: "#A7E57F",
+      },
     },
   },
   plugins: [require("@tailwindcss/forms")],

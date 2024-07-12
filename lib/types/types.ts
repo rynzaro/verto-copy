@@ -23,12 +23,48 @@ export type TokenMetadata = {
   name: string;
   icon: string;
   decimals: number;
-}
+};
 
 export const defaultTokenMetadata: TokenMetadata = {
-  contractId: 'loading',
-  symbol: 'LOADING',
-  name: 'loading',
-  icon: 'loading',
+  contractId: "loading",
+  symbol: "LOADING",
+  name: "loading",
+  icon: "loading",
   decimals: 0,
-}
+};
+
+export type FilterValues = {
+  minFromAmount: string;
+  maxFromAmount: string;
+  minToAmount: string;
+  maxToAmount: string;
+  minPrice: string;
+  maxPrice: string;
+  fromAccountId: boolean;
+  toAccountId: boolean;
+  buyMept: boolean;
+  showCompleted: boolean;
+};
+
+export const defaultFilterValues: FilterValues = {
+  minFromAmount: "",
+  maxFromAmount: "",
+  minToAmount: "",
+  maxToAmount: "",
+  minPrice: "",
+  maxPrice: "",
+  fromAccountId: false,
+  toAccountId: false,
+  buyMept: true,
+  showCompleted: true,
+};
+
+export type Sort = {
+  value: string;
+  order: "asc" | "desc";
+};
+
+export const defaultSort: Sort = {
+  value: "price",
+  order: "asc",
+};

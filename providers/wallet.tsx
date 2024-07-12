@@ -84,7 +84,7 @@ const NearWalletProvider = ({ children }: { children: ReactNode }) => {
     const meteorWallet = setupMeteorWallet({});
 
     const selector = setupWalletSelector({
-      network: "testnet",
+      network: NetworkId,
       modules: [meteorWallet],
     }).then((selector) => {
       setWalletSelector(selector);
@@ -225,6 +225,11 @@ const NearWalletProvider = ({ children }: { children: ReactNode }) => {
         ],
       })),
     });
+
+    if (!outcome) {
+      console.error("No outcome");
+      return null;
+    }
 
     return outcome;
   };

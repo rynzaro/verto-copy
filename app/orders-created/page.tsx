@@ -7,12 +7,15 @@ export default function Page() {
       <TradesTable
         typeOfOrders="open"
         heading=""
-        showCompletedToggle={false}
-        showOrderStatus={false}
-        initialSort={defaultSort}
+        showCompletedToggle={true}
+        showOrderStatus={true}
+        initialSort={{
+          value: "id",
+          order: "desc",
+        }}
         initialFilterValues={{
           ...defaultFilterValues,
-          showCompleted: false,
+          fromAccountId: true,
         }}
       />
     </div>

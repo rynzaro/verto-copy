@@ -1,20 +1,31 @@
 "use client";
 
 import { useNearWallet } from "@/providers/wallet";
-import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems, Transition } from "@headlessui/react";
+import {
+  Disclosure,
+  DisclosureButton,
+  DisclosurePanel,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuItems,
+  Transition,
+} from "@headlessui/react";
 import {
   Bars3Icon,
-  BellIcon, WalletIcon, XMarkIcon
+  BellIcon,
+  WalletIcon,
+  XMarkIcon,
 } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 
 const navigation = [
-  { name: "Trade now", href: "/"},
-  { name: "Market", href: "/market"},
-  { name: "Created Orders", href: "/created-orders"},
-  { name: "Getting Started", href: "/getting-started"},
+  { name: "Create Order", href: "/" },
+  { name: "Market", href: "/market" },
+  { name: "Orders Created", href: "/orders-created" },
+  { name: "Orders Filled", href: "/orders-filled" },
 ];
 
 export default function Navigation() {
@@ -22,10 +33,13 @@ export default function Navigation() {
   const pathName = usePathname();
 
   return (
-    <Disclosure as="nav" className="">
+    <Disclosure
+      as="nav"
+      className="bg-verto_bg border-b-2 border-b-verto_border py-2 font-bold"
+    >
       {({ open }) => (
         <>
-          <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 bg-verto_bg">
             <div className="relative flex h-16 items-center justify-between">
               <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
                 {/* Mobile menu button*/}
@@ -40,39 +54,53 @@ export default function Navigation() {
                 </DisclosureButton>
               </div>
               <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-                <div className="flex flex-shrink-0 items-center">
+                {/* <div className="flex flex-shrink-0 items-center">
                   <img
                     className="h-8 w-auto"
                     src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
                     alt="Your Company"
                   />
-                </div>
+                </div> */}
                 <div className="hidden sm:ml-6 sm:block">
                   <div className="flex space-x-4">
-                    {navigation.map((item) => (
-                      <a
-                        key={item.name}
-                        href={item.href}
-                        className={clsx(
-                          pathName.endsWith(item.href) ? 'bg-zinc-900 text-white' : 'text-zinc-300 hover:bg-zinc-700 hover:text-white',
-                          'rounded-md px-3 py-2 text-sm font-medium',
-                        )}
-                        aria-current={pathName.endsWith(item.href)  ? 'page' : undefined}
-                      >
-                        {item.name}
-                      </a>
-                    ))}
+                    {navigation.map((item) => {
+                      if (
+                        status === "unauthenticated" &&
+                        (item.name === "Created Orders" ||
+                          item.name === "My Orders")
+                      ) {
+                        return <></>;
+                      }
+                      return (
+                        <a
+                          key={item.name}
+                          href={item.href}
+                          className={clsx(
+                            pathName.endsWith(item.href)
+                              ? "bg-zinc-800 text-white"
+                              : "text-zinc-300 hover:bg-zinc-700 hover:text-white",
+                            "rounded-md px-3 py-2 text-sm font-medium"
+                          )}
+                          aria-current={
+                            pathName.endsWith(item.href) ? "page" : undefined
+                          }
+                        >
+                          {item.name}
+                        </a>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
               {/* User area */}
               <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-                { /* Unauthenticated */}
+                {/* Unauthenticated */}
                 {status === "unauthenticated" ? (
                   <button
                     type="button"
                     onClick={signIn}
-                    className="inline-flex items-center gap-x-1.5 rounded-md bg-gradient-to-r from-green-400 to-lime-300  hover:from-green-300 px-3.5 py-2.5 text-sm font-semibold text-black shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">
+                    className="inline-flex items-center gap-x-1.5 rounded-md bg-gradient-to-r button-gradient px-3.5 py-2.5 text-sm font-semibold text-black shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                  >
                     <WalletIcon
                       className="-ml-0.5 h-5 w-5"
                       aria-hidden="true"
@@ -90,7 +118,7 @@ export default function Navigation() {
                         <MenuButton className="relative flex rounded-md bg-zinc-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-zinc-800">
                           <span className="absolute -inset-1.5" />
                           <span className="sr-only">Open user menu</span>
-                          <span className="inline-flex items-center gap-x-1.5 rounded-md bg-gradient-to-r from-green-400 to-lime-300  hover:from-green-300 px-3.5 py-2.5 text-sm font-semibold text-black shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">
+                          <span className="inline-flex items-center gap-x-1.5 rounded-md  px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">
                             <WalletIcon
                               className="-ml-0.5 h-5 w-5"
                               aria-hidden="true"
@@ -113,7 +141,10 @@ export default function Navigation() {
                               <button
                                 type="button"
                                 onClick={signOut}
-                                className={clsx(focus ? 'bg-zinc-100' : '', 'block px-4 py-2 text-sm text-zinc-700')}
+                                className={clsx(
+                                  focus ? "bg-zinc-100" : "",
+                                  "block px-4 py-2 text-sm text-black w-full"
+                                )}
                               >
                                 Sign out
                               </button>
@@ -123,10 +154,10 @@ export default function Navigation() {
                       </Transition>
                     </Menu>
                   </>
-                ) : <></>
-                }
+                ) : (
+                  <></>
+                )}
                 {/* Profile dropdown */}
-
               </div>
             </div>
           </div>
@@ -139,10 +170,14 @@ export default function Navigation() {
                   as="a"
                   href={item.href}
                   className={clsx(
-                    pathName.endsWith(item.href)  ? 'bg-zinc-900 text-white' : 'text-zinc-300 hover:bg-zinc-700 hover:text-white',
-                    'block rounded-md px-3 py-2 text-base font-medium',
+                    pathName.endsWith(item.href)
+                      ? "bg-zinc-900 text-white"
+                      : "text-zinc-300 hover:bg-zinc-700 hover:text-white",
+                    "block rounded-md px-3 py-2 text-base font-medium"
                   )}
-                  aria-current={pathName.endsWith(item.href)  ? 'page' : undefined}
+                  aria-current={
+                    pathName.endsWith(item.href) ? "page" : undefined
+                  }
                 >
                   {item.name}
                 </DisclosureButton>
