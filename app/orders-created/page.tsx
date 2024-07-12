@@ -1,5 +1,5 @@
 import TradesTable from "@/components/TradesTable";
-import { defaultFilterValues } from "@/lib/types/types";
+import { defaultFilterValues, defaultSort } from "@/lib/types/types";
 
 export default function Page() {
   return (
@@ -8,6 +8,10 @@ export default function Page() {
         typeOfOrders="open"
         heading=""
         showCompletedToggle={true}
+        initialSort={{
+          value: "id",
+          order: "desc",
+        }}
         initialFilterValues={{
           ...defaultFilterValues,
           fromAccountId: true,

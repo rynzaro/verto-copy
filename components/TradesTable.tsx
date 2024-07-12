@@ -1,7 +1,12 @@
 "use client";
 
 import { VertoContract } from "@/lib/config/near";
-import { defaultFilterValues, FilterValues, Order } from "@/lib/types/types";
+import {
+  defaultFilterValues,
+  FilterValues,
+  Order,
+  Sort,
+} from "@/lib/types/types";
 import {
   convertIntToFloat,
   formatNumber,
@@ -24,17 +29,19 @@ import clsx from "clsx";
 
 const TAKE_OFFER_TGAS = "300000000000000";
 
-const sortOptions = ["price", "amountOffer", "amountFor"] as const;
+const sortOptions = ["price", "amountOffer", "amountFor", "id"] as const;
 
 export default function GetOrders({
   typeOfOrders,
   heading,
   showCompletedToggle,
+  initialSort,
   initialFilterValues,
 }: {
   typeOfOrders: string;
   heading: string;
   showCompletedToggle: boolean;
+  initialSort: Sort;
   initialFilterValues: FilterValues;
 }) {
   const tokenObjects = useFetchTokenObjects();
@@ -50,23 +57,19 @@ export default function GetOrders({
   const [currentOrderDetails, setCurrentOrderDetails] = useState<Order | null>(
     null
   );
-  const [sort, setSort] = useState<{
-    value: (typeof sortOptions)[number];
-    order: "asc" | "desc";
-  }>({
-    value: "price",
-    order: "asc",
-  });
+  const [sort, setSort] = useState<Sort>(initialSort);
   const [filterValues, setFilterValues] = useState<FilterValues>({
     ...initialFilterValues,
   });
 
   function handleSort(orderBy: (typeof sortOptions)[number]) {
     setSort((prev) => {
-      if (prev.value == orderBy) {
+      if (prev.value === orderBy && prev.order === "desc") {
+        return initialSort;
+      } else if (prev.value === orderBy && prev.order === "asc") {
         return {
-          value: prev.order == "desc" ? "price" : orderBy,
-          order: prev.order == "desc" ? "asc" : "desc",
+          value: orderBy,
+          order: "desc",
         };
       }
       return {
@@ -87,25 +90,42 @@ export default function GetOrders({
         tokenObjects[b.to_contract_id] === undefined
       ) {
         return 0;
-      } else if (sort.value === "price") {
-        const a_ratio =
-          parseFloat(a["to_amount"]) / parseFloat(a["from_amount"]);
-        const b_ratio =
-          parseFloat(b["to_amount"]) / parseFloat(b["from_amount"]);
-        return sort.order === "asc" ? a_ratio - b_ratio : b_ratio - a_ratio;
       }
-      const sortBy = sort.value === "amountOffer" ? "from_amount" : "to_amount";
-      const a_decimals =
-        sort.value === "amountOffer"
-          ? tokenObjects[a.from_contract_id].decimals
-          : tokenObjects[a.to_contract_id].decimals;
-      const b_decimals =
-        sort.value === "amountOffer"
-          ? tokenObjects[b.from_contract_id].decimals
-          : tokenObjects[b.to_contract_id].decimals;
-      const a_float = parseFloat(convertIntToFloat(a[sortBy], a_decimals));
-      const b_float = parseFloat(convertIntToFloat(b[sortBy], b_decimals));
-      return sort.order === "asc" ? a_float - b_float : -(a_float - b_float);
+      let valueA;
+      let valueB;
+      switch (sort.value) {
+        case "price":
+          valueA = parseFloat(a["to_amount"]) / parseFloat(a["from_amount"]);
+          valueB = parseFloat(b["to_amount"]) / parseFloat(b["from_amount"]);
+          break;
+
+        case "amountOffer":
+          let decimalsAOffer = tokenObjects[a.from_contract_id].decimals;
+          let decimalsBOffer = tokenObjects[b.from_contract_id].decimals;
+          valueA = parseFloat(
+            convertIntToFloat(a["from_amount"], decimalsAOffer)
+          );
+          valueB = parseFloat(
+            convertIntToFloat(b["from_amount"], decimalsBOffer)
+          );
+          break;
+
+        case "amountFor":
+          let decimalsAFor = tokenObjects[a.to_contract_id].decimals;
+          let decimalsBFor = tokenObjects[b.to_contract_id].decimals;
+          valueA = parseFloat(convertIntToFloat(a["to_amount"], decimalsAFor));
+          valueB = parseFloat(convertIntToFloat(b["to_amount"], decimalsBFor));
+          break;
+
+        case "id":
+          valueA = parseInt(a.id);
+          valueB = parseInt(b.id);
+          break;
+
+        default:
+          throw new Error(`Unsupported sort value: ${sort.value}`);
+      }
+      return sort.order === "asc" ? valueA - valueB : valueB - valueA;
     });
   };
 

@@ -58,3 +58,13 @@ export const defaultFilterValues: FilterValues = {
   buyMept: true,
   showCompleted: true,
 };
+
+export type Sort = {
+  value: string;
+  order: "asc" | "desc";
+};
+
+export const defaultSort: Sort = {
+  value: "price",
+  order: "asc",
+};
