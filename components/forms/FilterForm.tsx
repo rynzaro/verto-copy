@@ -50,10 +50,10 @@ export default function FilterForm({
     setVisible((prev) => !prev);
   }
 
-  function handleCurrencyClick(value: boolean) {
+  function handleShowSwap(fromMept: boolean) {
     setFilterValues((prev) => ({
       ...prev,
-      buyMept: !prev.buyMept,
+      buyMept: fromMept ? true : false,
     }));
   }
 
@@ -96,7 +96,7 @@ export default function FilterForm({
           type="button"
           className={`px-3.5 py-2 mr-1 h-full shadow-sm rounded-md font-semibold text-white focus:outline-none focus:ring-2 focus:ring-white focus-visible:outline ${filterValues.buyMept ? "bg-zinc-600" : "bg-zinc-800"}`}
           onClick={() => {
-            handleCurrencyClick(true);
+            handleShowSwap(true);
           }}
         >
           From MEPT
@@ -105,7 +105,7 @@ export default function FilterForm({
           type="button"
           className={`px-3.5 py-2 h-full shadow-sm rounded-md font-semibold text-white focus:outline-none focus:ring-2 focus:ring-white focus-visible:outline ${!filterValues.buyMept ? "bg-zinc-600" : "bg-zinc-800"}`}
           onClick={() => {
-            handleCurrencyClick(false);
+            handleShowSwap(false);
           }}
         >
           To MEPT
