@@ -52,7 +52,7 @@ export default function GetOrders({
     useNearWallet();
   const [orders, setOrders] = useState<Order[]>([]);
   const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
-  const [succesful, setSuccesful] = useState(false);
+  const [succesful, setSuccesful] = useState(true);
   const [failed, setFailed] = useState(false);
   const [action, setAction] = useState("");
   const [orderPopupOpen, setOrderPopupOpen] = useState(false);
@@ -420,11 +420,7 @@ export default function GetOrders({
         </div>
       </div>
       <div
-        className={clsx("w-4/5 sm:w-full sm:px-4", {
-          "max-w-2xl": !showOrderStatus,
-          "max-w-4xl": showOrderStatus,
-        })}
-      >
+        className="w-4/5 max-w-4xl">
         <div className="pt-4 flex">
           {/* <RefreshButton /> */}
           <FilterForm
@@ -435,11 +431,11 @@ export default function GetOrders({
           />
         </div>
 
-        <div>
-          {succesful ? (
+        {succesful ? (
+          <div className = "fixed bottom-5 self-center w-4/5 max-w-4xl ">
             <div
-              className="flex items-center p-4 my-4 text-sm text-green-800 border border-green-300 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400 dark:border-green-800 fixed bottom-5 w-4/5"
-              role="alert"
+            className="flex items-center p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400"
+            role="alert"
             >
               <svg
                 className="flex-shrink-0 inline w-4 h-4 me-3"
@@ -479,13 +475,16 @@ export default function GetOrders({
                 </svg>
               </button>
             </div>
-          ) : (
-            <></>
-          )}
+          </div>
+          
+        ) : (
+          <></>
+        )}
 
-          {failed ? (
+        {failed ? (
+          <div className = "fixed bottom-5 self-center w-4/5 max-w-4xl ">
             <div
-              className="flex items-center p-4 my-4 text-sm text-red-800 border border-red-300 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400 dark:border-red-800 fixed bottom-5 w-4/5"
+            className="flex items-center p-4 mb-4 text-sm text-red-800 border border-red-300 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400 dark:border-red-800 "
               role="alert"
             >
               <svg
@@ -526,10 +525,10 @@ export default function GetOrders({
                 </svg>
               </button>
             </div>
-          ) : (
-            <></>
-          )}
-        </div>
+          </div>
+        ) : (
+          <></>
+        )}
         <div className="block text-sm font-medium leading-6 text-verto_wt">
           {heading}
         </div>
