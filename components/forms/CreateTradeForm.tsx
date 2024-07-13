@@ -30,7 +30,6 @@ export default function CreateTradeForm() {
     useState<TokenMetadata>(defaultTokenMetadata);
   const [selectedToToken, setSelectedToToken] =
     useState<TokenMetadata>(defaultTokenMetadata);
-  const [isHovered, setHovered] = useState(false);
   const [succesfulCreation, setSuccesfulCreation] = useState(false);
   const [failedCreation, setFailedCreation] = useState(false);
   const [exchangeRate, setExchangeRate] = useState("");
@@ -46,8 +45,9 @@ export default function CreateTradeForm() {
   });
 
   const [values, setValues] = useState({
-    from_amount: "",
-    to_amount: "",
+    fromAmount: "",
+    toAmount: "",
+    exchangeRate:"",
   });
 
   useEffect(() => {
@@ -80,12 +80,12 @@ export default function CreateTradeForm() {
   }, [selectedFromToken.contractId, selectedToToken.contractId]);
 
   const validFrom =
-    0 < parseFloat(values.from_amount) &&
-    parseFloat(values.from_amount) <= balances.from_balance;
-  const validFor = 0 < parseFloat(values.to_amount);
+    0 < parseFloat(values.fromAmount) &&
+    parseFloat(values.fromAmount) <= balances.from_balance;
+  const validFor = 0 < parseFloat(values.toAmount);
 
-  const noFrom = isNaN(parseFloat(values.from_amount));
-  const noFor = isNaN(parseFloat(values.to_amount));
+  const noFrom = isNaN(parseFloat(values.fromAmount));
+  const noFor = isNaN(parseFloat(values.toAmount));
 
   const auth = status === "authenticated";
   const validTokens =
@@ -119,8 +119,9 @@ export default function CreateTradeForm() {
     setSelectedFromToken(selectedToToken);
     setSelectedToToken(tempFrom);
     setValues((prev) => ({
-      from_amount: prev.to_amount,
-      to_amount: prev.from_amount,
+      fromAmount: prev.toAmount,
+      toAmount: prev.fromAmount,
+      exchangeRate: prev.exchangeRate,
     }));
   }
 
@@ -183,30 +184,29 @@ export default function CreateTradeForm() {
       .catch((error) => console.log(error))
       .then((message) => {
         if (message === undefined) {
-          setSuccesfulCreation(false);
-          setFailedCreation(true);
           return;
         }
         setFailedCreation(false);
         setSuccesfulCreation(true);
         setValues({
-          from_amount: "",
-          to_amount: "",
+          fromAmount: "",
+          toAmount: "",
+          exchangeRate: "",
         });
       });
   }
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (values.from_amount === "" || values.to_amount === "") {
+    if (values.fromAmount === "" || values.toAmount === "") {
       return;
     }
     let fromAmount = convertFloatToInt(
-      values.from_amount,
+      values.fromAmount,
       selectedFromToken.decimals
     );
     let toAmount = convertFloatToInt(
-      values.to_amount,
+      values.toAmount,
       selectedToToken.decimals
     );
     callTransferMethod(fromAmount, toAmount);
@@ -216,31 +216,32 @@ export default function CreateTradeForm() {
     if (exchangeRate === "") {
       return;
     } else {
-      setValues({
-        from_amount: (
-          parseFloat(values.to_amount) * parseFloat(exchangeRate)
+      setValues((prev) => ({
+        fromAmount: (
+          parseFloat(values.toAmount) * parseFloat(values.exchangeRate)
         ).toString(),
-        to_amount: values.to_amount,
-      });
+        toAmount: prev.toAmount,
+        exchangeRate: prev.exchangeRate,
+      }));
     }
-  }, [exchangeRate]);
+  }, [values.exchangeRate]);
 
   useEffect(() => {
-    if (values.from_amount !== "" && values.to_amount !== "")
+    if (values.fromAmount !== "" && values.toAmount !== "")
       setExchangeRate(
         (
-          parseFloat(values.from_amount) / parseFloat(values.to_amount)
+          parseFloat(values.fromAmount) / parseFloat(values.toAmount)
         ).toString()
       );
-  }, [values.from_amount, values.to_amount]);
+  }, [values.fromAmount, values.toAmount]);
 
   const [placeHolder, setPlaceHolder] = useState("");
 
   useEffect(() => {
     setPlaceHolder(
-      numSlice(parseFloat(values.to_amount) / parseFloat(values.from_amount))
+      numSlice(parseFloat(values.toAmount) / parseFloat(values.fromAmount))
     );
-  }, [values.from_amount, values.to_amount]);
+  }, [values.fromAmount, values.toAmount]);
 
   return (
     <div className="text-white">
@@ -344,9 +345,9 @@ export default function CreateTradeForm() {
           <div className="flex">
             <input
               type="text"
-              name="from_amount"
-              id="from_amount"
-              value={values.from_amount}
+              name="fromAmount"
+              id="fromAmount"
+              value={values.fromAmount}
               onChange={(e) =>
                 handleNumericInput(e, setValues, selectedFromToken.decimals)
               }
@@ -369,24 +370,26 @@ export default function CreateTradeForm() {
             </div>
           </div>
           <div>
-            <button
-              type="button"
-              disabled={true}
-              className={` ${!auth ? "text-transparent hover:cursor-default" : "text-white"} text-sm pt-2`}
-              onClick={() =>
-                setValues({
-                  from_amount: balances.from_balance.toString(),
-                  to_amount: values.to_amount,
-                })
-              }
-            >
+
               Balance:{" "}
               {!auth
                 ? "N/A"
                 : tokenObjects === null ||
                     tokenObjects[selectedFromToken.contractId] === undefined
                   ? "N/A"
-                  : formatNumber(
+                  :             
+                  <button
+                    type="button"
+                    className={` ${!auth ? "text-transparent hover:cursor-default" : "text-white"} text-sm pt-2`}
+                    onClick={() =>
+                      setValues({
+                        fromAmount: convertIntToFloat(balances.from_balance.toString(), tokenObjects[selectedFromToken.contractId].decimals),
+                        toAmount: values.toAmount,
+                        exchangeRate: "",
+                      })
+                    }
+                  >
+                    {formatNumber(
                       Number(
                         convertIntToFloat(
                           balances.from_balance.toString(),
@@ -394,7 +397,8 @@ export default function CreateTradeForm() {
                         )
                       )
                     )}
-            </button>
+                  </button>}
+            
           </div>
         </div>
 
@@ -414,9 +418,9 @@ export default function CreateTradeForm() {
           <div className="flex ">
             <input
               type="text"
-              name="to_amount"
-              id="to_amount"
-              value={values.to_amount}
+              name="toAmount"
+              id="toAmount"
+              value={values.toAmount}
               onChange={(e) =>
                 handleNumericInput(e, setValues, selectedToToken.decimals)
               }
@@ -460,12 +464,12 @@ export default function CreateTradeForm() {
 
         <div className="flex flex-col py-4 px-4 w-full rounded-lg mb-2 mt-4 justify-between ring-1 ring-verto_border">
           <div className="font-semibold mb-2">EXCHANGE RATE</div>
-          {values.from_amount && values.to_amount ? (
+          {values.fromAmount && values.toAmount ? (
             <div className=" text-3xl flex">
               <span> 1 {selectedFromToken.symbol} ⇌ </span>
               <div className="px-1">
                 {numSlice(
-                  parseFloat(values.to_amount) / parseFloat(values.from_amount)
+                  parseFloat(values.toAmount) / parseFloat(values.fromAmount)
                 )}
               </div>
               {selectedToToken.symbol}
