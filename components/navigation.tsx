@@ -76,9 +76,12 @@ export default function Navigation() {
                           key={item.name}
                           href={item.href}
                           className={clsx(
+                            item.name === "Create Order"
+                              ? "bg-gradient-to-r from-green-400 to-lime-300 hover:from-green-300 hover:to-indigo-400  text-black hover:text-black"
+                              : "",
                             pathName.endsWith(item.href)
                               ? "bg-zinc-800 text-white"
-                              : "text-zinc-300 hover:bg-zinc-700 hover:text-white",
+                              : "hover:bg-zinc-700 hover:text-white",
                             "rounded-md px-3 py-2 text-sm font-medium"
                           )}
                           aria-current={
