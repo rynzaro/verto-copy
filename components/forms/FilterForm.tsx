@@ -3,7 +3,7 @@
 import { FilterValues, Order, TokenMetadata } from "@/lib/types/types";
 import { convertIntToFloat, handleNumericInput } from "@/lib/utils";
 import { Field, Label, MenuButton, Switch } from "@headlessui/react";
-import { Dispatch, useEffect, useState } from "react";
+import { Dispatch, useEffect, useRef, useState } from "react";
 
 export default function FilterForm({
   showCompletedToggle,
@@ -17,22 +17,20 @@ export default function FilterForm({
   handleFilterOrders: () => void;
 }) {
   const [visible, setVisible] = useState(false);
-  const filterIcon = (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-      strokeWidth={1.5}
-      stroke="currentColor"
-      className="size-6"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75"
-      />
-    </svg>
-  );
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleOutSideClick = (event: MouseEvent) => {
+      if (ref.current && !ref.current.contains(event.target as Node)) {
+        setVisible(false);
+      }
+    };
+    window.addEventListener("mousedown", handleOutSideClick);
+
+    return () => {
+      window.removeEventListener("mousedown", handleOutSideClick);
+    };
+  }, [ref]);
 
   function clearFilter() {
     setFilterValues((prev) => ({
@@ -142,7 +140,10 @@ export default function FilterForm({
   return (
     <div className="relative">
       {filterMenu}
-      <div className="w-[320px] sm:w-[480px] bg-verto_bg mb-2 ring-2 ring-verto_border rounded-xl px-3 py-4 absolute mt-2">
+      <div
+        className="w-[320px] sm:w-[480px] bg-verto_bg mb-2 ring-2 ring-verto_border rounded-xl px-3 py-4 absolute mt-2"
+        ref={ref}
+      >
         <div className="uppercase mb-1">From Amount</div>
         <div className="flex justify-center items-center gap-2">
           <div className="flex flex-col py-2 px-2 rounded-lg mb-2 ring-1 ring-verto_border">

@@ -52,7 +52,7 @@ export default function GetOrders({
     useNearWallet();
   const [orders, setOrders] = useState<Order[]>([]);
   const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
-  const [succesful, setSuccesful] = useState(true);
+  const [succesful, setSuccesful] = useState(false);
   const [failed, setFailed] = useState(false);
   const [action, setAction] = useState("");
   const [orderPopupOpen, setOrderPopupOpen] = useState(false);
@@ -419,8 +419,7 @@ export default function GetOrders({
           />
         </div>
       </div>
-      <div
-        className="w-4/5 max-w-4xl">
+      <div className="w-4/5 max-w-4xl">
         <div className="pt-4 flex">
           {/* <RefreshButton /> */}
           <FilterForm
@@ -432,10 +431,10 @@ export default function GetOrders({
         </div>
 
         {succesful ? (
-          <div className = "fixed bottom-5 self-center w-4/5 max-w-4xl ">
+          <div className="fixed bottom-5 self-center w-4/5 max-w-4xl ">
             <div
-            className="flex items-center p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400"
-            role="alert"
+              className="flex items-center p-4 mb-4 text-sm rounded-lg  bg-gray-800 text-green-400"
+              role="alert"
             >
               <svg
                 className="flex-shrink-0 inline w-4 h-4 me-3"
@@ -476,15 +475,14 @@ export default function GetOrders({
               </button>
             </div>
           </div>
-          
         ) : (
           <></>
         )}
 
         {failed ? (
-          <div className = "fixed bottom-5 self-center w-4/5 max-w-4xl ">
+          <div className="fixed bottom-5 self-center w-4/5 max-w-4xl ">
             <div
-            className="flex items-center p-4 mb-4 text-sm text-red-800 border border-red-300 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400 dark:border-red-800 "
+              className="flex items-center p-4 mb-4 text-sm rounded-lg bg-gray-800 text-red-400 border-red-800 "
               role="alert"
             >
               <svg
