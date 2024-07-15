@@ -47,7 +47,7 @@ export default function CreateTradeForm() {
   const [values, setValues] = useState({
     fromAmount: "",
     toAmount: "",
-    exchangeRate:"",
+    inputExchangeRate: "",
   });
 
   useEffect(() => {
@@ -121,7 +121,7 @@ export default function CreateTradeForm() {
     setValues((prev) => ({
       fromAmount: prev.toAmount,
       toAmount: prev.fromAmount,
-      exchangeRate: prev.exchangeRate,
+      inputExchangeRate: prev.inputExchangeRate,
     }));
   }
 
@@ -191,7 +191,7 @@ export default function CreateTradeForm() {
         setValues({
           fromAmount: "",
           toAmount: "",
-          exchangeRate: "",
+          inputExchangeRate: "",
         });
       });
   }
@@ -205,10 +205,7 @@ export default function CreateTradeForm() {
       values.fromAmount,
       selectedFromToken.decimals
     );
-    let toAmount = convertFloatToInt(
-      values.toAmount,
-      selectedToToken.decimals
-    );
+    let toAmount = convertFloatToInt(values.toAmount, selectedToToken.decimals);
     callTransferMethod(fromAmount, toAmount);
   };
 
@@ -218,20 +215,18 @@ export default function CreateTradeForm() {
     } else {
       setValues((prev) => ({
         fromAmount: (
-          parseFloat(values.toAmount) * parseFloat(values.exchangeRate)
+          parseFloat(values.toAmount) * parseFloat(values.inputExchangeRate)
         ).toString(),
         toAmount: prev.toAmount,
-        exchangeRate: prev.exchangeRate,
+        inputExchangeRate: prev.inputExchangeRate,
       }));
     }
-  }, [values.exchangeRate]);
+  }, [values.inputExchangeRate]);
 
   useEffect(() => {
     if (values.fromAmount !== "" && values.toAmount !== "")
       setExchangeRate(
-        (
-          parseFloat(values.fromAmount) / parseFloat(values.toAmount)
-        ).toString()
+        (parseFloat(values.fromAmount) / parseFloat(values.toAmount)).toString()
       );
   }, [values.fromAmount, values.toAmount]);
 
@@ -370,35 +365,37 @@ export default function CreateTradeForm() {
             </div>
           </div>
           <div>
-
-              Balance:{" "}
-              {!auth
-                ? "N/A"
-                : tokenObjects === null ||
-                    tokenObjects[selectedFromToken.contractId] === undefined
-                  ? "N/A"
-                  :             
-                  <button
-                    type="button"
-                    className={` ${!auth ? "text-transparent hover:cursor-default" : "text-white"} text-sm pt-2`}
-                    onClick={() =>
-                      setValues({
-                        fromAmount: convertIntToFloat(balances.from_balance.toString(), tokenObjects[selectedFromToken.contractId].decimals),
-                        toAmount: values.toAmount,
-                        exchangeRate: "",
-                      })
-                    }
-                  >
-                    {formatNumber(
-                      Number(
-                        convertIntToFloat(
-                          balances.from_balance.toString(),
-                          tokenObjects[selectedFromToken.contractId].decimals
-                        )
-                      )
-                    )}
-                  </button>}
-            
+            Balance:{" "}
+            {!auth ? (
+              "N/A"
+            ) : tokenObjects === null ||
+              tokenObjects[selectedFromToken.contractId] === undefined ? (
+              "N/A"
+            ) : (
+              <button
+                type="button"
+                className={` ${!auth ? "text-transparent hover:cursor-default" : "text-white"} text-sm pt-2`}
+                onClick={() =>
+                  setValues({
+                    fromAmount: convertIntToFloat(
+                      balances.from_balance.toString(),
+                      tokenObjects[selectedFromToken.contractId].decimals
+                    ),
+                    toAmount: values.toAmount,
+                    inputExchangeRate: "",
+                  })
+                }
+              >
+                {formatNumber(
+                  Number(
+                    convertIntToFloat(
+                      balances.from_balance.toString(),
+                      tokenObjects[selectedFromToken.contractId].decimals
+                    )
+                  )
+                )}
+              </button>
+            )}
           </div>
         </div>
 

@@ -79,9 +79,10 @@ export default function Navigation() {
                             item.name === "Create Order"
                               ? "bg-gradient-to-r from-green-400 to-lime-300 hover:from-green-300 hover:to-indigo-400  text-black hover:text-black"
                               : "",
-                            pathName.endsWith(item.href)
+                            pathName.endsWith(item.href) &&
+                              item.name !== "Create Order"
                               ? "bg-zinc-800 text-white"
-                              : "hover:bg-zinc-700 hover:text-white",
+                              : "hover:bg-zinc-700",
                             "rounded-md px-3 py-2 text-sm font-medium"
                           )}
                           aria-current={
