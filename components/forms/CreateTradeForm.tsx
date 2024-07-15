@@ -81,7 +81,9 @@ export default function CreateTradeForm() {
 
   const validFrom =
     0 < parseFloat(values.fromAmount) &&
-    parseFloat(values.fromAmount) <= balances.from_balance;
+    parseFloat(
+      convertFloatToInt(values.fromAmount, selectedFromToken.decimals)
+    ) <= balances.from_balance;
   const validFor = 0 < parseFloat(values.toAmount);
 
   const noFrom = isNaN(parseFloat(values.fromAmount));
@@ -368,8 +370,7 @@ export default function CreateTradeForm() {
             Balance:{" "}
             {!auth ? (
               "N/A"
-            ) : tokenObjects === null ||
-              tokenObjects[selectedFromToken.contractId] === undefined ? (
+            ) : tokenObjects === null ? (
               "N/A"
             ) : (
               <button
@@ -379,7 +380,7 @@ export default function CreateTradeForm() {
                   setValues({
                     fromAmount: convertIntToFloat(
                       balances.from_balance.toString(),
-                      tokenObjects[selectedFromToken.contractId].decimals
+                      selectedFromToken.decimals
                     ),
                     toAmount: values.toAmount,
                     inputExchangeRate: "",
@@ -390,7 +391,7 @@ export default function CreateTradeForm() {
                   Number(
                     convertIntToFloat(
                       balances.from_balance.toString(),
-                      tokenObjects[selectedFromToken.contractId].decimals
+                      selectedFromToken.decimals
                     )
                   )
                 )}
