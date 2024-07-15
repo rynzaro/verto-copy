@@ -63,7 +63,7 @@ export default function FilterForm({
   }
 
   const filterMenu = (
-    <div className="flex flex-wrap gap-x-2 gap-y-4">
+    <div className="flex flex-wrap gap-x-2 gap-y-4 justify-between">
       <button
         className="relative flex rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-zinc-800"
         onClick={toggleVisible}
@@ -92,7 +92,7 @@ export default function FilterForm({
       <div className="relative flex text-sm">
         <button
           type="button"
-          className={`px-3.5 py-2 mr-1 h-full shadow-sm rounded-md font-semibold text-white focus:outline-none focus:ring-2 focus:ring-white focus-visible:outline ${filterValues.buyMept ? "bg-zinc-600" : "bg-zinc-800"}`}
+          className={`px-3.5 py-2 mr-2 h-full shadow-sm rounded-md font-semibold text-white focus:outline-none hover:bg-zinc-400 ${filterValues.buyMept ? "bg-zinc-600" : "bg-zinc-800"}`}
           onClick={() => {
             handleShowSwap(true);
           }}
@@ -101,7 +101,7 @@ export default function FilterForm({
         </button>
         <button
           type="button"
-          className={`px-3.5 py-2 h-full shadow-sm rounded-md font-semibold text-white focus:outline-none focus:ring-2 focus:ring-white focus-visible:outline ${!filterValues.buyMept ? "bg-zinc-600" : "bg-zinc-800"}`}
+          className={`px-3.5 py-2 h-full shadow-sm rounded-md font-semibold text-white focus:outline-none hover:bg-zinc-400 ${!filterValues.buyMept ? "bg-zinc-600" : "bg-zinc-800"}`}
           onClick={() => {
             handleShowSwap(false);
           }}
