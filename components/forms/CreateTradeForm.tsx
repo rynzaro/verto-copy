@@ -82,7 +82,7 @@ export default function CreateTradeForm() {
   const validFrom =
     0 < parseFloat(values.fromAmount) &&
     parseFloat(
-      convertFloatToInt(values.fromAmount, selectedFromToken.decimals)
+      convertFloatToInt(values.fromAmount, selectedFromToken.decimals),
     ) <= balances.from_balance;
   const validFor = 0 < parseFloat(values.toAmount);
 
@@ -92,6 +92,48 @@ export default function CreateTradeForm() {
   const auth = status === "authenticated";
   const validTokens =
     selectedFromToken.contractId !== selectedToToken.contractId;
+
+  const [Multiple, setMultiple] = useState(1);
+  const validMultiple =
+    validFrom &&
+    parseFloat(
+      convertFloatToInt(values.fromAmount, selectedFromToken.decimals),
+    ) *
+      Multiple <=
+      balances.from_balance;
+
+  const maxMultiple = !validFrom
+    ? 1
+    : Math.min(
+        10,
+        Math.floor(
+          balances.from_balance /
+            parseFloat(
+              convertFloatToInt(values.fromAmount, selectedFromToken.decimals),
+            ),
+        ),
+      );
+  const [maxClicked, setMaxClicked] = useState(false);
+
+  const handleMultiple = () => {
+    if (maxClicked) {
+      setMultiple(1);
+      setMaxClicked(false);
+    } else if (Multiple === maxMultiple) {
+      setMaxClicked(true);
+    } else {
+      validFrom ? setMultiple((Multiple + 1) % 11) : setMultiple(1);
+    }
+  };
+
+  const validOrder = validFrom && validFor && validTokens && validMultiple;
+
+  // const maxMultiple =
+  //   parseFloat(
+  //     convertFloatToInt(values.fromAmount, selectedFromToken.decimals),
+  //   ) %
+  //     balances.from_balance >=
+  //   0;
 
   useEffect(() => {
     if (!tokenObjects) {
@@ -170,17 +212,19 @@ export default function CreateTradeForm() {
         deposit: fromAmount,
       });
     } else {
-      transactions.push({
-        contractId: selectedFromToken.contractId,
-        method: "ft_transfer_call",
-        args: {
-          receiver_id: VertoContract,
-          amount: fromAmount,
-          msg: jsonString,
-        },
-        gas: MAX_GAS,
-        deposit: "1",
-      });
+      for (let i = 0; i < Multiple; i++) {
+        transactions.push({
+          contractId: selectedFromToken.contractId,
+          method: "ft_transfer_call",
+          args: {
+            receiver_id: VertoContract,
+            amount: fromAmount,
+            msg: jsonString,
+          },
+          gas: MAX_GAS,
+          deposit: "1",
+        });
+      }
     }
     callMethods(transactions)
       .catch((error) => console.log(error))
@@ -205,7 +249,7 @@ export default function CreateTradeForm() {
     }
     let fromAmount = convertFloatToInt(
       values.fromAmount,
-      selectedFromToken.decimals
+      selectedFromToken.decimals,
     );
     let toAmount = convertFloatToInt(values.toAmount, selectedToToken.decimals);
     callTransferMethod(fromAmount, toAmount);
@@ -228,7 +272,9 @@ export default function CreateTradeForm() {
   useEffect(() => {
     if (values.fromAmount !== "" && values.toAmount !== "")
       setExchangeRate(
-        (parseFloat(values.fromAmount) / parseFloat(values.toAmount)).toString()
+        (
+          parseFloat(values.fromAmount) / parseFloat(values.toAmount)
+        ).toString(),
       );
   }, [values.fromAmount, values.toAmount]);
 
@@ -236,7 +282,7 @@ export default function CreateTradeForm() {
 
   useEffect(() => {
     setPlaceHolder(
-      numSlice(parseFloat(values.toAmount) / parseFloat(values.fromAmount))
+      numSlice(parseFloat(values.toAmount) / parseFloat(values.fromAmount)),
     );
   }, [values.fromAmount, values.toAmount]);
 
@@ -380,7 +426,7 @@ export default function CreateTradeForm() {
                   setValues({
                     fromAmount: convertIntToFloat(
                       balances.from_balance.toString(),
-                      selectedFromToken.decimals
+                      selectedFromToken.decimals,
                     ),
                     toAmount: values.toAmount,
                     inputExchangeRate: "",
@@ -391,9 +437,9 @@ export default function CreateTradeForm() {
                   Number(
                     convertIntToFloat(
                       balances.from_balance.toString(),
-                      selectedFromToken.decimals
-                    )
-                  )
+                      selectedFromToken.decimals,
+                    ),
+                  ),
                 )}
               </button>
             )}
@@ -453,29 +499,13 @@ export default function CreateTradeForm() {
                     Number(
                       convertIntToFloat(
                         balances.to_balance.toString(),
-                        tokenObjects[selectedToToken.contractId].decimals
-                      )
-                    )
+                        tokenObjects[selectedToToken.contractId].decimals,
+                      ),
+                    ),
                   )}
           </div>
         </div>
 
-        <div className="flex flex-col py-4 px-4 w-full rounded-lg mb-2 mt-4 justify-between ring-1 ring-verto_border">
-          <div className="font-semibold mb-2">EXCHANGE RATE</div>
-          {values.fromAmount && values.toAmount ? (
-            <div className=" text-3xl flex">
-              <span> 1 {selectedFromToken.symbol} ⇌ </span>
-              <div className="px-1">
-                {numSlice(
-                  parseFloat(values.toAmount) / parseFloat(values.fromAmount)
-                )}
-              </div>
-              {selectedToToken.symbol}
-            </div>
-          ) : (
-            <div className="text-transparent hover:cursor-default">N/A</div>
-          )}
-        </div>
         {/* <div className="my-8"> */}
 
         {/* SPECIAL TRADE OPTIONS */}
@@ -529,8 +559,8 @@ export default function CreateTradeForm() {
         {/* {privateTrade ? (
                     <>
                         <input
-                            type="text"
-                            name="to_account"
+                            type="text"1X
+
                             id="to_account"
                             onChange={(e) => handleInput(e, setValues)}
                             className="placeholder:text-zinc-700 placeholder:font-bold hover-inset-border2 mt-1 w-full text-center text-bold rounded-lg bg-verto_bg border-2 border-verto_borders mb-1 p-3 text-verto_wt focus:outline-none"
@@ -550,18 +580,49 @@ export default function CreateTradeForm() {
             Connect Wallet to Create Order
           </button>
         ) : (
-          <button
-            type="submit"
-            className={
-              validFrom && validFor && validTokens
-                ? "w-full rounded-md bg-gradient-to-r from-green-400 to-lime-300 hover:from-green-300 hover:to-lime-200 mt-2 px-3.5 py-2.5 text-sm font-semibold text-black shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
-                : "w-full rounded-md bg-gradient-to-r from-blue-400 hover:cursor-default to-blue-300 mt-2 px-3.5 py-2.5 text-sm font-semibold text-black shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
-            }
-            disabled={!(validFor && validFrom && validTokens)}
-          >
-            Create Order
-          </button>
+          <div className="flex justify-between py-2">
+            <button
+              type="button"
+              onClick={() => handleMultiple()}
+              className={
+                Multiple === 1
+                  ? "py-2.5 px-3 mr-2 w-20 rounded-md text-sm font-semibold ring-verto_border shadow-sm ring-1 hover:ring-2"
+                  : validMultiple && Multiple > 1
+                    ? "py-2.5 px-3 mr-2 w-20 rounded-md text-sm font-semibold ring-lime-400 ring-2"
+                    : "py-2.5 px-3 mr-2 w-20 rounded-md text-sm font-semibold ring-red-500 ring-2"
+              }
+            >
+              {Multiple}X {maxClicked ? <></> : <></>}
+            </button>
+            <button
+              type="submit"
+              className={
+                validOrder
+                  ? "w-full rounded-md bg-gradient-to-r from-green-400 to-lime-300 hover:from-green-300 hover:to-lime-200  text-sm font-semibold text-black shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+                  : "w-full rounded-md bg-gradient-to-r from-slate-800 hover:cursor-default to-slate-600 text-sm font-semibold text-black shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+              }
+              disabled={!validOrder}
+            >
+              Create Order
+            </button>
+          </div>
         )}
+        <div className="flex flex-col py-4 px-4 w-full rounded-lg mb-2 mt-2 justify-between ring-1 ring-verto_border">
+          <div className="font-semibold mb-2">EXCHANGE RATE</div>
+          {values.fromAmount && values.toAmount ? (
+            <div className=" text-3xl flex">
+              <span> 1 {selectedFromToken.symbol} ⇌ </span>
+              <div className="px-1">
+                {numSlice(
+                  parseFloat(values.toAmount) / parseFloat(values.fromAmount),
+                )}
+              </div>
+              {selectedToToken.symbol}
+            </div>
+          ) : (
+            <div className="text-transparent hover:cursor-default">N/A</div>
+          )}
+        </div>
       </form>
     </div>
   );
