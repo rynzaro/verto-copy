@@ -216,10 +216,10 @@ export default function CreateTradeForm() {
       return;
     } else {
       setValues((prev) => ({
-        fromAmount: (
-          parseFloat(values.toAmount) * parseFloat(values.inputExchangeRate)
+        fromAmount: prev.fromAmount,
+        toAmount: (
+          parseFloat(values.fromAmount) * parseFloat(values.inputExchangeRate)
         ).toString(),
-        toAmount: prev.toAmount,
         inputExchangeRate: prev.inputExchangeRate,
       }));
     }
