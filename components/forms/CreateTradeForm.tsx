@@ -196,16 +196,16 @@ export default function CreateTradeForm() {
       }
     }
 
-    if (selectedFromToken.contractId === "near") {
-      transactions.push({
-        contractId: VertoContract,
-        method: "make_order",
-        args: { msg: jsonString },
-        gas: MAX_GAS,
-        deposit: fromAmount,
-      });
-    } else {
-      for (let i = 0; i < Multiple; i++) {
+    for (let i = 0; i < Multiple; i++) {
+      if (selectedFromToken.contractId === "near") {
+        transactions.push({
+          contractId: VertoContract,
+          method: "make_order",
+          args: { msg: jsonString },
+          gas: MAX_GAS,
+          deposit: fromAmount,
+        });
+      } else {
         transactions.push({
           contractId: selectedFromToken.contractId,
           method: "ft_transfer_call",
