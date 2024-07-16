@@ -10,6 +10,7 @@ import {
 } from "@/lib/types/types";
 import {
   convertIntToFloat,
+  convertIntToFloat_,
   formatNumber,
   handleInput,
   truncateString,
@@ -58,11 +59,11 @@ export default function GetOrders({
   const [action, setAction] = useState("");
   const [orderPopupOpen, setOrderPopupOpen] = useState(false);
   const [currentOrderDetails, setCurrentOrderDetails] = useState<Order | null>(
-    null,
+    null
   );
 
   const [multipleOrders, setMultipleOrders] = useState(false);
-
+  const [transactions, setTransactions] = useState<Order[]>([]);
   const [sort, setSort] = useState<Sort>(initialSort);
   const [filterValues, setFilterValues] = useState<FilterValues>({
     ...initialFilterValues,
@@ -85,7 +86,7 @@ export default function GetOrders({
     });
   }
 
-  const sortOrders = (orders: Order[]) => {
+  function sortOrders(orders: Order[]) {
     // Use Array.prototype.sort() with a comparator function
     return orders.sort((a, b) => {
       if (
@@ -109,10 +110,10 @@ export default function GetOrders({
           let decimalsAOffer = tokenObjects[a.from_contract_id].decimals;
           let decimalsBOffer = tokenObjects[b.from_contract_id].decimals;
           valueA = parseFloat(
-            convertIntToFloat(a["from_amount"], decimalsAOffer),
+            convertIntToFloat(a["from_amount"], decimalsAOffer)
           );
           valueB = parseFloat(
-            convertIntToFloat(b["from_amount"], decimalsBOffer),
+            convertIntToFloat(b["from_amount"], decimalsBOffer)
           );
           break;
 
@@ -133,7 +134,7 @@ export default function GetOrders({
       }
       return sort.order === "asc" ? valueA - valueB : valueB - valueA;
     });
-  };
+  }
 
   function filterOrders() {
     console.log("Actual Filter Values:", filterValues);
@@ -194,14 +195,14 @@ export default function GetOrders({
       const fromAmount = parseFloat(
         convertIntToFloat(
           order.from_amount,
-          tokenObjects[order.from_contract_id].decimals,
-        ),
+          tokenObjects[order.from_contract_id].decimals
+        )
       );
       const toAmount = parseFloat(
         convertIntToFloat(
           order.to_amount,
-          tokenObjects[order.to_contract_id].decimals,
-        ),
+          tokenObjects[order.to_contract_id].decimals
+        )
       );
       const price = toAmount / fromAmount;
 
@@ -218,17 +219,6 @@ export default function GetOrders({
 
     setFilteredOrders(newOrderObjects);
   }
-
-  // let transactions: Order[] = [];
-  let transactions: any[] = [];
-  const handleCheck = (order: Order) => {
-    if (transactions.includes(order)) {
-      transactions = transactions.filter((orders) => orders.id !== order.id);
-    } else {
-      transactions.push(order);
-    }
-    console.log(transactions);
-  };
 
   useEffect(() => {
     filterOrders();
@@ -247,6 +237,26 @@ export default function GetOrders({
       })
       .catch((error) => console.log(error));
   }, [accountId, CONTRACT, viewMethod, typeOfOrders]);
+
+  const handleCheck = (order: Order) => {
+    setTransactions((prevTransactions) => {
+      if (prevTransactions.some((item) => item.id === order.id)) {
+        const newTransactions = prevTransactions.filter(
+          (item) => item.id !== order.id
+        );
+        console.log(newTransactions);
+        return newTransactions;
+      } else {
+        const newTransactions = [...prevTransactions, order];
+        console.log(newTransactions);
+        return newTransactions;
+      }
+    });
+  };
+
+  useEffect(() => {
+    setTransactions([]);
+  }, [filterValues.buyMept]);
 
   async function handleMultiple(orders: Order[]) {
     let arr: MethodParameters[] = [];
@@ -312,6 +322,7 @@ export default function GetOrders({
   }
 
   const multipleDetails = () => {
+    // declare Order that will be passed to the order display card function in the end
     let orderSummary: Order = {
       id: "",
       from_contract_id: "",
@@ -322,7 +333,19 @@ export default function GetOrders({
       maker_id: "",
       taker_id: null,
     };
-    const arr = transactions.reduce(
+    if (!tokenObjects) {
+      return orderSummary;
+    }
+    const arr: [
+      string[],
+      string[],
+      string[],
+      string[],
+      string[],
+      string[],
+      string[],
+      (string | null)[],
+    ] = transactions.reduce(
       (acc, order) => {
         acc[0].push(order.id);
         acc[1].push(order.from_contract_id);
@@ -334,7 +357,16 @@ export default function GetOrders({
         acc[7].push(order.taker_id);
         return acc;
       },
-      [[], [], [], [], [], [], [], []],
+      [[], [], [], [], [], [], [], []] as [
+        string[],
+        string[],
+        string[],
+        string[],
+        string[],
+        string[],
+        string[],
+        (string | null)[],
+      ]
     );
 
     // const arr = transactions.map((order) => [
@@ -352,19 +384,26 @@ export default function GetOrders({
     let i = 0;
     // for (let i = 0; i < arr[3].length; i++) {
     while (arr[3][i]) {
-      from_sum = from_sum + arr[3][i];
-      from_sum = from_sum + arr[4][i];
+      from_sum = from_sum + parseInt(arr[3][i]);
+      to_sum = to_sum + parseInt(arr[4][i]);
       i++;
     }
 
     orderSummary.id = arr[0].join(", ");
     orderSummary.from_contract_id = String(Array.from(new Set(arr[1]))[0]);
     orderSummary.to_contract_id = String(Array.from(new Set(arr[2]))[0]);
-    orderSummary.from_amount = String(from_sum);
-    orderSummary.to_amount = String(to_sum);
+    orderSummary.from_amount = from_sum.toLocaleString("fullwide", {
+      useGrouping: false,
+    });
+    orderSummary.to_amount = String(Array.from(new Set(arr[2]))[0]);
+    orderSummary.to_amount = to_sum.toLocaleString("fullwide", {
+      useGrouping: false,
+    });
     orderSummary.status = "open";
     orderSummary.maker_id = Array.from(new Set(arr[6])).join(", ");
     orderSummary.taker_id = arr[7][0];
+
+    console.log(orderSummary);
 
     return orderSummary;
   };
@@ -527,6 +566,7 @@ export default function GetOrders({
   }
 
   function showOrderDetails(order: Order) {
+    console.log(order);
     setCurrentOrderDetails(order);
     setOrderPopupOpen(true);
   }
@@ -575,7 +615,10 @@ export default function GetOrders({
                   Details
                 </button>
                 <button
-                  onClick={() => setMultipleOrders(false)}
+                  onClick={() => {
+                    setTransactions([]);
+                    setMultipleOrders(false);
+                  }}
                   type="button"
                   className={`px-3.5 py-2 mr-2 h-full shadow-sm rounded-md font-semibold bg-zinc-800 text-white focus:outline-none hover:bg-zinc-600`}
                 >
@@ -786,10 +829,10 @@ export default function GetOrders({
                 let toObject = tokenObjects[order.to_contract_id];
                 if (fromObject && toObject) {
                   let fromAmountFloat = Number(
-                    convertIntToFloat(order.from_amount, fromObject.decimals),
+                    convertIntToFloat(order.from_amount, fromObject.decimals)
                   );
                   let toAmountFloat = Number(
-                    convertIntToFloat(order.to_amount, toObject.decimals),
+                    convertIntToFloat(order.to_amount, toObject.decimals)
                   );
                   return (
                     <tr key={order.id} className="border-b border-gray-700 ">
@@ -817,9 +860,9 @@ export default function GetOrders({
                             Number(
                               convertIntToFloat(
                                 order.from_amount,
-                                fromObject.decimals,
-                              ),
-                            ),
+                                fromObject.decimals
+                              )
+                            )
                           )}
                         </p>
                         <span className="text-gray-500">
@@ -833,9 +876,9 @@ export default function GetOrders({
                             Number(
                               convertIntToFloat(
                                 order.to_amount,
-                                toObject.decimals,
-                              ),
-                            ),
+                                toObject.decimals
+                              )
+                            )
                           )}
                         </p>
                         <span className="text-gray-500">
@@ -848,9 +891,9 @@ export default function GetOrders({
                           {formatNumber(
                             Number(
                               parseFloat(
-                                (toAmountFloat / fromAmountFloat).toFixed(4),
-                              ),
-                            ),
+                                (toAmountFloat / fromAmountFloat).toFixed(4)
+                              )
+                            )
                           )}
                         </p>
                       </td>
