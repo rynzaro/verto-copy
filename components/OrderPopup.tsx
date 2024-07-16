@@ -1,10 +1,12 @@
 "use client";
 
-import useFetchTokenObjects from "@/hook/FetchTokenObjects";
 import { Order, TokenMetadata } from "@/lib/types/types";
 import Image from "next/image";
-import { convertIntToFloat, formatNumber } from "@/lib/utils";
-import { useEffect, useState } from "react";
+import {
+  convertIntToFloat,
+  formatNumber,
+  formatNumberPrecisely,
+} from "@/lib/utils";
 
 export default function OrderPopup({
   order,
@@ -68,7 +70,7 @@ export default function OrderPopup({
           <div className="flex justify-between px-4 py-3 font-bold text-sm">
             <div className="text-gray-400">You send</div>
             <div>
-              {formatNumber(
+              {formatNumberPrecisely(
                 Number(convertIntToFloat(order.to_amount, toObject.decimals))
               )}{" "}
               {toObject.symbol}
@@ -77,7 +79,7 @@ export default function OrderPopup({
           <div className="flex justify-between px-4 py-3 font-bold text-sm">
             <div className="text-gray-400">You receive</div>
             <div>
-              {formatNumber(
+              {formatNumberPrecisely(
                 Number(
                   convertIntToFloat(order.from_amount, fromObject.decimals)
                 )

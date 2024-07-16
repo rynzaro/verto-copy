@@ -88,5 +88,18 @@ export function truncateString(str: string, length: number) {
 }
 
 export function formatNumber(number: number) {
+  if (number > -1 && number < 1) {
+    number = +number.toFixed(3);
+  } else if (number > -10 && number < 10) {
+    number = +number.toFixed(2);
+  } else if (number > -100 && number < 100) {
+    number = +number.toFixed(1);
+  } else {
+    number = +number.toFixed();
+  }
+  return number.toLocaleString("en-US", { maximumFractionDigits: 12 });
+}
+
+export function formatNumberPrecisely(number: number) {
   return number.toLocaleString("en-US", { maximumFractionDigits: 12 });
 }

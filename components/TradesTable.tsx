@@ -2,17 +2,11 @@
 
 import { VertoContract } from "@/lib/config/near";
 import { Checkbox } from "@headlessui/react";
-import {
-  defaultFilterValues,
-  FilterValues,
-  Order,
-  Sort,
-} from "@/lib/types/types";
+import { FilterValues, Order, Sort } from "@/lib/types/types";
 import {
   convertIntToFloat,
   convertIntToFloat_,
   formatNumber,
-  handleInput,
   truncateString,
 } from "@/lib/utils";
 import { useNearWallet } from "@/providers/wallet";
@@ -399,7 +393,7 @@ export default function GetOrders({
     orderSummary.to_amount = to_sum.toLocaleString("fullwide", {
       useGrouping: false,
     });
-    orderSummary.status = "open";
+    orderSummary.status = "Open";
     orderSummary.maker_id = Array.from(new Set(arr[6])).join(", ");
     orderSummary.taker_id = arr[7][0];
 
@@ -566,7 +560,6 @@ export default function GetOrders({
   }
 
   function showOrderDetails(order: Order) {
-    console.log(order);
     setCurrentOrderDetails(order);
     setOrderPopupOpen(true);
   }
@@ -910,30 +903,35 @@ export default function GetOrders({
                       <td className="py-4">
                         {multipleOrders ? (
                           <div className="flex justify-center">
-                            <Checkbox
-                              onChange={() => handleCheck(order)}
-                              className="group block size-6 rounded border-verto_border border hover:border-2  bg-verto_bg data-[checked]:bg-white"
-                            >
-                              {/* Checkmark icon */}
-                              <svg
-                                className="stroke-black opacity-0 group-data-[checked]:opacity-100"
-                                viewBox="0 0 14 14"
-                                fill="none"
+                            {order.maker_id !== accountId ? (
+                              <Checkbox
+                                onChange={() => handleCheck(order)}
+                                className="group block size-6 rounded border-verto_border border-2 hover:border-3 hover:border-zinc-600 bg-verto_bg data-[checked]:bg-white"
                               >
-                                <path
-                                  d="M3 8L6 11L11 3.5"
-                                  strokeWidth={2}
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                />
-                              </svg>
-                            </Checkbox>
+                                {/* Checkmark icon */}
+                                <svg
+                                  className="stroke-black opacity-0 group-data-[checked]:opacity-100"
+                                  viewBox="0 0 14 14"
+                                  fill="none"
+                                >
+                                  <path
+                                    d="M3 8L6 11L11 3.5"
+                                    strokeWidth={2}
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                  />
+                                </svg>
+                              </Checkbox>
+                            ) : (
+                              <></>
+                            )}
                           </div>
                         ) : (
                           <button
                             type="button"
                             className="rounded-md bg-gradient-to-r from-green-400 to-lime-300 w-[60px] hover:from-green-300 py-1 text-sm font-semibold text-black shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
                             onClick={() => {
+                              console.log(order);
                               showOrderDetails(order);
                             }}
                           >
