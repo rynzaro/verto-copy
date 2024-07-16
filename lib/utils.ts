@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction } from "react";
 
 export const handleInput = (
   event: any,
-  setValues: Dispatch<SetStateAction<any>>,
+  setValues: Dispatch<SetStateAction<any>>
 ) => {
   const { name, value } = event.target;
 
@@ -15,7 +15,7 @@ export const handleInput = (
 export const handleNumericInput = (
   event: any,
   setValues: Dispatch<SetStateAction<any>>,
-  decimals: number,
+  decimals: number
 ) => {
   const { name, value } = event.target;
 
@@ -48,6 +48,11 @@ export function convertIntToFloat(amount: string, decimals: number): string {
     result = result.replace(/(\.\d*?)0+$/, "$1").replace(/\.$/, "");
   }
   return result;
+}
+
+export function convertIntToFloat_(amount: string, decimals: number): string {
+  const number = parseInt(amount);
+  return (number * Math.pow(10, -decimals)).toString();
 }
 
 export function convertFloatToInt(input: string, decimals: number): string {

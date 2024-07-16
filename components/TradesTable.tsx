@@ -1,6 +1,7 @@
 "use client";
 
 import { VertoContract } from "@/lib/config/near";
+import { Checkbox } from "@headlessui/react";
 import {
   defaultFilterValues,
   FilterValues,
@@ -9,6 +10,7 @@ import {
 } from "@/lib/types/types";
 import {
   convertIntToFloat,
+  convertIntToFloat_,
   formatNumber,
   handleInput,
   truncateString,
@@ -59,6 +61,9 @@ export default function GetOrders({
   const [currentOrderDetails, setCurrentOrderDetails] = useState<Order | null>(
     null
   );
+
+  const [multipleOrders, setMultipleOrders] = useState(false);
+  const [transactions, setTransactions] = useState<Order[]>([]);
   const [sort, setSort] = useState<Sort>(initialSort);
   const [filterValues, setFilterValues] = useState<FilterValues>({
     ...initialFilterValues,
@@ -81,7 +86,7 @@ export default function GetOrders({
     });
   }
 
-  const sortOrders = (orders: Order[]) => {
+  function sortOrders(orders: Order[]) {
     // Use Array.prototype.sort() with a comparator function
     return orders.sort((a, b) => {
       if (
@@ -129,7 +134,7 @@ export default function GetOrders({
       }
       return sort.order === "asc" ? valueA - valueB : valueB - valueA;
     });
-  };
+  }
 
   function filterOrders() {
     console.log("Actual Filter Values:", filterValues);
@@ -232,6 +237,176 @@ export default function GetOrders({
       })
       .catch((error) => console.log(error));
   }, [accountId, CONTRACT, viewMethod, typeOfOrders]);
+
+  const handleCheck = (order: Order) => {
+    setTransactions((prevTransactions) => {
+      if (prevTransactions.some((item) => item.id === order.id)) {
+        const newTransactions = prevTransactions.filter(
+          (item) => item.id !== order.id
+        );
+        console.log(newTransactions);
+        return newTransactions;
+      } else {
+        const newTransactions = [...prevTransactions, order];
+        console.log(newTransactions);
+        return newTransactions;
+      }
+    });
+  };
+
+  useEffect(() => {
+    setTransactions([]);
+  }, [filterValues.buyMept]);
+
+  async function handleMultiple(orders: Order[]) {
+    let arr: MethodParameters[] = [];
+    for (const order of orders) {
+      const jsonObject = {
+        type: "take",
+        id: order.id,
+      };
+
+      let storage_balance = null;
+      const jsonString = JSON.stringify(jsonObject);
+
+      storage_balance = await viewMethod({
+        contractId: order.from_contract_id,
+        method: "storage_balance_of",
+        args: {
+          account_id: accountId,
+        },
+      });
+
+      if (storage_balance === null && order.from_contract_id !== "near") {
+        arr.push({
+          contractId: order.from_contract_id,
+          method: "storage_deposit",
+          args: {
+            account_id: accountId,
+            registration_only: true,
+          },
+          gas: TAKE_OFFER_TGAS,
+          deposit: "100000000000000000000000",
+        });
+      }
+
+      arr.push({
+        contractId: order.to_contract_id,
+        method: "ft_transfer_call",
+        args: {
+          receiver_id: VertoContract,
+          amount: order.to_amount,
+          msg: jsonString,
+        },
+        gas: TAKE_OFFER_TGAS,
+        deposit: "1",
+      });
+    }
+
+    callMethods(arr)
+      .catch((error) => console.log(error))
+      .then((message) => {
+        setAction("Fill");
+        if (message === undefined) {
+          setSuccesful(false);
+          setFailed(true);
+          return;
+        }
+        setSuccesful(true);
+        setFailed(false);
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
+        return;
+      });
+  }
+
+  const multipleDetails = () => {
+    // declare Order that will be passed to the order display card function in the end
+    let orderSummary: Order = {
+      id: "",
+      from_contract_id: "",
+      to_contract_id: "",
+      from_amount: "",
+      to_amount: "",
+      status: "",
+      maker_id: "",
+      taker_id: null,
+    };
+    if (!tokenObjects) {
+      return orderSummary;
+    }
+    const arr: [
+      string[],
+      string[],
+      string[],
+      string[],
+      string[],
+      string[],
+      string[],
+      (string | null)[],
+    ] = transactions.reduce(
+      (acc, order) => {
+        acc[0].push(order.id);
+        acc[1].push(order.from_contract_id);
+        acc[2].push(order.to_contract_id);
+        acc[3].push(order.from_amount);
+        acc[4].push(order.to_amount);
+        acc[5].push(order.status);
+        acc[6].push(order.maker_id);
+        acc[7].push(order.taker_id);
+        return acc;
+      },
+      [[], [], [], [], [], [], [], []] as [
+        string[],
+        string[],
+        string[],
+        string[],
+        string[],
+        string[],
+        string[],
+        (string | null)[],
+      ]
+    );
+
+    // const arr = transactions.map((order) => [
+    //   order.id,
+    //   order.from_contract_id,
+    //   order.to_contract_id,
+    //   order.from_amount,
+    //   order.to_amount,
+    //   order.status,
+    //   order.maker_id,
+    //   order.taker_id,
+    // ]);
+    let from_sum = 0;
+    let to_sum = 0;
+    let i = 0;
+    // for (let i = 0; i < arr[3].length; i++) {
+    while (arr[3][i]) {
+      from_sum = from_sum + parseInt(arr[3][i]);
+      to_sum = to_sum + parseInt(arr[4][i]);
+      i++;
+    }
+
+    orderSummary.id = arr[0].join(", ");
+    orderSummary.from_contract_id = String(Array.from(new Set(arr[1]))[0]);
+    orderSummary.to_contract_id = String(Array.from(new Set(arr[2]))[0]);
+    orderSummary.from_amount = from_sum.toLocaleString("fullwide", {
+      useGrouping: false,
+    });
+    orderSummary.to_amount = String(Array.from(new Set(arr[2]))[0]);
+    orderSummary.to_amount = to_sum.toLocaleString("fullwide", {
+      useGrouping: false,
+    });
+    orderSummary.status = "open";
+    orderSummary.maker_id = Array.from(new Set(arr[6])).join(", ");
+    orderSummary.taker_id = arr[7][0];
+
+    console.log(orderSummary);
+
+    return orderSummary;
+  };
 
   async function handleFill(order: Order) {
     const jsonObject = {
@@ -391,6 +566,7 @@ export default function GetOrders({
   }
 
   function showOrderDetails(order: Order) {
+    console.log(order);
     setCurrentOrderDetails(order);
     setOrderPopupOpen(true);
   }
@@ -420,7 +596,7 @@ export default function GetOrders({
         </div>
       </div>
       <div className="w-4/5 max-w-4xl">
-        <div className="pt-4 flex">
+        <div className="pt-4 flex justify-between">
           {/* <RefreshButton /> */}
           <FilterForm
             showCompletedToggle={showCompletedToggle}
@@ -428,6 +604,39 @@ export default function GetOrders({
             setFilterValues={setFilterValues}
             handleFilterOrders={filterOrders}
           />
+          {multipleOrders ? (
+            <>
+              <div>
+                <button
+                  type="button"
+                  onClick={() => showOrderDetails(multipleDetails())}
+                  className={` rounded-md bg-gradient-to-r from-green-400 to-lime-300 h-full hover:from-green-300 px-3.5 py-2 mr-2 text-sm font-semibold text-black shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500`}
+                >
+                  Details
+                </button>
+                <button
+                  onClick={() => {
+                    setTransactions([]);
+                    setMultipleOrders(false);
+                  }}
+                  type="button"
+                  className={`px-3.5 py-2 mr-2 h-full shadow-sm rounded-md font-semibold bg-zinc-800 text-white focus:outline-none hover:bg-zinc-600`}
+                >
+                  Cancel
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              <button
+                className={`px-3.5 py-2 h-full shadow-sm rounded-md font-semibold bg-zinc-800 text-white focus:outline-none hover:bg-zinc-600`}
+                type="button"
+                onClick={() => setMultipleOrders(true)}
+              >
+                Select Multiple Orders
+              </button>
+            </>
+          )}
         </div>
 
         {succesful ? (
@@ -606,7 +815,11 @@ export default function GetOrders({
                 ) : (
                   <></>
                 )}
-                <th className="px-3 py-4">Action</th>
+                {multipleOrders ? (
+                  <th className="px-3 py-4"> Select </th>
+                ) : (
+                  <th className="px-3 py-4"> Action</th>
+                )}
               </tr>
             </thead>
 
@@ -695,15 +908,38 @@ export default function GetOrders({
                         <></>
                       )}
                       <td className="py-4">
-                        <button
-                          type="button"
-                          className="rounded-md bg-gradient-to-r from-green-400 to-lime-300 w-[60px] hover:from-green-300 py-1 text-sm font-semibold text-black shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
-                          onClick={() => {
-                            showOrderDetails(order);
-                          }}
-                        >
-                          Details
-                        </button>
+                        {multipleOrders ? (
+                          <div className="flex justify-center">
+                            <Checkbox
+                              onChange={() => handleCheck(order)}
+                              className="group block size-6 rounded border-verto_border border hover:border-2  bg-verto_bg data-[checked]:bg-white"
+                            >
+                              {/* Checkmark icon */}
+                              <svg
+                                className="stroke-black opacity-0 group-data-[checked]:opacity-100"
+                                viewBox="0 0 14 14"
+                                fill="none"
+                              >
+                                <path
+                                  d="M3 8L6 11L11 3.5"
+                                  strokeWidth={2}
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                />
+                              </svg>
+                            </Checkbox>
+                          </div>
+                        ) : (
+                          <button
+                            type="button"
+                            className="rounded-md bg-gradient-to-r from-green-400 to-lime-300 w-[60px] hover:from-green-300 py-1 text-sm font-semibold text-black shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+                            onClick={() => {
+                              showOrderDetails(order);
+                            }}
+                          >
+                            Details
+                          </button>
+                        )}
                       </td>
                     </tr>
                   );
