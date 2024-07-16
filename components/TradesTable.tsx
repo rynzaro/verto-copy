@@ -903,7 +903,8 @@ export default function GetOrders({
                       <td className="py-4">
                         {multipleOrders ? (
                           <div className="flex justify-center">
-                            {order.maker_id !== accountId ? (
+                            {order.maker_id !== accountId &&
+                            order.status === "Open" ? (
                               <Checkbox
                                 onChange={() => handleCheck(order)}
                                 className="group block size-6 rounded border-verto_border border-2 hover:border-3 hover:border-zinc-600 bg-verto_bg data-[checked]:bg-white"
