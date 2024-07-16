@@ -82,7 +82,7 @@ export default function CreateTradeForm() {
   const validFrom =
     0 < parseFloat(values.fromAmount) &&
     parseFloat(
-      convertFloatToInt(values.fromAmount, selectedFromToken.decimals),
+      convertFloatToInt(values.fromAmount, selectedFromToken.decimals)
     ) <= balances.from_balance;
   const validFor = 0 < parseFloat(values.toAmount);
 
@@ -97,7 +97,7 @@ export default function CreateTradeForm() {
   const validMultiple =
     validFrom &&
     parseFloat(
-      convertFloatToInt(values.fromAmount, selectedFromToken.decimals),
+      convertFloatToInt(values.fromAmount, selectedFromToken.decimals)
     ) *
       Multiple <=
       balances.from_balance;
@@ -109,13 +109,13 @@ export default function CreateTradeForm() {
         Math.floor(
           balances.from_balance /
             parseFloat(
-              convertFloatToInt(values.fromAmount, selectedFromToken.decimals),
-            ),
-        ),
+              convertFloatToInt(values.fromAmount, selectedFromToken.decimals)
+            )
+        )
       );
   const [maxClicked, setMaxClicked] = useState(false);
 
-  const handleMultiple = () => {
+  function handleMultiple() {
     if (maxClicked) {
       setMultiple(1);
       setMaxClicked(false);
@@ -124,16 +124,9 @@ export default function CreateTradeForm() {
     } else {
       validFrom ? setMultiple((Multiple + 1) % 11) : setMultiple(1);
     }
-  };
+  }
 
   const validOrder = validFrom && validFor && validTokens && validMultiple;
-
-  // const maxMultiple =
-  //   parseFloat(
-  //     convertFloatToInt(values.fromAmount, selectedFromToken.decimals),
-  //   ) %
-  //     balances.from_balance >=
-  //   0;
 
   useEffect(() => {
     if (!tokenObjects) {
@@ -249,7 +242,7 @@ export default function CreateTradeForm() {
     }
     let fromAmount = convertFloatToInt(
       values.fromAmount,
-      selectedFromToken.decimals,
+      selectedFromToken.decimals
     );
     let toAmount = convertFloatToInt(values.toAmount, selectedToToken.decimals);
     callTransferMethod(fromAmount, toAmount);
@@ -272,9 +265,7 @@ export default function CreateTradeForm() {
   useEffect(() => {
     if (values.fromAmount !== "" && values.toAmount !== "")
       setExchangeRate(
-        (
-          parseFloat(values.fromAmount) / parseFloat(values.toAmount)
-        ).toString(),
+        (parseFloat(values.fromAmount) / parseFloat(values.toAmount)).toString()
       );
   }, [values.fromAmount, values.toAmount]);
 
@@ -282,7 +273,7 @@ export default function CreateTradeForm() {
 
   useEffect(() => {
     setPlaceHolder(
-      numSlice(parseFloat(values.toAmount) / parseFloat(values.fromAmount)),
+      numSlice(parseFloat(values.toAmount) / parseFloat(values.fromAmount))
     );
   }, [values.fromAmount, values.toAmount]);
 
@@ -426,7 +417,7 @@ export default function CreateTradeForm() {
                   setValues({
                     fromAmount: convertIntToFloat(
                       balances.from_balance.toString(),
-                      selectedFromToken.decimals,
+                      selectedFromToken.decimals
                     ),
                     toAmount: values.toAmount,
                     inputExchangeRate: "",
@@ -437,9 +428,9 @@ export default function CreateTradeForm() {
                   Number(
                     convertIntToFloat(
                       balances.from_balance.toString(),
-                      selectedFromToken.decimals,
-                    ),
-                  ),
+                      selectedFromToken.decimals
+                    )
+                  )
                 )}
               </button>
             )}
@@ -499,9 +490,9 @@ export default function CreateTradeForm() {
                     Number(
                       convertIntToFloat(
                         balances.to_balance.toString(),
-                        tokenObjects[selectedToToken.contractId].decimals,
-                      ),
-                    ),
+                        tokenObjects[selectedToToken.contractId].decimals
+                      )
+                    )
                   )}
           </div>
         </div>
@@ -614,7 +605,7 @@ export default function CreateTradeForm() {
               <span> 1 {selectedFromToken.symbol} ⇌ </span>
               <div className="px-1">
                 {numSlice(
-                  parseFloat(values.toAmount) / parseFloat(values.fromAmount),
+                  parseFloat(values.toAmount) / parseFloat(values.fromAmount)
                 )}
               </div>
               {selectedToToken.symbol}
