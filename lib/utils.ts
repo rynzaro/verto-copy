@@ -103,3 +103,72 @@ export function formatNumber(number: number) {
 export function formatNumberPrecisely(number: number) {
   return number.toLocaleString("en-US", { maximumFractionDigits: 12 });
 }
+
+export function formatNumberShort(number: number) {
+  const numStr = number.toFixed();
+  const digits = numStr.charAt(0) === "-" ? numStr.length - 1 : numStr.length;
+  const commaPosition = digits % 3;
+
+  if (number < 100) {
+    return roundToSignificantDigits(number, 3).toString();
+  } else if (number >= 1000000000000000) {
+    return number.toLocaleString("en-US", {
+      maximumFractionDigits: 0,
+      notation: "compact",
+      compactDisplay: "short",
+    });
+  } else {
+    return number.toLocaleString("en-US", {
+      maximumFractionDigits: commaPosition === 0 ? 0 : 3 - commaPosition,
+      notation: "compact",
+      compactDisplay: "short",
+    });
+  }
+}
+
+function roundToSignificantDigits(number: number, digits: number) {
+  if (number === 0) {
+    return 0;
+  }
+
+  const d = Math.ceil(Math.log10(Math.abs(number)));
+  const power = digits - d;
+
+  const magnitude = Math.pow(10, power);
+  const shifted = Math.round(number * magnitude);
+  return shifted / magnitude;
+}
+
+/*
+function formatNumberShort(number) {
+  const numStr = number.toFixed();
+  const digits = numStr.charAt(0) === "-" ? numStr.length - 1 : numStr.length;
+  const commaPosition = digits % 3;
+  number = roundToSignificantDigits(number, 3);
+  let threeDigits = "";
+  if (number < 100) {
+    return number.toString();
+  }
+
+  const threeLetters = threeDigits.toString();
+  console.log(threeLetters);
+  let postfix = "";
+  if (digits > 3) {
+    postfix = " K";
+  } else if (digits > 6) {
+    postfix = " M";
+  } else if (digits > 9) {
+    postfix = " B";
+  } else if (digits > 12) {
+    postfix = " T";
+  }
+
+  if (number < 0.01) {
+    return number.toString();
+  }
+  if (commaPosition === 0) {
+    return threeDigits;
+  }
+  return `${threeLetters.slice(0, commaPosition)}.${threeLetters.slice(commaPosition)}`;
+}
+  */
