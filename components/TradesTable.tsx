@@ -7,6 +7,7 @@ import {
   convertIntToFloat,
   convertIntToFloat_,
   formatNumber,
+  formatNumberShort,
   truncateString,
 } from "@/lib/utils";
 import { useNearWallet } from "@/providers/wallet";
@@ -849,7 +850,7 @@ export default function GetOrders({
                       </td>
                       <td className="py-4 text-right">
                         <p className="font-bold inline">
-                          {formatNumber(
+                          {formatNumberShort(
                             Number(
                               convertIntToFloat(
                                 order.from_amount,
@@ -865,7 +866,7 @@ export default function GetOrders({
                       </td>
                       <td className="py-4 text-right">
                         <p className="font-bold inline">
-                          {formatNumber(
+                          {formatNumberShort(
                             Number(
                               convertIntToFloat(
                                 order.to_amount,
