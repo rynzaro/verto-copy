@@ -1,7 +1,14 @@
 "use client";
 
 import { VertoContract } from "@/lib/config/near";
-import { Checkbox } from "@headlessui/react";
+import {
+  Checkbox,
+  Listbox,
+  ListboxButton,
+  ListboxOption,
+  ListboxOptions,
+} from "@headlessui/react";
+
 import { FilterValues, Order, Sort } from "@/lib/types/types";
 import {
   convertIntToFloat,
@@ -30,14 +37,16 @@ const sortOptions = ["price", "amountOffer", "amountFor", "id"] as const;
 export default function GetOrders({
   typeOfOrders,
   heading,
-  showCompletedToggle,
+  showStatusDropdown,
+  showMultipleToggle,
   showOrderStatus,
   initialSort,
   initialFilterValues,
 }: {
   typeOfOrders: string;
   heading: string;
-  showCompletedToggle: boolean;
+  showStatusDropdown: boolean;
+  showMultipleToggle: boolean;
   showOrderStatus: boolean;
   initialSort: Sort;
   initialFilterValues: FilterValues;
@@ -53,8 +62,18 @@ export default function GetOrders({
   const [action, setAction] = useState("");
   const [orderPopupOpen, setOrderPopupOpen] = useState(false);
   const [currentOrderDetails, setCurrentOrderDetails] = useState<Order | null>(
-    null
+    null,
   );
+
+  const [currentStatusFilter, setCurrentStatusFilter] =
+    useState<(typeof statusFilterOptions)[number]>("All");
+  const statusFilterOptions = [
+    "All",
+    "Open",
+    "Completed",
+    "Canceled",
+    "Filled",
+  ];
 
   const [multipleOrders, setMultipleOrders] = useState(false);
   const [transactions, setTransactions] = useState<Order[]>([]);
@@ -104,10 +123,10 @@ export default function GetOrders({
           let decimalsAOffer = tokenObjects[a.from_contract_id].decimals;
           let decimalsBOffer = tokenObjects[b.from_contract_id].decimals;
           valueA = parseFloat(
-            convertIntToFloat(a["from_amount"], decimalsAOffer)
+            convertIntToFloat(a["from_amount"], decimalsAOffer),
           );
           valueB = parseFloat(
-            convertIntToFloat(b["from_amount"], decimalsBOffer)
+            convertIntToFloat(b["from_amount"], decimalsBOffer),
           );
           break;
 
@@ -186,17 +205,43 @@ export default function GetOrders({
         return false;
       }
 
+      if (currentStatusFilter === "All") {
+        return true;
+      } else if (currentStatusFilter === "Open" && order.status !== "Open") {
+        return false;
+      } else if (
+        currentStatusFilter === "Completed" &&
+        order.status !== "Completed"
+      ) {
+        return false;
+      } else if (
+        currentStatusFilter === "Canceled" &&
+        order.status !== "Canceled"
+      ) {
+        return false;
+      } else if (
+        currentStatusFilter === "Filled" &&
+        order.status !== "Filled" &&
+        order.taker_id !== accountId
+      ) {
+        return false;
+      }
+
+      // if (filterValues.showCanceled && order.status !== "Canceled") {
+      //   return false;
+      // }
+
       const fromAmount = parseFloat(
         convertIntToFloat(
           order.from_amount,
-          tokenObjects[order.from_contract_id].decimals
-        )
+          tokenObjects[order.from_contract_id].decimals,
+        ),
       );
       const toAmount = parseFloat(
         convertIntToFloat(
           order.to_amount,
-          tokenObjects[order.to_contract_id].decimals
-        )
+          tokenObjects[order.to_contract_id].decimals,
+        ),
       );
       const price = toAmount / fromAmount;
 
@@ -206,8 +251,8 @@ export default function GetOrders({
         toAmount >= minToAmount &&
         toAmount <= maxToAmount &&
         price >= minPrice &&
-        price <= maxPrice &&
-        (filterValues.showCompleted || order.status === "Open")
+        price <= maxPrice
+        // && (filterValues.showCompleted || order.status === "Open")
       );
     });
 
@@ -216,7 +261,8 @@ export default function GetOrders({
 
   useEffect(() => {
     filterOrders();
-  }, [orders, filterValues.buyMept, filterValues.showCompleted]);
+  }, [orders, filterValues.buyMept, currentStatusFilter]);
+  // }, [orders, filterValues.buyMept, filterValues.showCompleted]);
 
   useEffect(() => {
     viewMethod({
@@ -236,7 +282,7 @@ export default function GetOrders({
     setTransactions((prevTransactions) => {
       if (prevTransactions.some((item) => item.id === order.id)) {
         const newTransactions = prevTransactions.filter(
-          (item) => item.id !== order.id
+          (item) => item.id !== order.id,
         );
         console.log(newTransactions);
         return newTransactions;
@@ -360,7 +406,7 @@ export default function GetOrders({
         string[],
         string[],
         (string | null)[],
-      ]
+      ],
     );
 
     // const arr = transactions.map((order) => [
@@ -592,43 +638,73 @@ export default function GetOrders({
         <div className="pt-4 flex justify-between">
           {/* <RefreshButton /> */}
           <FilterForm
-            showCompletedToggle={showCompletedToggle}
+            // showStatusDropdown={showStatusDropdown}
             filterValues={filterValues}
             setFilterValues={setFilterValues}
             handleFilterOrders={filterOrders}
           />
-          {multipleOrders ? (
-            <>
-              <div>
+          {showMultipleToggle ? (
+            multipleOrders ? (
+              <>
+                <div>
+                  <button
+                    type="button"
+                    onClick={() => showOrderDetails(multipleDetails())}
+                    className={` rounded-md bg-gradient-to-r from-green-400 to-lime-300 h-full hover:from-green-300 px-3.5 py-2 mr-2 text-sm font-semibold text-black shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500`}
+                  >
+                    Details
+                  </button>
+                  <button
+                    onClick={() => {
+                      setTransactions([]);
+                      setMultipleOrders(false);
+                    }}
+                    type="button"
+                    className={`px-3.5 py-2 mr-2 h-full shadow-sm rounded-md font-semibold bg-zinc-800 text-white focus:outline-none hover:bg-zinc-600`}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
                 <button
+                  className={`px-3.5 py-2 h-full shadow-sm rounded-md font-semibold bg-zinc-800 text-white focus:outline-none hover:bg-zinc-600`}
                   type="button"
-                  onClick={() => showOrderDetails(multipleDetails())}
-                  className={` rounded-md bg-gradient-to-r from-green-400 to-lime-300 h-full hover:from-green-300 px-3.5 py-2 mr-2 text-sm font-semibold text-black shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500`}
+                  onClick={() => setMultipleOrders(true)}
                 >
-                  Details
+                  Select Multiple Orders
                 </button>
-                <button
-                  onClick={() => {
-                    setTransactions([]);
-                    setMultipleOrders(false);
-                  }}
-                  type="button"
-                  className={`px-3.5 py-2 mr-2 h-full shadow-sm rounded-md font-semibold bg-zinc-800 text-white focus:outline-none hover:bg-zinc-600`}
-                >
-                  Cancel
-                </button>
-              </div>
-            </>
+              </>
+            )
           ) : (
-            <>
-              <button
-                className={`px-3.5 py-2 h-full shadow-sm rounded-md font-semibold bg-zinc-800 text-white focus:outline-none hover:bg-zinc-600`}
-                type="button"
-                onClick={() => setMultipleOrders(true)}
+            <></>
+          )}
+          {showStatusDropdown ? (
+            <Listbox
+              value={currentStatusFilter}
+              onChange={setCurrentStatusFilter}
+            >
+              <ListboxButton className="relative w-1/5 min-w-[100px] cursor-default rounded-md py-1.5 pl-3 pr-10 text-left text-zinc-400 shadow-sm ring-inset ring-verto_border ring-1 focus:outline-none sm:text-sm sm:leading-6 hover:ring-2">
+                {currentStatusFilter}
+              </ListboxButton>
+              <ListboxOptions
+                className="absolute z-10 mt-1 max-h-60 w-[180px] min-w-[100px] overflow-auto rounded-md bg-verto_bg py-1 text-base shadow-lg ring-1 ring-verto_border sm:text-sm"
+                anchor="bottom"
               >
-                Select Multiple Orders
-              </button>
-            </>
+                {statusFilterOptions.map((status) => (
+                  <ListboxOption
+                    key={""}
+                    value={status}
+                    className="data-[focus]:bg-zinc-700 text-zinc-400 pl-3 pr-10 py-1.5"
+                  >
+                    {status}
+                  </ListboxOption>
+                ))}
+              </ListboxOptions>
+            </Listbox>
+          ) : (
+            <></>
           )}
         </div>
 
@@ -822,10 +898,10 @@ export default function GetOrders({
                 let toObject = tokenObjects[order.to_contract_id];
                 if (fromObject && toObject) {
                   let fromAmountFloat = Number(
-                    convertIntToFloat(order.from_amount, fromObject.decimals)
+                    convertIntToFloat(order.from_amount, fromObject.decimals),
                   );
                   let toAmountFloat = Number(
-                    convertIntToFloat(order.to_amount, toObject.decimals)
+                    convertIntToFloat(order.to_amount, toObject.decimals),
                   );
                   return (
                     <tr key={order.id} className="border-b border-gray-700 ">
@@ -853,9 +929,9 @@ export default function GetOrders({
                             Number(
                               convertIntToFloat(
                                 order.from_amount,
-                                fromObject.decimals
-                              )
-                            )
+                                fromObject.decimals,
+                              ),
+                            ),
                           )}
                         </p>
                         <span className="text-gray-500">
@@ -869,9 +945,9 @@ export default function GetOrders({
                             Number(
                               convertIntToFloat(
                                 order.to_amount,
-                                toObject.decimals
-                              )
-                            )
+                                toObject.decimals,
+                              ),
+                            ),
                           )}
                         </p>
                         <span className="text-gray-500">
@@ -884,9 +960,9 @@ export default function GetOrders({
                           {formatNumber(
                             Number(
                               parseFloat(
-                                (toAmountFloat / fromAmountFloat).toFixed(4)
-                              )
-                            )
+                                (toAmountFloat / fromAmountFloat).toFixed(4),
+                              ),
+                            ),
                           )}
                         </p>
                       </td>

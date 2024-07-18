@@ -43,7 +43,6 @@ export type FilterValues = {
   fromAccountId: boolean;
   toAccountId: boolean;
   buyMept: boolean;
-  showCompleted: boolean;
 };
 
 export const defaultFilterValues: FilterValues = {
@@ -56,7 +55,6 @@ export const defaultFilterValues: FilterValues = {
   fromAccountId: false,
   toAccountId: false,
   buyMept: true,
-  showCompleted: true,
 };
 
 export type Sort = {

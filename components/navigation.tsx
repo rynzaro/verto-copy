@@ -24,8 +24,8 @@ import { useEffect } from "react";
 const navigation = [
   { name: "Create Order", href: "/" },
   { name: "Market", href: "/market" },
-  { name: "Orders Created", href: "/orders-created" },
-  { name: "Orders Filled", href: "/orders-filled" },
+  { name: "Dashboard", href: "/dashboard" },
+  // { name: "Orders Filled", href: "/orders-filled" },
 ];
 
 export default function Navigation() {
@@ -83,7 +83,7 @@ export default function Navigation() {
                               item.name !== "Create Order"
                               ? "bg-zinc-800 text-white"
                               : "hover:bg-zinc-700",
-                            "rounded-md px-3 py-2 text-sm font-medium"
+                            "rounded-md px-3 py-2 text-sm font-medium",
                           )}
                           aria-current={
                             pathName.endsWith(item.href) ? "page" : undefined
@@ -147,7 +147,7 @@ export default function Navigation() {
                                 onClick={signOut}
                                 className={clsx(
                                   focus ? "bg-zinc-100" : "",
-                                  "block px-4 py-2 text-sm text-black w-full"
+                                  "block px-4 py-2 text-sm text-black w-full",
                                 )}
                               >
                                 Sign out
@@ -177,7 +177,7 @@ export default function Navigation() {
                     pathName.endsWith(item.href)
                       ? "bg-zinc-900 text-white"
                       : "text-zinc-300 hover:bg-zinc-700 hover:text-white",
-                    "block rounded-md px-3 py-2 text-base font-medium"
+                    "block rounded-md px-3 py-2 text-base font-medium",
                   )}
                   aria-current={
                     pathName.endsWith(item.href) ? "page" : undefined
