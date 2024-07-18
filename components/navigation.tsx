@@ -35,7 +35,7 @@ export default function Navigation() {
   return (
     <Disclosure
       as="nav"
-      className="bg-verto_bg border-b-2 border-b-verto_border py-2 font-bold"
+      className="bg-verto_bg border-b-2 border-b-verto_border py-2 font-bold text-white"
     >
       {({ open }) => (
         <>
