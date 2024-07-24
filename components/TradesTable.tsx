@@ -686,7 +686,7 @@ export default function GetOrders({
                       setMultipleOrders(false);
                     }}
                     type="button"
-                    className={`px-3.5 py-2 mr-2 h-full shadow-sm rounded-md font-semibold bg-zinc-800 text-white focus:outline-none hover:bg-zinc-600`}
+                    className={`px-3.5 py-2.5 mr-2 h-full shadow-sm rounded-md font-semibold bg-zinc-800 text-white focus:outline-none hover:bg-zinc-600`}
                   >
                     <span className="flex sm:hidden">
                       <XMarkIcon className="h-4 w-4" />
@@ -700,12 +700,12 @@ export default function GetOrders({
             ) : (
               <>
                 <button
-                  className={`  px-3.5 py-2 h-full shadow-sm rounded-md font-semibold bg-zinc-800 text-white focus:outline-none hover:bg-zinc-600 `}
+                  className={`  px-3.5 py-2.5 h-full shadow-sm rounded-md font-semibold bg-zinc-800 text-white focus:outline-none hover:bg-zinc-600 `}
                   type="button"
                   onClick={() => setMultipleOrders(true)}
                 >
                   <span className="flex sm:hidden">
-                    <PencilSquareIcon className="h-6 w-6 pr-2" /> Select
+                    <PencilSquareIcon className="h-4 w-4 m-1" />
                   </span>
                   <span className="hidden sm:flex">
                     <PencilSquareIcon className="h-6 w-6 pr-2" />
