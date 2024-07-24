@@ -6,12 +6,12 @@ import { Field, Label, MenuButton, Switch } from "@headlessui/react";
 import { Dispatch, useEffect, useRef, useState } from "react";
 
 export default function FilterForm({
-  showCompletedToggle,
+  // showCompletedToggle,
   filterValues,
   setFilterValues,
   handleFilterOrders,
 }: {
-  showCompletedToggle: boolean;
+  // showCompletedToggle: boolean;
   filterValues: FilterValues;
   setFilterValues: Dispatch<React.SetStateAction<FilterValues>>;
   handleFilterOrders: () => void;
@@ -109,7 +109,7 @@ export default function FilterForm({
           To MEPT
         </button>
       </div>
-      {showCompletedToggle ? (
+      {/* {showCompletedToggle ? (
         <Field className="flex items-center relative text-white mx-4">
           <Switch
             checked={filterValues.showCompleted}
@@ -129,7 +129,7 @@ export default function FilterForm({
         </Field>
       ) : (
         <></>
-      )}
+      )} */}
     </div>
   );
 
