@@ -4,6 +4,14 @@ import { FilterValues, Order, TokenMetadata } from "@/lib/types/types";
 import { convertIntToFloat, handleNumericInput } from "@/lib/utils";
 import { Field, Label, MenuButton, Switch } from "@headlessui/react";
 import { Dispatch, useEffect, useRef, useState } from "react";
+import {
+  ArrowUpRightIcon,
+  ArrowDownRightIcon,
+  ArrowsUpDownIcon,
+  PencilSquareIcon,
+  ArrowRightIcon,
+  ArrowLeftIcon,
+} from "@heroicons/react/20/solid";
 
 export default function FilterForm({
   // showCompletedToggle,
@@ -48,19 +56,25 @@ export default function FilterForm({
     setVisible((prev) => !prev);
   }
 
-  function handleShowSwap(fromMept: boolean) {
+  const [fromMept, setFromMept] = useState(false);
+
+  function handleMept() {
+    setFromMept((prev) => !prev);
+  }
+
+  useEffect(() => {
     setFilterValues((prev) => ({
       ...prev,
       buyMept: fromMept ? true : false,
     }));
-  }
+  }, [fromMept]);
 
-  function toggleShowCompleted() {
-    setFilterValues((prev) => ({
-      ...prev,
-      showCompleted: !prev.showCompleted,
-    }));
-  }
+  // function toggleShowCompleted() {
+  //   setFilterValues((prev) => ({
+  //     ...prev,
+  //     showCompleted: !prev.showCompleted,
+  //   }));
+  // }
 
   const filterMenu = (
     <div className="flex flex-wrap gap-x-2 gap-y-4 justify-between">
@@ -92,21 +106,17 @@ export default function FilterForm({
       <div className="relative flex text-sm">
         <button
           type="button"
-          className={`px-3.5 py-2 mr-2 h-full shadow-sm rounded-md font-semibold text-white focus:outline-none hover:bg-zinc-400 ${filterValues.buyMept ? "bg-zinc-600" : "bg-zinc-800"}`}
+          className={`flex items-center px-3.5 py-2 mr-2 h-full shadow-sm rounded-md font-semibold text-white focus:outline-none hover:bg-zinc-400 ${filterValues.buyMept ? "bg-zinc-600" : "bg-zinc-800"}`}
           onClick={() => {
-            handleShowSwap(true);
+            handleMept();
           }}
         >
-          From MEPT
-        </button>
-        <button
-          type="button"
-          className={`px-3.5 py-2 h-full shadow-sm rounded-md font-semibold text-white focus:outline-none hover:bg-zinc-400 ${!filterValues.buyMept ? "bg-zinc-600" : "bg-zinc-800"}`}
-          onClick={() => {
-            handleShowSwap(false);
-          }}
-        >
-          To MEPT
+          {!fromMept ? (
+            <ArrowRightIcon className="h-6 w-6 pr-2" />
+          ) : (
+            <ArrowLeftIcon className="h-6 w-6 pr-2" />
+          )}
+          MEPT
         </button>
       </div>
       {/* {showCompletedToggle ? (

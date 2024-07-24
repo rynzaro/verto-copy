@@ -27,6 +27,10 @@ import {
   ArrowUpRightIcon,
   ArrowDownRightIcon,
   ArrowsUpDownIcon,
+  PencilSquareIcon,
+  XMarkIcon,
+  ShoppingCartIcon,
+  ArrowPathIcon,
 } from "@heroicons/react/20/solid";
 import OrderPopup from "./OrderPopup";
 import clsx from "clsx";
@@ -638,13 +642,26 @@ export default function GetOrders({
       </div>
       <div className="w-4/5 max-w-4xl">
         <div className="pt-4 flex justify-between">
-          {/* <RefreshButton /> */}
-          <FilterForm
-            // showStatusDropdown={showStatusDropdown}
-            filterValues={filterValues}
-            setFilterValues={setFilterValues}
-            handleFilterOrders={filterOrders}
-          />
+          <div className="flex">
+            <FilterForm
+              // showStatusDropdown={showStatusDropdown}
+              filterValues={filterValues}
+              setFilterValues={setFilterValues}
+              handleFilterOrders={filterOrders}
+            />
+            <button
+              onClick={() => filterOrders()}
+              className={`rounded-md h-full px-3.5 py-2 mr-2 text-md hover:bg-zinc-600 bg-zinc-800 font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500`}
+            >
+              <span className="hidden sm:flex items-center">
+                <ArrowPathIcon className="h-6 w-6 pr-2 items-center" /> Refresh{" "}
+              </span>
+              <span className="flex sm:hidden items-center">
+                <ArrowPathIcon className="h-4 w-4" />
+              </span>
+            </button>
+          </div>
+
           {showMultipleToggle ? (
             multipleOrders ? (
               <>
@@ -653,9 +670,15 @@ export default function GetOrders({
                     type="button"
                     // onClick={() => showOrderDetails(multipleDetails())}
                     onClick={() => handleMultiple(transactions)}
-                    className={` rounded-md bg-gradient-to-r from-green-400 to-lime-300 h-full hover:from-green-300 px-3.5 py-2 mr-2 text-sm font-semibold text-black shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500`}
+                    disabled={transactions.length < 2}
+                    className={`${transactions.length < 2 ? "cursor-default bg-slate-600" : "bg-gradient-to-r from-green-400 to-lime-300 hover:from-green-300 hover:to-lime-200"} rounded-md  h-full  px-3.5 py-2 mr-2 text-sm font-semibold text-black shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500`}
                   >
-                    Details
+                    <span className="flex sm:hidden">
+                      <ShoppingCartIcon className="h-4 w-4" />
+                    </span>
+                    <span className="hidden sm:flex items-center">
+                      <ShoppingCartIcon className="h-6 w-6 pr-2" /> Details
+                    </span>
                   </button>
                   <button
                     onClick={() => {
@@ -665,24 +688,36 @@ export default function GetOrders({
                     type="button"
                     className={`px-3.5 py-2 mr-2 h-full shadow-sm rounded-md font-semibold bg-zinc-800 text-white focus:outline-none hover:bg-zinc-600`}
                   >
-                    Cancel
+                    <span className="flex sm:hidden">
+                      <XMarkIcon className="h-4 w-4" />
+                    </span>
+                    <span className="hidden sm:flex">
+                      <XMarkIcon className="h-6 w-6 pr-2 items-center" /> Cancel
+                    </span>
                   </button>
                 </div>
               </>
             ) : (
               <>
                 <button
-                  className={`px-3.5 py-2 h-full shadow-sm rounded-md font-semibold bg-zinc-800 text-white focus:outline-none hover:bg-zinc-600`}
+                  className={`  px-3.5 py-2 h-full shadow-sm rounded-md font-semibold bg-zinc-800 text-white focus:outline-none hover:bg-zinc-600 `}
                   type="button"
                   onClick={() => setMultipleOrders(true)}
                 >
-                  Select Multiple Orders
+                  <span className="flex sm:hidden">
+                    <PencilSquareIcon className="h-6 w-6 pr-2" /> Select
+                  </span>
+                  <span className="hidden sm:flex">
+                    <PencilSquareIcon className="h-6 w-6 pr-2" />
+                    Select Multiple
+                  </span>
                 </button>
               </>
             )
           ) : (
             <></>
           )}
+
           {showStatusDropdown ? (
             <Listbox
               value={currentStatusFilter}

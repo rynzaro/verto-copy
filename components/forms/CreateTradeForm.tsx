@@ -33,6 +33,7 @@ export default function CreateTradeForm() {
   const [succesfulCreation, setSuccesfulCreation] = useState(false);
   const [failedCreation, setFailedCreation] = useState(false);
   const [exchangeRate, setExchangeRate] = useState("");
+  const [exchangeVisible, setExchangeVisible] = useState(false);
 
   const [activeInput, setActiveInput] = useState({
     fromInput: false,
@@ -82,7 +83,7 @@ export default function CreateTradeForm() {
   const validFrom =
     0 < parseFloat(values.fromAmount) &&
     parseFloat(
-      convertFloatToInt(values.fromAmount, selectedFromToken.decimals)
+      convertFloatToInt(values.fromAmount, selectedFromToken.decimals),
     ) <= balances.from_balance;
   const validFor = 0 < parseFloat(values.toAmount);
 
@@ -97,7 +98,7 @@ export default function CreateTradeForm() {
   const validMultiple =
     validFrom &&
     parseFloat(
-      convertFloatToInt(values.fromAmount, selectedFromToken.decimals)
+      convertFloatToInt(values.fromAmount, selectedFromToken.decimals),
     ) *
       Multiple <=
       balances.from_balance;
@@ -109,9 +110,9 @@ export default function CreateTradeForm() {
         Math.floor(
           balances.from_balance /
             parseFloat(
-              convertFloatToInt(values.fromAmount, selectedFromToken.decimals)
-            )
-        )
+              convertFloatToInt(values.fromAmount, selectedFromToken.decimals),
+            ),
+        ),
       );
   const [maxClicked, setMaxClicked] = useState(false);
 
@@ -242,7 +243,7 @@ export default function CreateTradeForm() {
     }
     let fromAmount = convertFloatToInt(
       values.fromAmount,
-      selectedFromToken.decimals
+      selectedFromToken.decimals,
     );
     let toAmount = convertFloatToInt(values.toAmount, selectedToToken.decimals);
     callTransferMethod(fromAmount, toAmount);
@@ -265,7 +266,9 @@ export default function CreateTradeForm() {
   useEffect(() => {
     if (values.fromAmount !== "" && values.toAmount !== "")
       setExchangeRate(
-        (parseFloat(values.fromAmount) / parseFloat(values.toAmount)).toString()
+        (
+          parseFloat(values.fromAmount) / parseFloat(values.toAmount)
+        ).toString(),
       );
   }, [values.fromAmount, values.toAmount]);
 
@@ -273,7 +276,7 @@ export default function CreateTradeForm() {
 
   useEffect(() => {
     setPlaceHolder(
-      numSlice(parseFloat(values.toAmount) / parseFloat(values.fromAmount))
+      numSlice(parseFloat(values.toAmount) / parseFloat(values.fromAmount)),
     );
   }, [values.fromAmount, values.toAmount]);
 
@@ -387,7 +390,7 @@ export default function CreateTradeForm() {
               }
               // use toLocaleString() for comma formatting
               autoComplete="off"
-              className="w-3/4 p-0 text-4xl bg-transparent outline-none border-0 focus:outline-none focus:ring-0 focus:border-none"
+              className="w-3/4 p-0 text-3xl sm:text-4xl bg-transparent outline-none border-0 focus:outline-none focus:ring-0 focus:border-none"
               placeholder="Enter Amount"
               onFocus={() =>
                 setActiveInput({ fromInput: true, toInput: false })
@@ -396,7 +399,7 @@ export default function CreateTradeForm() {
                 setActiveInput({ fromInput: false, toInput: false })
               }
             />
-            <div className="w-1/4">
+            <div className="sm:w-1/4 pb-1.5">
               <TokenDropdown
                 selected={selectedFromToken}
                 setSelected={setSelectedFromToken}
@@ -417,7 +420,7 @@ export default function CreateTradeForm() {
                   setValues({
                     fromAmount: convertIntToFloat(
                       balances.from_balance.toString(),
-                      selectedFromToken.decimals
+                      selectedFromToken.decimals,
                     ),
                     toAmount: values.toAmount,
                     inputExchangeRate: "",
@@ -428,9 +431,9 @@ export default function CreateTradeForm() {
                   Number(
                     convertIntToFloat(
                       balances.from_balance.toString(),
-                      selectedFromToken.decimals
-                    )
-                  )
+                      selectedFromToken.decimals,
+                    ),
+                  ),
                 )}
               </button>
             )}
@@ -450,7 +453,7 @@ export default function CreateTradeForm() {
           className={`flex flex-col my-2 py-4 px-4 w-full rounded-lg  justify-between ring-1 focus-within:ring-2 ${!auth || noFor ? "ring-verto_border ring-1 hover:ring-2" : validFor ? "ring-lime-400 ring-2" : "ring-red-600 ring-2 focus-within:ring-red-600"}`}
         >
           <div className="uppercase mb-2 font-medium">For</div>
-          <div className="flex ">
+          <div className="flex items-center">
             <input
               type="text"
               name="toAmount"
@@ -461,7 +464,7 @@ export default function CreateTradeForm() {
               }
               // onChange={(e) => handleInput(e, 'to')}
               autoComplete="off"
-              className="w-3/4 p-0 text-4xl bg-transparent outline-none border-0 focus:outline-none focus:ring-0 focus:border-none"
+              className="w-3/4 p-0 text-3xl sm:text-4xl bg-transparent outline-none border-0 focus:outline-none focus:ring-0 focus:border-none"
               placeholder="Enter Amount"
               onFocus={() =>
                 setActiveInput({ fromInput: false, toInput: true })
@@ -470,7 +473,7 @@ export default function CreateTradeForm() {
                 setActiveInput({ fromInput: false, toInput: false })
               }
             />
-            <div className="w-1/4">
+            <div className="sm:w-1/4 pb-1.5">
               <TokenDropdown
                 selected={selectedToToken}
                 setSelected={setSelectedToToken}
@@ -490,9 +493,9 @@ export default function CreateTradeForm() {
                     Number(
                       convertIntToFloat(
                         balances.to_balance.toString(),
-                        tokenObjects[selectedToToken.contractId].decimals
-                      )
-                    )
+                        tokenObjects[selectedToToken.contractId].decimals,
+                      ),
+                    ),
                   )}
           </div>
         </div>
@@ -590,7 +593,7 @@ export default function CreateTradeForm() {
               className={
                 validOrder
                   ? "w-full rounded-md bg-gradient-to-r from-green-400 to-lime-300 hover:from-green-300 hover:to-lime-200  text-sm font-semibold text-black shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
-                  : "w-full rounded-md bg-gradient-to-r from-slate-800 hover:cursor-default to-slate-600 text-sm font-semibold text-black shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+                  : "w-full rounded-md bg-verto_bg ring-verto_border ring-1 hover:cursor-default text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
               }
               disabled={!validOrder}
             >
@@ -598,22 +601,25 @@ export default function CreateTradeForm() {
             </button>
           </div>
         )}
-        <div className="flex flex-col py-4 px-4 w-full rounded-lg mb-2 mt-2 justify-between ring-1 ring-verto_border">
-          <div className="font-semibold mb-2">EXCHANGE RATE</div>
-          {values.fromAmount && values.toAmount ? (
+        {values.fromAmount || values.toAmount ? (
+          <div
+            className={`${validFor && validFrom ? "opacity-100" : "opacity-0"} transition-opacity duration-500 flex flex-col py-4 px-4 w-full rounded-lg mb-2 mt-2 justify-between ring-1 ring-verto_border`}
+          >
+            <div className="font-semibold mb-2">EXCHANGE RATE</div>
+
             <div className=" text-3xl flex">
               <span> 1 {selectedFromToken.symbol} ⇌ </span>
               <div className="px-1">
                 {numSlice(
-                  parseFloat(values.toAmount) / parseFloat(values.fromAmount)
+                  parseFloat(values.toAmount) / parseFloat(values.fromAmount),
                 )}
               </div>
               {selectedToToken.symbol}
             </div>
-          ) : (
-            <div className="text-transparent hover:cursor-default">N/A</div>
-          )}
-        </div>
+          </div>
+        ) : (
+          <></>
+        )}
       </form>
     </div>
   );
