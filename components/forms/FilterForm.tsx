@@ -11,6 +11,7 @@ import {
   PencilSquareIcon,
   ArrowRightIcon,
   ArrowLeftIcon,
+  AdjustmentsHorizontalIcon,
 } from "@heroicons/react/20/solid";
 
 export default function FilterForm({
@@ -91,7 +92,7 @@ export default function FilterForm({
             viewBox="0 0 24 24"
             strokeWidth="1.5"
             stroke="currentColor"
-            className="size-6"
+            className="size-5 my-1 mx-0.5 hidden:size-6 sm:pr-1"
           >
             <path
               strokeLinecap="round"
@@ -99,7 +100,7 @@ export default function FilterForm({
               d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75"
             />
           </svg>
-          Filter
+          <span className="hidden sm:inline">Filter</span>
         </span>
       </button>
 

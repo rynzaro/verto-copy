@@ -643,12 +643,6 @@ export default function GetOrders({
       <div className="w-4/5 max-w-4xl">
         <div className="pt-4 flex justify-between">
           <div className="flex">
-            <FilterForm
-              // showStatusDropdown={showStatusDropdown}
-              filterValues={filterValues}
-              setFilterValues={setFilterValues}
-              handleFilterOrders={filterOrders}
-            />
             <button
               onClick={() => filterOrders()}
               className={`rounded-md h-full px-3.5 py-2 mr-2 text-md hover:bg-zinc-600 bg-zinc-800 font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500`}
@@ -660,6 +654,12 @@ export default function GetOrders({
                 <ArrowPathIcon className="h-4 w-4" />
               </span>
             </button>
+            <FilterForm
+              // showStatusDropdown={showStatusDropdown}
+              filterValues={filterValues}
+              setFilterValues={setFilterValues}
+              handleFilterOrders={filterOrders}
+            />
           </div>
 
           {showMultipleToggle ? (
