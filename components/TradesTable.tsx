@@ -429,7 +429,8 @@ export default function GetOrders({
       i++;
     }
 
-    orderSummary.id = arr[0].join(", ");
+    // orderSummary.id = arr[0].join(", ");
+    orderSummary.id = arr[0][0];
     orderSummary.from_contract_id = String(Array.from(new Set(arr[1]))[0]);
     orderSummary.to_contract_id = String(Array.from(new Set(arr[2]))[0]);
     orderSummary.from_amount = from_sum.toLocaleString("fullwide", {
@@ -649,7 +650,8 @@ export default function GetOrders({
                 <div>
                   <button
                     type="button"
-                    onClick={() => showOrderDetails(multipleDetails())}
+                    // onClick={() => showOrderDetails(multipleDetails())}
+                    onClick={() => handleMultiple(transactions)}
                     className={` rounded-md bg-gradient-to-r from-green-400 to-lime-300 h-full hover:from-green-300 px-3.5 py-2 mr-2 text-sm font-semibold text-black shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500`}
                   >
                     Details
