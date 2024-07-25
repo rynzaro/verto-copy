@@ -47,6 +47,7 @@ function Page() {
           ...defaultFilterValues,
           // showCompleted: false,
         }}
+        marketView={true}
         showStatusDropdown={false}
         showMultipleToggle={true}
       />

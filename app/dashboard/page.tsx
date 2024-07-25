@@ -10,6 +10,7 @@ export default function Page() {
         showStatusDropdown={true}
         showMultipleToggle={false}
         showOrderStatus={true}
+        marketView={false}
         initialSort={{
           value: "id",
           order: "desc",

@@ -29,7 +29,7 @@ export default function OrderPopup({
   // console.log(order);
 
   return (
-    <div className="flex justify-center z-50">
+    <div className="flex justify-center">
       <div className="w-[360px]">
         <div className="border border-gray-600 rounded-md divide-y divide-gray-600 w-full my-2">
           <div className="flex justify-between px-4 py-3 font-bold text-sm">

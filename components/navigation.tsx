@@ -77,7 +77,7 @@ export default function Navigation() {
                           href={item.href}
                           className={clsx(
                             item.name === "Create Order"
-                              ? "bg-gradient-to-r from-green-400 to-lime-300 hover:from-green-300 hover:to-indigo-400  text-black hover:text-black"
+                              ? "bg-gradient-to-r from-green-400 to-lime-300 hover:from-green-300 hover:to-lime-200  text-black hover:text-black"
                               : "",
                             pathName.endsWith(item.href) &&
                               item.name !== "Create Order"
@@ -119,7 +119,7 @@ export default function Navigation() {
                   <>
                     <Menu as="div" className="relative ml-3">
                       <div>
-                        <MenuButton className="relative flex rounded-md bg-zinc-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-zinc-800">
+                        <MenuButton className="relative flex rounded-md bg-zinc-800 text-sm focus:outline-none hover:bg-zinc-600 focus:ring-offset-2 focus:ring-offset-zinc-800">
                           <span className="absolute -inset-1.5" />
                           <span className="sr-only">Open user menu</span>
                           <span className="inline-flex items-center gap-x-1.5 rounded-md  px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">
