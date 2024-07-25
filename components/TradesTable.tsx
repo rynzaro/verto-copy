@@ -2,6 +2,7 @@
 
 import { VertoContract } from "@/lib/config/near";
 import {
+  Button,
   Checkbox,
   Listbox,
   ListboxButton,
@@ -645,12 +646,28 @@ export default function GetOrders({
         )}
       >
         <div className="p-3 pt-1 rounded-lg bg-zinc-800">
-          <OrderPopup
-            order={currentOrderDetails}
-            close={() => setOrderPopupOpen(false)}
-            tokenObjects={tokenObjects}
-            orderActionButton={getOrderButton(currentOrderDetails)}
-          />
+          {multipleOrders ? (
+            <OrderPopup
+              order={currentOrderDetails}
+              close={() => setOrderPopupOpen(false)}
+              tokenObjects={tokenObjects}
+              orderActionButton={
+                <button
+                  className={` w-full h-full ${transactions.length < 2 ? "cursor-default bg-slate-600" : "bg-gradient-to-r from-green-400 to-lime-300 hover:from-green-300 hover:to-lime-200"} rounded-md px-3.5 py-3 mr-2 text-sm font-semibold text-black shadow-sm`}
+                  onClick={() => handleMultiple(transactions)}
+                >
+                  Fill
+                </button>
+              }
+            />
+          ) : (
+            <OrderPopup
+              order={currentOrderDetails}
+              close={() => setOrderPopupOpen(false)}
+              tokenObjects={tokenObjects}
+              orderActionButton={getOrderButton(currentOrderDetails)}
+            />
+          )}
         </div>
       </div>
       <div className="w-4/5 max-w-4xl">
@@ -681,8 +698,8 @@ export default function GetOrders({
                 <div>
                   <button
                     type="button"
-                    // onClick={() => showOrderDetails(multipleDetails())}
-                    onClick={() => handleMultiple(transactions)}
+                    onClick={() => showOrderDetails(multipleDetails())}
+                    // onClick={() => handleMultiple(transactions)}
                     disabled={transactions.length < 2}
                     className={`${transactions.length < 2 ? "cursor-default bg-slate-600" : "bg-gradient-to-r from-green-400 to-lime-300 hover:from-green-300 hover:to-lime-200"} rounded-md  h-full  px-3.5 py-2 mr-2 text-sm font-semibold text-black shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500`}
                   >
