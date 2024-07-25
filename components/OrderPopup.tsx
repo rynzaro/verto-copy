@@ -26,8 +26,10 @@ export default function OrderPopup({
   const fromObject = tokenObjects[order.from_contract_id];
   const toObject = tokenObjects[order.to_contract_id];
 
+  // console.log(order);
+
   return (
-    <div className="flex justify-center z-50">
+    <div className="flex justify-center">
       <div className="w-[360px]">
         <div className="border border-gray-600 rounded-md divide-y divide-gray-600 w-full my-2">
           <div className="flex justify-between px-4 py-3 font-bold text-sm">
@@ -71,7 +73,7 @@ export default function OrderPopup({
             <div className="text-gray-400">You send</div>
             <div>
               {formatNumberPrecisely(
-                Number(convertIntToFloat(order.to_amount, toObject.decimals))
+                Number(convertIntToFloat(order.to_amount, toObject.decimals)),
               )}{" "}
               {toObject.symbol}
             </div>
@@ -81,8 +83,8 @@ export default function OrderPopup({
             <div>
               {formatNumberPrecisely(
                 Number(
-                  convertIntToFloat(order.from_amount, fromObject.decimals)
-                )
+                  convertIntToFloat(order.from_amount, fromObject.decimals),
+                ),
               )}{" "}
               {fromObject.symbol}
             </div>
@@ -92,11 +94,11 @@ export default function OrderPopup({
             <div>
               {formatNumber(
                 parseFloat(
-                  convertIntToFloat(order.from_amount, fromObject.decimals)
+                  convertIntToFloat(order.from_amount, fromObject.decimals),
                 ) /
                   parseFloat(
-                    convertIntToFloat(order.to_amount, toObject.decimals)
-                  )
+                    convertIntToFloat(order.to_amount, toObject.decimals),
+                  ),
               )}
             </div>
           </div>

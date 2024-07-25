@@ -7,8 +7,10 @@ export default function Page() {
       <TradesTable
         typeOfOrders="open"
         heading=""
-        showCompletedToggle={true}
+        showStatusDropdown={true}
+        showMultipleToggle={false}
         showOrderStatus={true}
+        marketView={false}
         initialSort={{
           value: "id",
           order: "desc",
@@ -18,6 +20,18 @@ export default function Page() {
           fromAccountId: true,
         }}
       />
+
+      {/* <TradesTable
+        typeOfOrders="open"
+        heading=""
+        showCompletedToggle={true}
+        showOrderStatus={true}
+        initialSort={defaultSort}
+        initialFilterValues={{
+          ...defaultFilterValues,
+          toAccountId: true,
+        }}
+      /> */}
     </div>
   );
 }

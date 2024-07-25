@@ -4,14 +4,24 @@ import { FilterValues, Order, TokenMetadata } from "@/lib/types/types";
 import { convertIntToFloat, handleNumericInput } from "@/lib/utils";
 import { Field, Label, MenuButton, Switch } from "@headlessui/react";
 import { Dispatch, useEffect, useRef, useState } from "react";
+import {
+  ArrowUpRightIcon,
+  ArrowDownRightIcon,
+  ArrowsUpDownIcon,
+  PencilSquareIcon,
+  ArrowRightIcon,
+  ArrowLeftIcon,
+  AdjustmentsHorizontalIcon,
+  FunnelIcon,
+} from "@heroicons/react/20/solid";
 
 export default function FilterForm({
-  showCompletedToggle,
+  // showCompletedToggle,
   filterValues,
   setFilterValues,
   handleFilterOrders,
 }: {
-  showCompletedToggle: boolean;
+  // showCompletedToggle: boolean;
   filterValues: FilterValues;
   setFilterValues: Dispatch<React.SetStateAction<FilterValues>>;
   handleFilterOrders: () => void;
@@ -48,68 +58,69 @@ export default function FilterForm({
     setVisible((prev) => !prev);
   }
 
-  function handleShowSwap(fromMept: boolean) {
+  const [fromMept, setFromMept] = useState(false);
+
+  function handleMept() {
+    setFromMept((prev) => !prev);
+  }
+
+  useEffect(() => {
     setFilterValues((prev) => ({
       ...prev,
       buyMept: fromMept ? true : false,
     }));
-  }
+  }, [fromMept]);
 
-  function toggleShowCompleted() {
-    setFilterValues((prev) => ({
-      ...prev,
-      showCompleted: !prev.showCompleted,
-    }));
-  }
+  // function toggleShowCompleted() {
+  //   setFilterValues((prev) => ({
+  //     ...prev,
+  //     showCompleted: !prev.showCompleted,
+  //   }));
+  // }
 
   const filterMenu = (
-    <div className="flex flex-wrap gap-x-2 gap-y-4 justify-between">
+    <div className="relative flex gap-x-2 gap-y-4 justify-between z-0">
       <button
-        className="relative flex rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-zinc-800"
+        className=" flex items-center px-3.5 py-2 font-semibold h-full rounded-md text-mg focus:outline-none bg-zinc-800 hover:bg-zinc-600"
         onClick={toggleVisible}
       >
-        <span className="absolute -inset-1.5" />
-        <span className="sr-only">Open user menu</span>
-        <span className="inline-flex items-center gap-x-1.5 bg-zinc-800 rounded-md px-3.5 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2">
-          <svg
+        <FunnelIcon className="h-4 w-4" />
+        <span className="hidden sm:inline sm:pl-2">Filter</span>
+      </button>
+      {/* <span className="absolute -inset-1.5" /> */}
+      {/* <span className="sr-only">Open user menu</span> */}
+      {/* <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
             strokeWidth="1.5"
             stroke="currentColor"
-            className="size-6"
+            className="size-5 my-1 mx-0.5 hidden:size-6 sm:pr-1"
           >
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
               d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75"
             />
-          </svg>
-          Filter
-        </span>
-      </button>
+          </svg> */}
 
-      <div className="relative flex text-sm">
+      <div className="relative flex">
         <button
           type="button"
-          className={`px-3.5 py-2 mr-2 h-full shadow-sm rounded-md font-semibold text-white focus:outline-none hover:bg-zinc-400 ${filterValues.buyMept ? "bg-zinc-600" : "bg-zinc-800"}`}
+          className={`flex items-center text-mg px-3.5 py-2 mr-2 h-full bg-zinc-800 shadow-sm rounded-md font-semibold text-white focus:outline-none hover:bg-zinc-600 `}
           onClick={() => {
-            handleShowSwap(true);
+            handleMept();
           }}
         >
-          From MEPT
-        </button>
-        <button
-          type="button"
-          className={`px-3.5 py-2 h-full shadow-sm rounded-md font-semibold text-white focus:outline-none hover:bg-zinc-400 ${!filterValues.buyMept ? "bg-zinc-600" : "bg-zinc-800"}`}
-          onClick={() => {
-            handleShowSwap(false);
-          }}
-        >
-          To MEPT
+          {!fromMept ? (
+            <ArrowRightIcon className="h-6 w-6 pr-2" />
+          ) : (
+            <ArrowLeftIcon className="h-6 w-6 pr-2" />
+          )}
+          MEPT
         </button>
       </div>
-      {showCompletedToggle ? (
+      {/* {showCompletedToggle ? (
         <Field className="flex items-center relative text-white mx-4">
           <Switch
             checked={filterValues.showCompleted}
@@ -129,7 +140,7 @@ export default function FilterForm({
         </Field>
       ) : (
         <></>
-      )}
+      )} */}
     </div>
   );
 
@@ -141,7 +152,7 @@ export default function FilterForm({
     <div className="relative">
       {filterMenu}
       <div
-        className="w-[320px] sm:w-[480px] bg-verto_bg mb-2 ring-2 ring-verto_border rounded-xl px-3 py-4 absolute mt-2"
+        className="w-[320px] sm:w-[480px] bg-verto_bg left-0 ring-2 ring-verto_border rounded-xl px-3 absolute py-4 mt-0"
         ref={ref}
       >
         <div className="uppercase mb-1">From Amount</div>
