@@ -221,7 +221,10 @@ export default function GetOrders({
         return false;
       }
 
-      if (currentStatusFilter === "All") {
+      if (
+        currentStatusFilter === "All" &&
+        filterValues === initialFilterValues
+      ) {
         return true;
       } else if (currentStatusFilter === "Open" && order.status !== "Open") {
         return false;
@@ -273,11 +276,12 @@ export default function GetOrders({
     });
 
     setFilteredOrders(newOrderObjects);
+    console.log(newOrderObjects);
   }
 
   useEffect(() => {
     filterOrders();
-  }, [orders, filterValues.buyMept, currentStatusFilter]);
+  }, [orders, currentStatusFilter, filterValues]);
   // }, [orders, filterValues.buyMept, filterValues.showCompleted]);
 
   useEffect(() => {
@@ -673,7 +677,7 @@ export default function GetOrders({
       <div className="w-4/5 max-w-4xl">
         <div className="pt-4 flex justify-between">
           <div className="flex">
-            <button
+            {/* <button
               onClick={() => filterOrders()}
               className={`rounded-md h-full px-3.5 py-2 mr-2 text-md hover:bg-zinc-600 bg-zinc-800 font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500`}
             >
@@ -683,7 +687,7 @@ export default function GetOrders({
               <span className="flex sm:hidden items-center">
                 <ArrowPathIcon className="h-4 w-4" />
               </span>
-            </button>
+            </button> */}
             <FilterForm
               // showStatusDropdown={showStatusDropdown}
               filterValues={filterValues}
@@ -699,7 +703,6 @@ export default function GetOrders({
                   <button
                     type="button"
                     onClick={() => showOrderDetails(multipleDetails())}
-                    // onClick={() => handleMultiple(transactions)}
                     disabled={transactions.length < 2}
                     className={`${transactions.length < 2 ? "cursor-default bg-slate-600" : "bg-gradient-to-r from-green-400 to-lime-300 hover:from-green-300 hover:to-lime-200"} rounded-md  h-full  px-3.5 py-2 mr-2 text-sm font-semibold text-black shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500`}
                   >
@@ -972,7 +975,7 @@ export default function GetOrders({
                     convertIntToFloat(order.to_amount, toObject.decimals),
                   );
                   return (
-                    <tr key={order.id} className="border-b border-gray-700 ">
+                    <tr key={order.id} className="border-b border-gray-700">
                       <td className="py-4 flex items-center justify-center">
                         <Image
                           src={fromObject.icon}
