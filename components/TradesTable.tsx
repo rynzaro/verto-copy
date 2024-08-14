@@ -192,19 +192,6 @@ export default function GetOrders({
         return false;
       }
 
-      // if both are set, to be filtered out neither must be correct
-      if (filterValues.fromAccountId && filterValues.toAccountId) {
-        if (accountId !== order.maker_id && accountId !== order.taker_id) {
-          return false;
-        }
-        // if one is set, if it doesn't match, it's filtered out
-      } else if (
-        (filterValues.fromAccountId && accountId !== order.maker_id) ||
-        (filterValues.toAccountId && accountId !== order.taker_id)
-      ) {
-        return false;
-      }
-
       if (
         (filterValues.buyMept &&
           order.from_contract_id !== "pre.meteor-token.near") ||
@@ -214,40 +201,87 @@ export default function GetOrders({
         return false;
       }
 
-      if (
-        marketView &&
-        (order.status !== "Open" || order.maker_id === accountId)
-      ) {
-        return false;
+      if (!marketView) {
+        if (![order.taker_id, order.maker_id].includes(accountId)) {
+          return false;
+        } else if (currentStatusFilter === "All") {
+          return true;
+        } else if (currentStatusFilter === "Open" && order.status !== "Open") {
+          return false;
+        } else if (
+          currentStatusFilter === "Completed" &&
+          order.status !== "Completed"
+        ) {
+          return false;
+        } else if (
+          currentStatusFilter === "Canceled" &&
+          order.status !== "Canceled"
+        ) {
+          return false;
+        } else if (
+          currentStatusFilter === "Filled" &&
+          order.taker_id !== accountId
+        ) {
+          return false;
+        }
+      } else {
+        if (filterValues.fromAccountId && filterValues.toAccountId) {
+          if (accountId !== order.maker_id && accountId !== order.taker_id) {
+            return false;
+          }
+          // if one is set, if it doesn't match, it's filtered out
+        } else if (
+          (filterValues.fromAccountId && accountId !== order.maker_id) ||
+          (filterValues.toAccountId && accountId !== order.taker_id)
+        ) {
+          return false;
+        } else if (order.status !== "Open" || order.maker_id === accountId) {
+          return false;
+        }
       }
 
-      if (
-        currentStatusFilter === "All" &&
-        filterValues === initialFilterValues
-      ) {
-        return true;
-      } else if (currentStatusFilter === "Open" && order.status !== "Open") {
-        return false;
-      } else if (
-        currentStatusFilter === "Completed" &&
-        order.status !== "Completed"
-      ) {
-        return false;
-      } else if (
-        currentStatusFilter === "Canceled" &&
-        order.status !== "Canceled"
-      ) {
-        return false;
-      } else if (
-        currentStatusFilter === "Filled" &&
-        order.status !== "Filled" &&
-        order.taker_id !== accountId
-      ) {
-        return false;
-      }
-
-      // if (filterValues.showCanceled && order.status !== "Canceled") {
-      //   return false;
+      // if (!marketView) {
+      //   if (filterValues.fromAccountId && filterValues.toAccountId) {
+      //     if (accountId !== order.maker_id && accountId !== order.taker_id) {
+      //       return false;
+      //     } else if (
+      //       currentStatusFilter === "Open" &&
+      //       order.status !== "Open"
+      //     ) {
+      //       return false;
+      //     } else if (
+      //       currentStatusFilter === "Completed" &&
+      //       order.status !== "Completed" &&
+      //       order.maker_id !== accountId
+      //     ) {
+      //       return false;
+      //     } else if (
+      //       currentStatusFilter === "Canceled" &&
+      //       order.status !== "Canceled" &&
+      //       order.maker_id !== accountId
+      //     ) {
+      //       return false;
+      //     } else if (
+      //       currentStatusFilter === "Filled" &&
+      //       order.taker_id !== accountId
+      //     ) {
+      //       return false;
+      //     }
+      //   }
+      // } else {
+      //   if (filterValues.fromAccountId && filterValues.toAccountId) {
+      //     if (accountId !== order.maker_id && accountId !== order.taker_id) {
+      //       return false;
+      //     }
+      //     // if one is set, if it doesn't match, it's filtered out
+      //   } else if (
+      //     (filterValues.fromAccountId && accountId !== order.maker_id) ||
+      //     (filterValues.toAccountId && accountId !== order.taker_id)
+      //   ) {
+      //     return false;
+      //   } else if (order.status !== "Open" || order.maker_id === accountId) {
+      //     return false;
+      //   }
       // }
 
       const fromAmount = parseFloat(
