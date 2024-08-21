@@ -147,8 +147,8 @@ const NearWalletProvider = ({ children }: { children: ReactNode }) => {
     method: string;
     args?: Record<string, any>;
   }) => {
-    const url = "https://rpc.shitzuapes.xyz";
-    // const url = `https://rpc.${NetworkId}.near.org`;
+    // const url = "https://rpc.shitzuapes.xyz";
+    const url = `https://rpc.${NetworkId}.near.org`;
     const provider = new providers.JsonRpcProvider({ url });
 
     let res = await provider.query({
